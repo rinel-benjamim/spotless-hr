@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\AttendanceType;
 use App\EmployeeRole;
 use App\Models\Attendance;
+use App\Models\CompanySetting;
 use App\Models\Employee;
 use App\Models\Shift;
 use App\Models\User;
@@ -15,6 +16,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        CompanySetting::create([
+            'company_name' => 'Lavandaria Spotless',
+            'business_hours_start' => '08:00:00',
+            'business_hours_end' => '20:00:00',
+            'timezone' => 'Europe/Lisbon',
+            'currency' => 'AKZ',
+        ]);
+
         $adminUser = User::factory()->create([
             'name' => 'Administrador',
             'email' => 'admin@lavandaria.com',
@@ -26,6 +35,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Turno da Manhã',
             'start_time' => '08:00:00',
             'end_time' => '16:00:00',
+            'tolerance_minutes' => 15,
             'description' => 'Turno diurno padrão',
         ]);
 
@@ -33,6 +43,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Turno da Tarde',
             'start_time' => '14:00:00',
             'end_time' => '22:00:00',
+            'tolerance_minutes' => 15,
             'description' => 'Turno vespertino',
         ]);
 
@@ -40,6 +51,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Turno da Noite',
             'start_time' => '22:00:00',
             'end_time' => '06:00:00',
+            'tolerance_minutes' => 15,
             'description' => 'Turno noturno',
         ]);
 
@@ -57,6 +69,7 @@ class DatabaseSeeder extends Seeder
             'role' => EmployeeRole::Operator,
             'contract_type' => 'full_time',
             'shift_id' => $morningShift->id,
+            'hire_date' => now()->subYears(2),
         ]);
 
         $employee2 = Employee::create([
@@ -66,6 +79,7 @@ class DatabaseSeeder extends Seeder
             'role' => EmployeeRole::Washer,
             'contract_type' => 'full_time',
             'shift_id' => $morningShift->id,
+            'hire_date' => now()->subYears(3),
         ]);
 
         $employee3 = Employee::create([
@@ -75,6 +89,7 @@ class DatabaseSeeder extends Seeder
             'role' => EmployeeRole::Ironer,
             'contract_type' => 'part_time',
             'shift_id' => $afternoonShift->id,
+            'hire_date' => now()->subMonths(6),
         ]);
 
         $employee4 = Employee::create([
@@ -84,6 +99,7 @@ class DatabaseSeeder extends Seeder
             'role' => EmployeeRole::Supervisor,
             'contract_type' => 'full_time',
             'shift_id' => $morningShift->id,
+            'hire_date' => now()->subYears(4),
         ]);
 
         $today = now();

@@ -14,8 +14,16 @@ class Shift extends Model
         'name',
         'start_time',
         'end_time',
+        'tolerance_minutes',
         'description',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'tolerance_minutes' => 'integer',
+        ];
+    }
 
     public function employees(): HasMany
     {

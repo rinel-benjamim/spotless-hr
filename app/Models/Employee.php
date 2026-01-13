@@ -22,6 +22,7 @@ class Employee extends Model
         'role',
         'contract_type',
         'shift_id',
+        'hire_date',
         'status',
     ];
 
@@ -31,6 +32,7 @@ class Employee extends Model
             'role' => EmployeeRole::class,
             'contract_type' => ContractType::class,
             'status' => EmployeeStatus::class,
+            'hire_date' => 'date',
         ];
     }
 
@@ -47,6 +49,11 @@ class Employee extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function justifications(): HasMany
+    {
+        return $this->hasMany(Justification::class);
     }
 
     public function isActive(): bool

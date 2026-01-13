@@ -32,7 +32,7 @@ test('two factor challenge can be rendered', function () {
         'two_factor_confirmed_at' => now(),
     ])->save();
 
-    $this->post(route('login'), [
+    $this->from(route('login'))->post(route('login.store'), [
         'email' => $user->email,
         'password' => 'password',
     ]);

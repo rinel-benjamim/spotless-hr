@@ -52,10 +52,12 @@ export interface Employee {
     role: EmployeeRole;
     contract_type: ContractType;
     shift_id: number | null;
+    hire_date: string | null;
     status: EmployeeStatus;
     user?: User;
     shift?: Shift;
     attendances?: Attendance[];
+    justifications?: Justification[];
     created_at: string;
     updated_at: string;
 }
@@ -65,6 +67,7 @@ export interface Shift {
     name: string;
     start_time: string;
     end_time: string;
+    tolerance_minutes: number;
     description: string | null;
     employees_count?: number;
     created_at: string;
@@ -100,6 +103,55 @@ export type ContractType =
 export type EmployeeStatus = 'active' | 'inactive';
 
 export type AttendanceType = 'check_in' | 'check_out';
+
+export interface Justification {
+    id: number;
+    employee_id: number;
+    attendance_id: number | null;
+    absence_date: string | null;
+    reason: string;
+    justified_by: number;
+    employee?: Employee;
+    attendance?: Attendance;
+    justifiedBy?: User;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ActivityLog {
+    id: number;
+    user_id: number | null;
+    action: string;
+    model_type: string | null;
+    model_id: number | null;
+    description: string | null;
+    properties: Record<string, unknown> | null;
+    ip_address: string | null;
+    user?: User;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CompanySetting {
+    id: number;
+    company_name: string;
+    business_hours_start: string;
+    business_hours_end: string;
+    timezone: string;
+    currency: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface MonthlySummary {
+    days_worked: number;
+    late_count: number;
+    absence_count: number;
+    justified_count: number;
+    total_hours: number;
+}
+
+export type AbsenceType = 'absence' | 'late' | 'justified';
 
 export interface PaginatedData<T> {
     data: T[];

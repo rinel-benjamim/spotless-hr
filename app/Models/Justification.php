@@ -2,29 +2,32 @@
 
 namespace App\Models;
 
-use App\AttendanceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Attendance extends Model
+class Justification extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'attendance_id',
         'employee_id',
-        'type',
-        'recorded_at',
-        'notes',
+        'absence_date',
+        'reason',
+        'justified_by',
     ];
 
     protected function casts(): array
     {
         return [
-            'type' => AttendanceType::class,
-            'recorded_at' => 'datetime',
+            'absence_date' => 'date',
         ];
+    }
+
+    public function attendance(): BelongsTo
+    {
+        return $this->belongsTo(Attendance::class);
     }
 
     public function employee(): BelongsTo
@@ -32,8 +35,8 @@ class Attendance extends Model
         return $this->belongsTo(Employee::class);
     }
 
-    public function justification(): HasOne
+    public function justifiedBy(): BelongsTo
     {
-        return $this->hasOne(Justification::class);
+        return $this->belongsTo(User::class, 'justified_by');
     }
 }
