@@ -34,16 +34,40 @@ class DashboardController extends Controller
             ->distinct('employee_id')
             ->count('employee_id');
 
-        $totalHoursThisMonth = DB::table('attendances as check_in')
-            ->join('attendances as check_out', function ($join) {
-                $join->on('check_in.employee_id', '=', 'check_out.employee_id')
-                    ->whereRaw('DATE(check_in.recorded_at) = DATE(check_out.recorded_at)')
-                    ->whereRaw('check_out.recorded_at > check_in.recorded_at');
-            })
-            ->where('check_in.type', AttendanceType::CheckIn->value)
-            ->where('check_out.type', AttendanceType::CheckOut->value)
-            ->whereDate('check_in.recorded_at', '>=', $thisMonth)
-            ->sum(DB::raw('TIMESTAMPDIFF(MINUTE, check_in.recorded_at, check_out.recorded_at) / 60'));
+        // Calculate total hours this month in a DB-agnostic way (works on SQLite).
+        $events = Attendance::whereDate('recorded_at', '>=', $thisMonth)
+            ->whereIn('type', [AttendanceType::CheckIn->value, AttendanceType::CheckOut->value])
+            ->orderBy('employee_id')
+            ->orderBy('recorded_at')
+            ->get(['employee_id', 'type', 'recorded_at']);
+
+        $totalMinutes = 0;
+
+        $grouped = $events->groupBy(function ($item) {
+            return $item->employee_id . '|' . (\Illuminate\Support\Carbon::parse($item->recorded_at)->toDateString());
+        });
+
+        foreach ($grouped as $group) {
+            $start = null;
+
+            foreach ($group as $event) {
+                $time = $event->recorded_at instanceof \Illuminate\Support\Carbon
+                    ? $event->recorded_at
+                    : \Illuminate\Support\Carbon::parse($event->recorded_at);
+
+                if ($event->type === AttendanceType::CheckIn->value) {
+                    $start = $time;
+                    continue;
+                }
+
+                if ($event->type === AttendanceType::CheckOut->value && $start) {
+                    $totalMinutes += $time->diffInMinutes($start);
+                    $start = null;
+                }
+            }
+        }
+
+        $totalHoursThisMonth = $totalMinutes / 60;
 
         $recentAttendances = Attendance::with('employee')
             ->latest('recorded_at')
