@@ -35,7 +35,14 @@ class EmployeeController extends Controller
 
     public function store(StoreEmployeeRequest $request)
     {
-        Employee::create($request->validated());
+        $data = $request->validated();
+
+        if (isset($data['password'])) {
+            $data['temp_password'] = $data['password'];
+            unset($data['password']);
+        }
+
+        Employee::create($data);
 
         return redirect()->route('employees.index')
             ->with('success', 'Funcionário criado com sucesso.');

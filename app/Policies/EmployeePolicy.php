@@ -9,36 +9,36 @@ class EmployeePolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->isAdmin() || $user->employee?->isManager();
     }
 
     public function view(User $user, Employee $employee): bool
     {
-        return $user->isAdmin() || $user->employee?->id === $employee->id;
+        return $user->isAdmin() || $user->employee?->isManager() || $user->employee?->id === $employee->id;
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->employee?->isManager();
     }
 
     public function update(User $user, Employee $employee): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->employee?->isManager();
     }
 
     public function delete(User $user, Employee $employee): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->employee?->isManager();
     }
 
     public function restore(User $user, Employee $employee): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->employee?->isManager();
     }
 
     public function forceDelete(User $user, Employee $employee): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->employee?->isManager();
     }
 }

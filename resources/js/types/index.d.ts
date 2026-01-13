@@ -53,11 +53,15 @@ export interface Employee {
     contract_type: ContractType;
     shift_id: number | null;
     hire_date: string | null;
+    base_salary: number | null;
+    deduction_per_absence: number | null;
     status: EmployeeStatus;
     user?: User;
     shift?: Shift;
     attendances?: Attendance[];
     justifications?: Justification[];
+    payrolls?: Payroll[];
+    schedules?: Schedule[];
     created_at: string;
     updated_at: string;
 }
@@ -149,6 +153,37 @@ export interface MonthlySummary {
     absence_count: number;
     justified_count: number;
     total_hours: number;
+}
+
+export interface Payroll {
+    id: number;
+    employee_id: number;
+    reference_month: string;
+    base_salary: number;
+    total_days_worked: number;
+    absences_count: number;
+    late_count: number;
+    total_deductions: number;
+    total_bonus: number;
+    net_salary: number;
+    paid_at: string | null;
+    notes: string | null;
+    employee?: Employee;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Schedule {
+    id: number;
+    employee_id: number;
+    date: string;
+    shift_id: number | null;
+    is_working_day: boolean;
+    notes: string | null;
+    employee?: Employee;
+    shift?: Shift;
+    created_at: string;
+    updated_at: string;
 }
 
 export type AbsenceType = 'absence' | 'late' | 'justified';

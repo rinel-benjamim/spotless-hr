@@ -4,9 +4,9 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('employees index returns an Inertia response', function () {
-    $user = User::factory()->create();
+    $admin = User::factory()->create(['role' => 'admin']);
 
-    $this->actingAs($user)
+    $this->actingAs($admin)
         ->get(route('employees.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page

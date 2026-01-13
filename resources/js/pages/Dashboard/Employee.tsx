@@ -1,9 +1,19 @@
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type Attendance, type BreadcrumbItem, type Employee } from '@/types';
-import { Head, router } from '@inertiajs/react';
-import { Calendar, Clock, LogIn, LogOut, User } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import {
+    Clock,
+    Calendar,
+    TrendingUp,
+    LogIn,
+    LogOut,
+    FileText,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface EmployeeDashboardProps {
     employee?: Employee;
@@ -14,59 +24,8 @@ interface EmployeeDashboardProps {
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
+    { title: 'Dashboard', href: '/dashboard' },
 ];
-
-const formatDateTime = (dateTime: string) => {
-    return new Date(dateTime).toLocaleString('pt-PT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-const formatTime = (dateTime: string) => {
-    return new Date(dateTime).toLocaleTimeString('pt-PT', {
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-const getEmployeeRoleLabel = (role: string) => {
-    const roles: Record<string, string> = {
-        manager: 'Gerente',
-        supervisor: 'Supervisor',
-        operator: 'Operador',
-        washer: 'Lavador',
-        ironer: 'Passador',
-        delivery_driver: 'Motorista de Entrega',
-        customer_service: 'Atendimento ao Cliente',
-    };
-    return roles[role] || role;
-};
-
-const getContractTypeLabel = (type: string) => {
-    const types: Record<string, string> = {
-        full_time: 'Tempo Integral',
-        part_time: 'Meio Período',
-        temporary: 'Temporário',
-        internship: 'Estágio',
-    };
-    return types[type] || type;
-};
-
-const handleCheckIn = () => {
-    router.post('/attendances/check-in', {});
-};
-
-const handleCheckOut = () => {
-    router.post('/attendances/check-out', {});
-};
 
 export default function EmployeeDashboard({
     employee,
@@ -78,12 +37,15 @@ export default function EmployeeDashboard({
     if (message || !employee) {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
-                <Head title="Dashboard - Funcionário" />
-                <div className="flex min-h-[400px] items-center justify-center p-6">
-                    <Card className="p-8 text-center">
-                        <p className="text-muted-foreground">
-                            {message || 'Perfil de funcionário não encontrado.'}
-                        </p>
+                <Head title="Dashboard" />
+                <div className="flex h-full items-center justify-center p-6">
+                    <Card className="p-12">
+                        <div className="text-center">
+                            <p className="text-lg text-muted-foreground">
+                                {message ||
+                                    'Perfil de funcionário não encontrado.'}
+                            </p>
+                        </div>
                     </Card>
                 </div>
             </AppLayout>
@@ -95,203 +57,254 @@ export default function EmployeeDashboard({
     const canCheckOut =
         lastAttendance && lastAttendance.type === 'check_in';
 
+    const handleCheckIn = () => {
+        router.post('/attendances/check-in', {
+            employee_id: employee.id,
+        });
+    };
+
+    const handleCheckOut = () => {
+        router.post('/attendances/check-out', {
+            employee_id: employee.id,
+        });
+    };
+
+    const todayCheckIns = todayAttendances.filter(
+        (a) => a.type === 'check_in',
+    ).length;
+    const todayCheckOuts = todayAttendances.filter(
+        (a) => a.type === 'check_out',
+    ).length;
+
+    const monthCheckIns = monthAttendances.filter(
+        (a) => a.type === 'check_in',
+    ).length;
+
+    const getAttendanceTypeBadge = (type: string) => {
+        return type === 'check_in' ? (
+            <Badge variant="default" className="bg-green-600">
+                Entrada
+            </Badge>
+        ) : (
+            <Badge variant="secondary" className="bg-blue-600 text-white">
+                Saída
+            </Badge>
+        );
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard - Funcionário" />
+            <Head title="Dashboard" />
 
             <div className="flex flex-col gap-6 p-6">
-                <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                    <h1 className="text-2xl font-bold">
+                        Bem-vindo, {employee.full_name}!
+                    </h1>
+                    <p className="text-muted-foreground">
+                        {employee.employee_code} - {employee.shift?.name}
+                    </p>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-3">
                     <Card className="p-6">
-                        <div className="mb-4 flex items-center gap-2">
-                            <User className="size-5 text-primary" />
-                            <h2 className="text-lg font-semibold">
-                                Informações Pessoais
-                            </h2>
-                        </div>
-                        <div className="space-y-2">
+                        <div className="flex items-center justify-between">
                             <div>
-                                <span className="text-sm text-muted-foreground">
-                                    Nome:
-                                </span>
-                                <p className="font-medium">
-                                    {employee.full_name}
+                                <p className="text-sm font-medium text-muted-foreground">
+                                    Estado
+                                </p>
+                                <p className="mt-2 text-2xl font-bold">
+                                    {canCheckOut ? 'Presente' : 'Ausente'}
                                 </p>
                             </div>
-                            <div>
-                                <span className="text-sm text-muted-foreground">
-                                    Código:
-                                </span>
-                                <p className="font-medium">
-                                    {employee.employee_code}
-                                </p>
+                            <div
+                                className={`rounded-lg p-3 ${canCheckOut ? 'bg-green-50' : 'bg-gray-50'}`}
+                            >
+                                <Clock
+                                    className={`size-6 ${canCheckOut ? 'text-green-600' : 'text-gray-600'}`}
+                                />
                             </div>
-                            <div>
-                                <span className="text-sm text-muted-foreground">
-                                    Função:
-                                </span>
-                                <p className="font-medium">
-                                    {getEmployeeRoleLabel(employee.role)}
-                                </p>
-                            </div>
-                            <div>
-                                <span className="text-sm text-muted-foreground">
-                                    Tipo de Contrato:
-                                </span>
-                                <p className="font-medium">
-                                    {getContractTypeLabel(
-                                        employee.contract_type,
-                                    )}
-                                </p>
-                            </div>
-                            {employee.shift && (
-                                <div>
-                                    <span className="text-sm text-muted-foreground">
-                                        Turno:
-                                    </span>
-                                    <p className="font-medium">
-                                        {employee.shift.name} (
-                                        {employee.shift.start_time} -{' '}
-                                        {employee.shift.end_time})
-                                    </p>
-                                </div>
-                            )}
                         </div>
                     </Card>
 
                     <Card className="p-6">
-                        <div className="mb-4 flex items-center gap-2">
-                            <Clock className="size-5 text-primary" />
-                            <h2 className="text-lg font-semibold">
-                                Registo de Ponto
-                            </h2>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-muted-foreground">
+                                    Presenças este Mês
+                                </p>
+                                <p className="mt-2 text-2xl font-bold">
+                                    {monthCheckIns}
+                                </p>
+                            </div>
+                            <div className="rounded-lg bg-blue-50 p-3">
+                                <Calendar className="size-6 text-blue-600" />
+                            </div>
                         </div>
-                        <div className="space-y-4">
-                            {lastAttendance && (
-                                <div>
-                                    <span className="text-sm text-muted-foreground">
-                                        Última Marcação:
-                                    </span>
-                                    <p className="font-medium">
-                                        {lastAttendance.type === 'check_in'
-                                            ? 'Entrada'
-                                            : 'Saída'}{' '}
-                                        às{' '}
-                                        {formatTime(lastAttendance.recorded_at)}
-                                    </p>
-                                </div>
-                            )}
-                            <div className="flex gap-2">
-                                <Button
-                                    onClick={handleCheckIn}
-                                    disabled={!canCheckIn}
-                                    className="flex-1"
-                                    variant={canCheckIn ? 'default' : 'outline'}
-                                >
-                                    <LogIn className="mr-2 size-4" />
-                                    Marcar Entrada
-                                </Button>
-                                <Button
-                                    onClick={handleCheckOut}
-                                    disabled={!canCheckOut}
-                                    className="flex-1"
-                                    variant={
-                                        canCheckOut ? 'default' : 'outline'
-                                    }
-                                >
-                                    <LogOut className="mr-2 size-4" />
-                                    Marcar Saída
-                                </Button>
+                    </Card>
+
+                    <Card className="p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-muted-foreground">
+                                    Registos Hoje
+                                </p>
+                                <p className="mt-2 text-2xl font-bold">
+                                    {todayAttendances.length}
+                                </p>
+                            </div>
+                            <div className="rounded-lg bg-purple-50 p-3">
+                                <TrendingUp className="size-6 text-purple-600" />
                             </div>
                         </div>
                     </Card>
                 </div>
 
                 <Card className="p-6">
-                    <div className="mb-4 flex items-center gap-2">
-                        <Calendar className="size-5 text-primary" />
-                        <h2 className="text-lg font-semibold">
-                            Presenças de Hoje
-                        </h2>
+                    <h2 className="mb-4 text-lg font-semibold">
+                        Marcar Presença
+                    </h2>
+                    <div className="flex flex-wrap gap-4">
+                        <Button
+                            onClick={handleCheckIn}
+                            disabled={!canCheckIn}
+                            size="lg"
+                            className="bg-green-600 hover:bg-green-700"
+                        >
+                            <LogIn className="mr-2 size-5" />
+                            Marcar Entrada
+                        </Button>
+                        <Button
+                            onClick={handleCheckOut}
+                            disabled={!canCheckOut}
+                            size="lg"
+                            variant="secondary"
+                        >
+                            <LogOut className="mr-2 size-5" />
+                            Marcar Saída
+                        </Button>
                     </div>
-                    {todayAttendances.length > 0 ? (
-                        <div className="space-y-2">
-                            {todayAttendances.map((attendance) => (
-                                <div
-                                    key={attendance.id}
-                                    className="flex items-center justify-between rounded-lg border p-3"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        {attendance.type === 'check_in' ? (
-                                            <LogIn className="size-4 text-green-600" />
-                                        ) : (
-                                            <LogOut className="size-4 text-red-600" />
-                                        )}
-                                        <span className="font-medium">
-                                            {attendance.type === 'check_in'
-                                                ? 'Entrada'
-                                                : 'Saída'}
-                                        </span>
-                                    </div>
-                                    <span className="text-sm text-muted-foreground">
-                                        {formatTime(attendance.recorded_at)}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-center text-sm text-muted-foreground">
-                            Nenhuma presença registada hoje
+                    {lastAttendance && (
+                        <p className="mt-4 text-sm text-muted-foreground">
+                            Último registo:{' '}
+                            {lastAttendance.type === 'check_in'
+                                ? 'Entrada'
+                                : 'Saída'}{' '}
+                            em{' '}
+                            {format(
+                                new Date(lastAttendance.recorded_at),
+                                "dd/MM/yyyy 'às' HH:mm",
+                                { locale: ptBR },
+                            )}
                         </p>
                     )}
                 </Card>
 
+                <div className="grid gap-6 lg:grid-cols-2">
+                    <Card className="p-6">
+                        <h2 className="mb-4 text-lg font-semibold">
+                            Registos de Hoje
+                        </h2>
+                        {todayAttendances.length === 0 ? (
+                            <div className="py-8 text-center text-sm text-muted-foreground">
+                                Nenhum registo hoje
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {todayAttendances.map((attendance) => (
+                                    <div
+                                        key={attendance.id}
+                                        className="flex items-center justify-between rounded-lg border p-3"
+                                    >
+                                        <div>
+                                            <p className="font-medium">
+                                                {format(
+                                                    new Date(
+                                                        attendance.recorded_at,
+                                                    ),
+                                                    'HH:mm',
+                                                    { locale: ptBR },
+                                                )}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {format(
+                                                    new Date(
+                                                        attendance.recorded_at,
+                                                    ),
+                                                    "dd/MM/yyyy",
+                                                    { locale: ptBR },
+                                                )}
+                                            </p>
+                                        </div>
+                                        {getAttendanceTypeBadge(attendance.type)}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </Card>
+
+                    <Card className="p-6">
+                        <h2 className="mb-4 text-lg font-semibold">
+                            Ações Rápidas
+                        </h2>
+                        <div className="grid gap-3">
+                            <Link href={`/reports/employee/${employee.id}`}>
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                >
+                                    <FileText className="mr-2 size-4" />
+                                    Ver Meus Relatórios
+                                </Button>
+                            </Link>
+                            <Link href={`/reports/calendar/${employee.id}`}>
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                >
+                                    <Calendar className="mr-2 size-4" />
+                                    Ver Calendário
+                                </Button>
+                            </Link>
+                        </div>
+                    </Card>
+                </div>
+
                 <Card className="p-6">
                     <h2 className="mb-4 text-lg font-semibold">
-                        Histórico Mensal
+                        Informações do Turno
                     </h2>
-                    {monthAttendances.length > 0 ? (
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b">
-                                        <th className="pb-3 text-left text-sm font-medium text-muted-foreground">
-                                            Tipo
-                                        </th>
-                                        <th className="pb-3 text-left text-sm font-medium text-muted-foreground">
-                                            Data/Hora
-                                        </th>
-                                        <th className="pb-3 text-left text-sm font-medium text-muted-foreground">
-                                            Notas
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {monthAttendances.map((attendance) => (
-                                        <tr
-                                            key={attendance.id}
-                                            className="border-b last:border-0"
-                                        >
-                                            <td className="py-3 text-sm">
-                                                {attendance.type === 'check_in'
-                                                    ? 'Entrada'
-                                                    : 'Saída'}
-                                            </td>
-                                            <td className="py-3 text-sm text-muted-foreground">
-                                                {formatDateTime(
-                                                    attendance.recorded_at,
-                                                )}
-                                            </td>
-                                            <td className="py-3 text-sm text-muted-foreground">
-                                                {attendance.notes || '-'}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                    {employee.shift ? (
+                        <div className="grid gap-4 md:grid-cols-3">
+                            <div className="rounded-lg border p-4">
+                                <p className="text-sm text-muted-foreground">
+                                    Turno
+                                </p>
+                                <p className="mt-2 text-lg font-semibold">
+                                    {employee.shift.name}
+                                </p>
+                            </div>
+                            <div className="rounded-lg border p-4">
+                                <p className="text-sm text-muted-foreground">
+                                    Horário
+                                </p>
+                                <p className="mt-2 text-lg font-semibold">
+                                    {employee.shift.start_time} -{' '}
+                                    {employee.shift.end_time}
+                                </p>
+                            </div>
+                            <div className="rounded-lg border p-4">
+                                <p className="text-sm text-muted-foreground">
+                                    Tolerância
+                                </p>
+                                <p className="mt-2 text-lg font-semibold">
+                                    {employee.shift.tolerance_minutes} min
+                                </p>
+                            </div>
                         </div>
                     ) : (
-                        <p className="text-center text-sm text-muted-foreground">
-                            Nenhuma presença registada este mês
+                        <p className="text-sm text-muted-foreground">
+                            Sem turno atribuído
                         </p>
                     )}
                 </Card>

@@ -23,6 +23,8 @@ class Employee extends Model
         'contract_type',
         'shift_id',
         'hire_date',
+        'base_salary',
+        'deduction_per_absence',
         'status',
     ];
 
@@ -33,6 +35,8 @@ class Employee extends Model
             'contract_type' => ContractType::class,
             'status' => EmployeeStatus::class,
             'hire_date' => 'date',
+            'base_salary' => 'decimal:2',
+            'deduction_per_absence' => 'decimal:2',
         ];
     }
 
@@ -56,8 +60,23 @@ class Employee extends Model
         return $this->hasMany(Justification::class);
     }
 
+    public function payrolls(): HasMany
+    {
+        return $this->hasMany(Payroll::class);
+    }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
     public function isActive(): bool
     {
         return $this->status === EmployeeStatus::Active;
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === EmployeeRole::Manager;
     }
 }

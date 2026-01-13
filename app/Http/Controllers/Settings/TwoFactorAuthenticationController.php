@@ -10,7 +10,6 @@ use Laravel\Fortify\Features;
 
 class TwoFactorAuthenticationController extends Controller
 {
-
     public function __construct()
     {
         if (Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')) {

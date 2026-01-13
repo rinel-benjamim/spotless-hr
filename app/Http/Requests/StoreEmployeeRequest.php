@@ -12,19 +12,23 @@ class StoreEmployeeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->isAdmin();
+        return $this->user()->isAdmin() || $this->user()->employee?->isManager();
     }
 
     public function rules(): array
     {
         return [
-            'employee_code' => ['required', 'string', 'max:255', 'unique:employees,employee_code'],
+            'employee_code' => ['sometimes', 'string', 'max:255', 'unique:employees,employee_code'],
             'full_name' => ['required', 'string', 'max:255'],
             'role' => ['required', Rule::enum(EmployeeRole::class)],
             'contract_type' => ['required', Rule::enum(ContractType::class)],
             'shift_id' => ['required', 'exists:shifts,id'],
+            'hire_date' => ['nullable', 'date'],
+            'base_salary' => ['nullable', 'numeric', 'min:0'],
+            'deduction_per_absence' => ['nullable', 'numeric', 'min:0'],
             'status' => ['sometimes', Rule::enum(EmployeeStatus::class)],
             'user_id' => ['nullable', 'exists:users,id'],
+            'password' => ['nullable', 'string', 'min:8'],
         ];
     }
 

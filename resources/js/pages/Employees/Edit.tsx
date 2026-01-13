@@ -52,6 +52,9 @@ export default function EmployeesEdit({
         role: employee.role,
         contract_type: employee.contract_type,
         shift_id: employee.shift_id?.toString() || '',
+        hire_date: employee.hire_date || '',
+        base_salary: employee.base_salary?.toString() || '',
+        deduction_per_absence: employee.deduction_per_absence?.toString() || '',
         status: employee.status,
     });
 
@@ -232,6 +235,53 @@ export default function EmployeesEdit({
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.status} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="hire_date">Data de Admissão</Label>
+                                <Input
+                                    id="hire_date"
+                                    type="date"
+                                    value={data.hire_date}
+                                    onChange={(e) =>
+                                        setData('hire_date', e.target.value)
+                                    }
+                                />
+                                <InputError message={errors.hire_date} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="base_salary">Salário Base (€)</Label>
+                                <Input
+                                    id="base_salary"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={data.base_salary}
+                                    onChange={(e) =>
+                                        setData('base_salary', e.target.value)
+                                    }
+                                    placeholder="0.00"
+                                />
+                                <InputError message={errors.base_salary} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="deduction_per_absence">
+                                    Dedução por Falta (€)
+                                </Label>
+                                <Input
+                                    id="deduction_per_absence"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={data.deduction_per_absence}
+                                    onChange={(e) =>
+                                        setData('deduction_per_absence', e.target.value)
+                                    }
+                                    placeholder="0.00"
+                                />
+                                <InputError message={errors.deduction_per_absence} />
                             </div>
                         </div>
 

@@ -48,6 +48,10 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
         role: '',
         contract_type: '',
         shift_id: '',
+        hire_date: '',
+        base_salary: '',
+        deduction_per_absence: '',
+        password: '',
         status: 'active',
     });
 
@@ -220,6 +224,73 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.status} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="hire_date">Data de Admissão</Label>
+                                <Input
+                                    id="hire_date"
+                                    type="date"
+                                    value={data.hire_date}
+                                    onChange={(e) =>
+                                        setData('hire_date', e.target.value)
+                                    }
+                                />
+                                <InputError message={errors.hire_date} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="base_salary">Salário Base (€)</Label>
+                                <Input
+                                    id="base_salary"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={data.base_salary}
+                                    onChange={(e) =>
+                                        setData('base_salary', e.target.value)
+                                    }
+                                    placeholder="0.00"
+                                />
+                                <InputError message={errors.base_salary} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="deduction_per_absence">
+                                    Dedução por Falta (€)
+                                </Label>
+                                <Input
+                                    id="deduction_per_absence"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={data.deduction_per_absence}
+                                    onChange={(e) =>
+                                        setData('deduction_per_absence', e.target.value)
+                                    }
+                                    placeholder="0.00"
+                                />
+                                <InputError message={errors.deduction_per_absence} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="password">
+                                    Senha (para criar conta de utilizador)
+                                </Label>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={data.password}
+                                    onChange={(e) =>
+                                        setData('password', e.target.value)
+                                    }
+                                    placeholder="Mínimo 8 caracteres"
+                                />
+                                <InputError message={errors.password} />
+                                <p className="text-sm text-muted-foreground">
+                                    Se fornecido, será criada automaticamente uma conta
+                                    de utilizador para este funcionário.
+                                </p>
                             </div>
                         </div>
 

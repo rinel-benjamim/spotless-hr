@@ -6,7 +6,9 @@ use App\Http\Controllers\CompanySettingsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\JustificationController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ShiftController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +37,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('justifications/{justification}', [JustificationController::class, 'destroy'])->name('justifications.destroy');
 
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+    Route::get('payrolls', [PayrollController::class, 'index'])->name('payrolls.index');
+    Route::get('payrolls/create', [PayrollController::class, 'create'])->name('payrolls.create');
+    Route::post('payrolls', [PayrollController::class, 'store'])->name('payrolls.store');
+    Route::get('payrolls/{payroll}', [PayrollController::class, 'show'])->name('payrolls.show');
+    Route::put('payrolls/{payroll}', [PayrollController::class, 'update'])->name('payrolls.update');
+    Route::post('payrolls/{payroll}/mark-paid', [PayrollController::class, 'markAsPaid'])->name('payrolls.mark-paid');
+    Route::post('payrolls/{payroll}/recalculate', [PayrollController::class, 'recalculate'])->name('payrolls.recalculate');
+
+    Route::get('schedules', [ScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('schedules/create', [ScheduleController::class, 'create'])->name('schedules.create');
+    Route::post('schedules', [ScheduleController::class, 'store'])->name('schedules.store');
+    Route::put('schedules/{schedule}', [ScheduleController::class, 'update'])->name('schedules.update');
+    Route::delete('schedules/{schedule}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 
     Route::get('settings/company', [CompanySettingsController::class, 'edit'])->name('company-settings.edit');
     Route::put('settings/company', [CompanySettingsController::class, 'update'])->name('company-settings.update');

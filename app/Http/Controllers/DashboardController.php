@@ -44,7 +44,7 @@ class DashboardController extends Controller
         $totalMinutes = 0;
 
         $grouped = $events->groupBy(function ($item) {
-            return $item->employee_id . '|' . (\Illuminate\Support\Carbon::parse($item->recorded_at)->toDateString());
+            return $item->employee_id.'|'.(\Illuminate\Support\Carbon::parse($item->recorded_at)->toDateString());
         });
 
         foreach ($grouped as $group) {
@@ -57,6 +57,7 @@ class DashboardController extends Controller
 
                 if ($event->type === AttendanceType::CheckIn->value) {
                     $start = $time;
+
                     continue;
                 }
 
