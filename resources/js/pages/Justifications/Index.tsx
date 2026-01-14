@@ -1,11 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type Justification, type PaginatedData } from '@/types';
+import {
+    type BreadcrumbItem,
+    type Justification,
+    type PaginatedData,
+} from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 
 interface JustificationsIndexProps {
     justifications: PaginatedData<Justification>;
@@ -23,7 +27,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
+    return format(new Date(dateString), "dd/MM/yyyy 'às' HH:mm", {
+        locale: ptBR,
+    });
 };
 
 const formatAbsenceDate = (dateString: string) => {
@@ -36,7 +42,9 @@ const handleDelete = (id: number) => {
     }
 };
 
-export default function JustificationsIndex({ justifications }: JustificationsIndexProps) {
+export default function JustificationsIndex({
+    justifications,
+}: JustificationsIndexProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Justificativas" />
@@ -79,34 +87,52 @@ export default function JustificationsIndex({ justifications }: JustificationsIn
                             </thead>
                             <tbody className="divide-y">
                                 {justifications.data.map((justification) => (
-                                    <tr key={justification.id} className="hover:bg-muted/50">
+                                    <tr
+                                        key={justification.id}
+                                        className="hover:bg-muted/50"
+                                    >
                                         <td className="px-6 py-4 text-sm font-medium">
                                             {justification.employee?.full_name}
                                             <div className="text-xs text-muted-foreground">
-                                                {justification.employee?.employee_code}
+                                                {
+                                                    justification.employee
+                                                        ?.employee_code
+                                                }
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm">
                                             {justification.absence_date
-                                                ? formatAbsenceDate(justification.absence_date)
+                                                ? formatAbsenceDate(
+                                                      justification.absence_date,
+                                                  )
                                                 : '-'}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
-                                            <div className="max-w-md truncate" title={justification.reason}>
+                                            <div
+                                                className="max-w-md truncate"
+                                                title={justification.reason}
+                                            >
                                                 {justification.reason}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm">
-                                            {justification.justifiedBy?.name || '-'}
+                                            {justification.justifiedBy?.name ||
+                                                '-'}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-muted-foreground">
-                                            {formatDate(justification.created_at)}
+                                            {formatDate(
+                                                justification.created_at,
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => handleDelete(justification.id)}
+                                                onClick={() =>
+                                                    handleDelete(
+                                                        justification.id,
+                                                    )
+                                                }
                                             >
                                                 <Trash2 className="size-4 text-destructive" />
                                             </Button>
@@ -115,7 +141,10 @@ export default function JustificationsIndex({ justifications }: JustificationsIn
                                 ))}
                                 {justifications.data.length === 0 && (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                                        <td
+                                            colSpan={6}
+                                            className="px-6 py-12 text-center text-sm text-muted-foreground"
+                                        >
                                             Nenhuma justificativa encontrada.
                                         </td>
                                     </tr>
@@ -127,7 +156,9 @@ export default function JustificationsIndex({ justifications }: JustificationsIn
                     {justifications.last_page > 1 && (
                         <div className="flex items-center justify-between border-t px-6 py-3">
                             <div className="text-sm text-muted-foreground">
-                                Mostrando {justifications.from} a {justifications.to} de {justifications.total} registros
+                                Mostrando {justifications.from} a{' '}
+                                {justifications.to} de {justifications.total}{' '}
+                                registros
                             </div>
                             <div className="flex gap-2">
                                 <Link
@@ -137,7 +168,9 @@ export default function JustificationsIndex({ justifications }: JustificationsIn
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled={justifications.current_page === 1}
+                                        disabled={
+                                            justifications.current_page === 1
+                                        }
                                     >
                                         <ChevronLeft className="size-4" />
                                     </Button>
@@ -149,7 +182,10 @@ export default function JustificationsIndex({ justifications }: JustificationsIn
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled={justifications.current_page === justifications.last_page}
+                                        disabled={
+                                            justifications.current_page ===
+                                            justifications.last_page
+                                        }
                                     >
                                         <ChevronRight className="size-4" />
                                     </Button>

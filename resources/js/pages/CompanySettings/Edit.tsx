@@ -64,7 +64,9 @@ export default function CompanySettingsEdit({
 
             <div className="flex flex-col gap-6 p-6">
                 <div>
-                    <h1 className="text-2xl font-bold">Configurações da Empresa</h1>
+                    <h1 className="text-2xl font-bold">
+                        Configurações da Empresa
+                    </h1>
                     <p className="text-muted-foreground">
                         Gerir configurações gerais do sistema
                     </p>
@@ -73,7 +75,9 @@ export default function CompanySettingsEdit({
                 <Card className="p-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="company_name">Nome da Empresa *</Label>
+                            <Label htmlFor="company_name">
+                                Nome da Empresa *
+                            </Label>
                             <Input
                                 id="company_name"
                                 value={data.company_name}
@@ -95,10 +99,15 @@ export default function CompanySettingsEdit({
                                     type="time"
                                     value={data.business_hours_start}
                                     onChange={(e) =>
-                                        setData('business_hours_start', e.target.value)
+                                        setData(
+                                            'business_hours_start',
+                                            e.target.value,
+                                        )
                                     }
                                 />
-                                <InputError message={errors.business_hours_start} />
+                                <InputError
+                                    message={errors.business_hours_start}
+                                />
                             </div>
 
                             <div className="space-y-2">
@@ -110,10 +119,15 @@ export default function CompanySettingsEdit({
                                     type="time"
                                     value={data.business_hours_end}
                                     onChange={(e) =>
-                                        setData('business_hours_end', e.target.value)
+                                        setData(
+                                            'business_hours_end',
+                                            e.target.value,
+                                        )
                                     }
                                 />
-                                <InputError message={errors.business_hours_end} />
+                                <InputError
+                                    message={errors.business_hours_end}
+                                />
                             </div>
                         </div>
 
@@ -131,7 +145,10 @@ export default function CompanySettingsEdit({
                                     </SelectTrigger>
                                     <SelectContent>
                                         {timezones.map((tz) => (
-                                            <SelectItem key={tz.value} value={tz.value}>
+                                            <SelectItem
+                                                key={tz.value}
+                                                value={tz.value}
+                                            >
                                                 {tz.label}
                                             </SelectItem>
                                         ))}
@@ -185,7 +202,9 @@ export default function CompanySettingsEdit({
                                 Última atualização:
                             </span>
                             <span>
-                                {new Date(settings.updated_at).toLocaleString('pt-PT')}
+                                {new Date(settings.updated_at).toLocaleString(
+                                    'pt-PT',
+                                )}
                             </span>
                         </div>
                         <div className="flex justify-between">
@@ -193,7 +212,9 @@ export default function CompanySettingsEdit({
                                 Data de criação:
                             </span>
                             <span>
-                                {new Date(settings.created_at).toLocaleString('pt-PT')}
+                                {new Date(settings.created_at).toLocaleString(
+                                    'pt-PT',
+                                )}
                             </span>
                         </div>
                     </div>

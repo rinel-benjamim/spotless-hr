@@ -1,18 +1,12 @@
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type Attendance, type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import {
-    Users,
-    UserCheck,
-    Clock,
-    TrendingUp,
-    ArrowRight,
-} from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Button } from '@/components/ui/button';
+import { ArrowRight, Clock, TrendingUp, UserCheck, Users } from 'lucide-react';
 
 interface AdminDashboardProps {
     stats: {
@@ -56,7 +50,7 @@ export default function AdminDashboard({
         },
         {
             title: 'Horas Trabalhadas (Mês)',
-            value: `${stats.totalHoursThisMonth.toFixed(1)}h`,
+            value: `${Number(stats.totalHoursThisMonth).toFixed(1)}h`,
             icon: Clock,
             color: 'text-orange-600',
             bgColor: 'bg-orange-50',
@@ -81,7 +75,9 @@ export default function AdminDashboard({
 
             <div className="flex flex-col gap-6 p-6">
                 <div>
-                    <h1 className="text-2xl font-bold">Dashboard Administrativo</h1>
+                    <h1 className="text-2xl font-bold">
+                        Dashboard Administrativo
+                    </h1>
                     <p className="text-muted-foreground">
                         Visão geral do sistema de gestão de RH
                     </p>
@@ -102,7 +98,9 @@ export default function AdminDashboard({
                                 <div
                                     className={`rounded-lg p-3 ${stat.bgColor}`}
                                 >
-                                    <stat.icon className={`size-6 ${stat.color}`} />
+                                    <stat.icon
+                                        className={`size-6 ${stat.color}`}
+                                    />
                                 </div>
                             </div>
                         </Card>
@@ -137,7 +135,10 @@ export default function AdminDashboard({
                                         <div className="flex items-center gap-3">
                                             <div>
                                                 <p className="font-medium">
-                                                    {attendance.employee?.full_name}
+                                                    {
+                                                        attendance.employee
+                                                            ?.full_name
+                                                    }
                                                 </p>
                                                 <p className="text-xs text-muted-foreground">
                                                     {format(
@@ -150,7 +151,9 @@ export default function AdminDashboard({
                                                 </p>
                                             </div>
                                         </div>
-                                        {getAttendanceTypeBadge(attendance.type)}
+                                        {getAttendanceTypeBadge(
+                                            attendance.type,
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -163,25 +166,37 @@ export default function AdminDashboard({
                         </h2>
                         <div className="grid gap-3">
                             <Link href="/employees/create">
-                                <Button variant="outline" className="w-full justify-start">
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                >
                                     <Users className="mr-2 size-4" />
                                     Adicionar Funcionário
                                 </Button>
                             </Link>
                             <Link href="/payrolls/create">
-                                <Button variant="outline" className="w-full justify-start">
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                >
                                     <Clock className="mr-2 size-4" />
                                     Gerar Folha de Pagamento
                                 </Button>
                             </Link>
                             <Link href="/schedules/create">
-                                <Button variant="outline" className="w-full justify-start">
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                >
                                     <TrendingUp className="mr-2 size-4" />
                                     Criar Escala
                                 </Button>
                             </Link>
                             <Link href="/reports">
-                                <Button variant="outline" className="w-full justify-start">
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                >
                                     <UserCheck className="mr-2 size-4" />
                                     Ver Relatórios
                                 </Button>
@@ -200,9 +215,7 @@ export default function AdminDashboard({
                                 Média de Presenças Diárias
                             </p>
                             <p className="mt-2 text-2xl font-bold">
-                                {Math.round(
-                                    stats.presentToday * 0.9,
-                                )}
+                                {Math.round(stats.presentToday * 0.9)}
                             </p>
                         </div>
                         <div className="rounded-lg border p-4">
@@ -227,7 +240,7 @@ export default function AdminDashboard({
                             <p className="mt-2 text-2xl font-bold">
                                 {stats.activeEmployees > 0
                                     ? (
-                                          stats.totalHoursThisMonth /
+                                          Number(stats.totalHoursThisMonth) /
                                           stats.activeEmployees
                                       ).toFixed(1)
                                     : 0}

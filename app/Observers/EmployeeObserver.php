@@ -16,6 +16,10 @@ class EmployeeObserver
         if (empty($employee->employee_code)) {
             $employee->employee_code = $this->generateEmployeeCode();
         }
+
+        if (empty($employee->hire_date)) {
+            $employee->hire_date = now();
+        }
     }
 
     public function created(Employee $employee): void

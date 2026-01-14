@@ -20,11 +20,12 @@ class UpdateEmployeeRequest extends FormRequest
         $employeeId = $this->route('employee');
 
         return [
-            'employee_code' => ['sometimes', 'string', 'max:255', Rule::unique('employees', 'employee_code')->ignore($employeeId)],
             'full_name' => ['sometimes', 'string', 'max:255'],
             'role' => ['sometimes', Rule::enum(EmployeeRole::class)],
             'contract_type' => ['sometimes', Rule::enum(ContractType::class)],
             'shift_id' => ['sometimes', 'exists:shifts,id'],
+            'base_salary' => ['nullable', 'numeric', 'min:0'],
+            'deduction_per_absence' => ['nullable', 'numeric', 'min:0'],
             'status' => ['sometimes', Rule::enum(EmployeeStatus::class)],
             'user_id' => ['nullable', 'exists:users,id'],
         ];

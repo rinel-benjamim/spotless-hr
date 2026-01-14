@@ -3,9 +3,9 @@ import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Employee, type Schedule } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { format, getDaysInMonth, startOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 interface SchedulesIndexProps {
     schedules: Record<number, Schedule[]>;
@@ -46,7 +46,10 @@ export default function SchedulesIndex({
     const firstDay = startOfMonth(new Date(year, month - 1));
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-    const getScheduleForDay = (employeeId: number, day: number): Schedule | undefined => {
+    const getScheduleForDay = (
+        employeeId: number,
+        day: number,
+    ): Schedule | undefined => {
         const employeeSchedules = schedules[employeeId] || [];
         return employeeSchedules.find((s) => {
             const scheduleDate = new Date(s.date);
@@ -85,7 +88,9 @@ export default function SchedulesIndex({
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold capitalize">{monthName}</h2>
+                    <h2 className="text-xl font-semibold capitalize">
+                        {monthName}
+                    </h2>
                     <div className="flex gap-2">
                         <Button
                             variant="outline"
@@ -119,7 +124,8 @@ export default function SchedulesIndex({
                                         {employee.full_name}
                                     </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        {employee.employee_code} - {employee.shift?.name}
+                                        {employee.employee_code} -{' '}
+                                        {employee.shift?.name}
                                     </p>
                                 </div>
 
@@ -130,10 +136,18 @@ export default function SchedulesIndex({
                                                 employee.id,
                                                 day,
                                             );
-                                            const date = new Date(year, month - 1, day);
-                                            const dayName = format(date, 'EEE', {
-                                                locale: ptBR,
-                                            });
+                                            const date = new Date(
+                                                year,
+                                                month - 1,
+                                                day,
+                                            );
+                                            const dayName = format(
+                                                date,
+                                                'EEE',
+                                                {
+                                                    locale: ptBR,
+                                                },
+                                            );
 
                                             return (
                                                 <div
@@ -168,15 +182,15 @@ export default function SchedulesIndex({
                     <h3 className="mb-2 font-semibold">Legenda:</h3>
                     <div className="flex flex-wrap gap-4 text-sm">
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded bg-green-50 border"></div>
+                            <div className="size-4 rounded border bg-green-50"></div>
                             <span>Dia de Trabalho</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded bg-gray-100 border"></div>
+                            <div className="size-4 rounded border bg-gray-100"></div>
                             <span>Folga / Fim de Semana</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded bg-white border"></div>
+                            <div className="size-4 rounded border bg-white"></div>
                             <span>Sem Escala</span>
                         </div>
                     </div>

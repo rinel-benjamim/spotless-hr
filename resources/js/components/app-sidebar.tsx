@@ -16,7 +16,10 @@ import { Link } from '@inertiajs/react';
 import {
     BookOpen,
     Calendar,
+    CalendarDays,
     Clock,
+    DollarSign,
+    FileText,
     Folder,
     LayoutGrid,
     Users,
@@ -43,6 +46,21 @@ const mainNavItems: NavItem[] = [
         title: 'Turnos',
         href: '/shifts',
         icon: Clock,
+    },
+    {
+        title: 'Escalas',
+        href: '/schedules',
+        icon: CalendarDays,
+    },
+    {
+        title: 'Folhas de Pagamento',
+        href: '/payrolls',
+        icon: DollarSign,
+    },
+    {
+        title: 'Relatórios',
+        href: '/reports',
+        icon: FileText,
     },
 ];
 

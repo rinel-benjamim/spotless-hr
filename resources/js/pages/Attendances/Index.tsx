@@ -53,11 +53,11 @@ const formatDateTime = (dateTime: string) => {
 
 const getAttendanceTypeBadge = (type: string) => {
     return type === 'check_in' ? (
-        <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+        <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
             Entrada
         </span>
     ) : (
-        <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+        <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-red-600/20 ring-inset">
             Saída
         </span>
     );
@@ -110,7 +110,10 @@ export default function AttendancesIndex({
                     >
                         <div className="space-y-2">
                             <Label htmlFor="employee_id">Funcionário</Label>
-                            <Select value={employeeId} onValueChange={setEmployeeId}>
+                            <Select
+                                value={employeeId}
+                                onValueChange={setEmployeeId}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Todos" />
                                 </SelectTrigger>

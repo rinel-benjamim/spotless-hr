@@ -8,9 +8,9 @@ import {
     type MonthlySummary,
 } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Clock, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight, Clock, Download } from 'lucide-react';
 
 interface EmployeeReportProps {
     employee: Employee;
@@ -34,11 +34,11 @@ const getAttendanceTypeLabel = (type: string) => {
 
 const getAttendanceTypeBadge = (type: string) => {
     return type === 'check_in' ? (
-        <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+        <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
             Entrada
         </span>
     ) : (
-        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-600/20 ring-inset">
             Saída
         </span>
     );
@@ -66,7 +66,9 @@ export default function EmployeeReport({
         },
     ];
 
-    const monthName = format(new Date(year, month - 1), 'MMMM yyyy', { locale: ptBR });
+    const monthName = format(new Date(year, month - 1), 'MMMM yyyy', {
+        locale: ptBR,
+    });
 
     const navigateMonth = (direction: number) => {
         let newMonth = month + direction;
@@ -80,7 +82,9 @@ export default function EmployeeReport({
             newYear--;
         }
 
-        router.get(`/reports/employee/${employee.id}?year=${newYear}&month=${newMonth}`);
+        router.get(
+            `/reports/employee/${employee.id}?year=${newYear}&month=${newMonth}`,
+        );
     };
 
     return (
@@ -90,7 +94,9 @@ export default function EmployeeReport({
             <div className="flex flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold">{employee.full_name}</h1>
+                        <h1 className="text-2xl font-bold">
+                            {employee.full_name}
+                        </h1>
                         <p className="text-sm text-muted-foreground">
                             {employee.employee_code} • {employee.shift?.name}
                         </p>
@@ -102,7 +108,9 @@ export default function EmployeeReport({
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold capitalize">{monthName}</h2>
+                    <h2 className="text-xl font-semibold capitalize">
+                        {monthName}
+                    </h2>
                     <div className="flex gap-2">
                         <Button
                             variant="outline"
@@ -123,24 +131,44 @@ export default function EmployeeReport({
 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                     <Card className="p-4">
-                        <p className="text-sm font-medium text-muted-foreground">Dias Trabalhados</p>
-                        <p className="mt-2 text-3xl font-bold">{summary.days_worked}</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Dias Trabalhados
+                        </p>
+                        <p className="mt-2 text-3xl font-bold">
+                            {summary.days_worked}
+                        </p>
                     </Card>
                     <Card className="p-4">
-                        <p className="text-sm font-medium text-muted-foreground">Horas Totais</p>
-                        <p className="mt-2 text-3xl font-bold">{summary.total_hours}h</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Horas Totais
+                        </p>
+                        <p className="mt-2 text-3xl font-bold">
+                            {summary.total_hours}h
+                        </p>
                     </Card>
                     <Card className="p-4">
-                        <p className="text-sm font-medium text-muted-foreground">Atrasos</p>
-                        <p className="mt-2 text-3xl font-bold text-orange-600">{summary.late_count}</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Atrasos
+                        </p>
+                        <p className="mt-2 text-3xl font-bold text-orange-600">
+                            {summary.late_count}
+                        </p>
                     </Card>
                     <Card className="p-4">
-                        <p className="text-sm font-medium text-muted-foreground">Faltas</p>
-                        <p className="mt-2 text-3xl font-bold text-red-600">{summary.absence_count}</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Faltas
+                        </p>
+                        <p className="mt-2 text-3xl font-bold text-red-600">
+                            {summary.absence_count}
+                        </p>
                     </Card>
                     <Card className="p-4">
-                        <p className="text-sm font-medium text-muted-foreground">Justificadas</p>
-                        <p className="mt-2 text-3xl font-bold text-green-600">{summary.justified_count}</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Justificadas
+                        </p>
+                        <p className="mt-2 text-3xl font-bold text-green-600">
+                            {summary.justified_count}
+                        </p>
                     </Card>
                 </div>
 
@@ -168,17 +196,24 @@ export default function EmployeeReport({
                             </thead>
                             <tbody className="divide-y">
                                 {attendances.map((attendance) => (
-                                    <tr key={attendance.id} className="hover:bg-muted/50">
+                                    <tr
+                                        key={attendance.id}
+                                        className="hover:bg-muted/50"
+                                    >
                                         <td className="px-6 py-4 text-sm">
                                             {formatDate(attendance.recorded_at)}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
-                                            {getAttendanceTypeBadge(attendance.type)}
+                                            {getAttendanceTypeBadge(
+                                                attendance.type,
+                                            )}
                                         </td>
-                                        <td className="px-6 py-4 text-sm font-mono">
+                                        <td className="px-6 py-4 font-mono text-sm">
                                             <div className="flex items-center gap-2">
                                                 <Clock className="size-4 text-muted-foreground" />
-                                                {formatTime(attendance.recorded_at)}
+                                                {formatTime(
+                                                    attendance.recorded_at,
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-muted-foreground">
@@ -188,8 +223,12 @@ export default function EmployeeReport({
                                 ))}
                                 {attendances.length === 0 && (
                                     <tr>
-                                        <td colSpan={4} className="px-6 py-12 text-center text-sm text-muted-foreground">
-                                            Nenhum registo encontrado para este mês.
+                                        <td
+                                            colSpan={4}
+                                            className="px-6 py-12 text-center text-sm text-muted-foreground"
+                                        >
+                                            Nenhum registo encontrado para este
+                                            mês.
                                         </td>
                                     </tr>
                                 )}

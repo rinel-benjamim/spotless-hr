@@ -67,10 +67,7 @@ export default function ShiftsIndex({ shifts }: ShiftsIndexProps) {
                                     </div>
                                     <div className="flex gap-1">
                                         <Link href={`/shifts/${shift.id}/edit`}>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                            >
+                                            <Button variant="ghost" size="icon">
                                                 <Pencil className="size-4" />
                                             </Button>
                                         </Link>

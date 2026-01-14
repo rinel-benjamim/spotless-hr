@@ -3,9 +3,16 @@ import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type Attendance, type BreadcrumbItem, type Employee } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isWeekend } from 'date-fns';
+import {
+    eachDayOfInterval,
+    endOfMonth,
+    format,
+    isSameMonth,
+    isWeekend,
+    startOfMonth,
+} from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CalendarProps {
     employee: Employee;
@@ -43,7 +50,7 @@ export default function Calendar({
 
     const currentDate = new Date(year, month - 1, 1);
     const monthName = format(currentDate, 'MMMM yyyy', { locale: ptBR });
-    
+
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
     const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -60,38 +67,60 @@ export default function Calendar({
             newYear--;
         }
 
-        router.get(`/reports/calendar/${employee.id}?year=${newYear}&month=${newMonth}`);
+        router.get(
+            `/reports/calendar/${employee.id}?year=${newYear}&month=${newMonth}`,
+        );
     };
 
     const getDayStatus = (day: Date) => {
         const dateStr = format(day, 'yyyy-MM-dd');
-        
+
         if (!isSameMonth(day, currentDate)) {
             return { status: 'other-month', label: '', color: 'bg-gray-50' };
         }
-        
+
         if (isWeekend(day)) {
-            return { status: 'weekend', label: 'Fim de Semana', color: 'bg-gray-100' };
+            return {
+                status: 'weekend',
+                label: 'Fim de Semana',
+                color: 'bg-gray-100',
+            };
         }
 
         const absence = absences.find((a) => a.date === dateStr);
         if (absence) {
             if (absence.type === 'justified') {
-                return { status: 'justified', label: 'Justificada', color: 'bg-green-100 border-green-300' };
+                return {
+                    status: 'justified',
+                    label: 'Justificada',
+                    color: 'bg-green-100 border-green-300',
+                };
             }
-            return { status: 'absence', label: 'Falta', color: 'bg-red-100 border-red-300' };
+            return {
+                status: 'absence',
+                label: 'Falta',
+                color: 'bg-red-100 border-red-300',
+            };
         }
 
         if (attendances[dateStr]?.length > 0) {
-            const checkIn = attendances[dateStr].find((a) => a.type === 'check_in');
-            const checkOut = attendances[dateStr].find((a) => a.type === 'check_out');
-            
+            const checkIn = attendances[dateStr].find(
+                (a) => a.type === 'check_in',
+            );
+            const checkOut = attendances[dateStr].find(
+                (a) => a.type === 'check_out',
+            );
+
             return {
                 status: 'present',
                 label: checkIn && checkOut ? 'Completo' : 'Parcial',
                 color: 'bg-blue-50 border-blue-300',
-                checkIn: checkIn ? format(new Date(checkIn.recorded_at), 'HH:mm') : null,
-                checkOut: checkOut ? format(new Date(checkOut.recorded_at), 'HH:mm') : null,
+                checkIn: checkIn
+                    ? format(new Date(checkIn.recorded_at), 'HH:mm')
+                    : null,
+                checkOut: checkOut
+                    ? format(new Date(checkOut.recorded_at), 'HH:mm')
+                    : null,
             };
         }
 
@@ -110,7 +139,9 @@ export default function Calendar({
             <div className="flex flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold">{employee.full_name}</h1>
+                        <h1 className="text-2xl font-bold">
+                            {employee.full_name}
+                        </h1>
                         <p className="text-sm text-muted-foreground">
                             {employee.employee_code} • {employee.shift?.name}
                         </p>
@@ -118,7 +149,9 @@ export default function Calendar({
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold capitalize">{monthName}</h2>
+                    <h2 className="text-xl font-semibold capitalize">
+                        {monthName}
+                    </h2>
                     <div className="flex gap-2">
                         <Button
                             variant="outline"
@@ -166,11 +199,14 @@ export default function Calendar({
                                 {day}
                             </div>
                         ))}
-                        
+
                         {emptyDays.map((i) => (
-                            <div key={`empty-${i}`} className="min-h-[100px]"></div>
+                            <div
+                                key={`empty-${i}`}
+                                className="min-h-[100px]"
+                            ></div>
                         ))}
-                        
+
                         {daysInMonth.map((day) => {
                             const dayStatus = getDayStatus(day);
                             return (
@@ -188,12 +224,16 @@ export default function Calendar({
                                     )}
                                     {dayStatus.checkIn && (
                                         <div className="mt-2 text-xs">
-                                            <div className="text-green-700">↓ {dayStatus.checkIn}</div>
+                                            <div className="text-green-700">
+                                                ↓ {dayStatus.checkIn}
+                                            </div>
                                         </div>
                                     )}
                                     {dayStatus.checkOut && (
                                         <div className="text-xs">
-                                            <div className="text-blue-700">↑ {dayStatus.checkOut}</div>
+                                            <div className="text-blue-700">
+                                                ↑ {dayStatus.checkOut}
+                                            </div>
                                         </div>
                                     )}
                                 </div>

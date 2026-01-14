@@ -1,19 +1,19 @@
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type Attendance, type BreadcrumbItem, type Employee } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import {
-    Clock,
-    Calendar,
-    TrendingUp,
-    LogIn,
-    LogOut,
-    FileText,
-} from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import {
+    Calendar,
+    Clock,
+    FileText,
+    LogIn,
+    LogOut,
+    TrendingUp,
+} from 'lucide-react';
 
 interface EmployeeDashboardProps {
     employee?: Employee;
@@ -52,10 +52,8 @@ export default function EmployeeDashboard({
         );
     }
 
-    const canCheckIn =
-        !lastAttendance || lastAttendance.type === 'check_out';
-    const canCheckOut =
-        lastAttendance && lastAttendance.type === 'check_in';
+    const canCheckIn = !lastAttendance || lastAttendance.type === 'check_out';
+    const canCheckOut = lastAttendance && lastAttendance.type === 'check_in';
 
     const handleCheckIn = () => {
         router.post('/attendances/check-in', {
@@ -231,12 +229,14 @@ export default function EmployeeDashboard({
                                                     new Date(
                                                         attendance.recorded_at,
                                                     ),
-                                                    "dd/MM/yyyy",
+                                                    'dd/MM/yyyy',
                                                     { locale: ptBR },
                                                 )}
                                             </p>
                                         </div>
-                                        {getAttendanceTypeBadge(attendance.type)}
+                                        {getAttendanceTypeBadge(
+                                            attendance.type,
+                                        )}
                                     </div>
                                 ))}
                             </div>

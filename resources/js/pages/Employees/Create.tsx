@@ -43,12 +43,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
     const { data, setData, post, processing, errors } = useForm({
         user_id: '',
-        employee_code: '',
         full_name: '',
         role: '',
         contract_type: '',
         shift_id: '',
-        hire_date: '',
         base_salary: '',
         deduction_per_absence: '',
         password: '',
@@ -78,22 +76,9 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="employee_code">
-                                    Código do Funcionário *
+                                <Label htmlFor="full_name">
+                                    Nome Completo *
                                 </Label>
-                                <Input
-                                    id="employee_code"
-                                    value={data.employee_code}
-                                    onChange={(e) =>
-                                        setData('employee_code', e.target.value)
-                                    }
-                                    placeholder="EMP1001"
-                                />
-                                <InputError message={errors.employee_code} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="full_name">Nome Completo *</Label>
                                 <Input
                                     id="full_name"
                                     value={data.full_name}
@@ -208,7 +193,10 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
                                 <Select
                                     value={data.status}
                                     onValueChange={(value) =>
-                                        setData('status', value as EmployeeStatus)
+                                        setData(
+                                            'status',
+                                            value as EmployeeStatus,
+                                        )
                                     }
                                 >
                                     <SelectTrigger>
@@ -227,20 +215,9 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="hire_date">Data de Admissão</Label>
-                                <Input
-                                    id="hire_date"
-                                    type="date"
-                                    value={data.hire_date}
-                                    onChange={(e) =>
-                                        setData('hire_date', e.target.value)
-                                    }
-                                />
-                                <InputError message={errors.hire_date} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="base_salary">Salário Base (€)</Label>
+                                <Label htmlFor="base_salary">
+                                    Salário Base (€)
+                                </Label>
                                 <Input
                                     id="base_salary"
                                     type="number"
@@ -266,11 +243,16 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
                                     min="0"
                                     value={data.deduction_per_absence}
                                     onChange={(e) =>
-                                        setData('deduction_per_absence', e.target.value)
+                                        setData(
+                                            'deduction_per_absence',
+                                            e.target.value,
+                                        )
                                     }
                                     placeholder="0.00"
                                 />
-                                <InputError message={errors.deduction_per_absence} />
+                                <InputError
+                                    message={errors.deduction_per_absence}
+                                />
                             </div>
 
                             <div className="space-y-2">
@@ -288,8 +270,9 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
                                 />
                                 <InputError message={errors.password} />
                                 <p className="text-sm text-muted-foreground">
-                                    Se fornecido, será criada automaticamente uma conta
-                                    de utilizador para este funcionário.
+                                    Se fornecido, será criada automaticamente
+                                    uma conta de utilizador para este
+                                    funcionário.
                                 </p>
                             </div>
                         </div>

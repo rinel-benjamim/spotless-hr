@@ -47,12 +47,10 @@ export default function EmployeesEdit({
     shifts,
 }: EmployeesEditProps) {
     const { data, setData, put, processing, errors } = useForm({
-        employee_code: employee.employee_code,
         full_name: employee.full_name,
         role: employee.role,
         contract_type: employee.contract_type,
         shift_id: employee.shift_id?.toString() || '',
-        hire_date: employee.hire_date || '',
         base_salary: employee.base_salary?.toString() || '',
         deduction_per_absence: employee.deduction_per_absence?.toString() || '',
         status: employee.status,
@@ -83,22 +81,9 @@ export default function EmployeesEdit({
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="employee_code">
-                                    Código do Funcionário *
+                                <Label htmlFor="full_name">
+                                    Nome Completo *
                                 </Label>
-                                <Input
-                                    id="employee_code"
-                                    value={data.employee_code}
-                                    onChange={(e) =>
-                                        setData('employee_code', e.target.value)
-                                    }
-                                    placeholder="EMP1001"
-                                />
-                                <InputError message={errors.employee_code} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="full_name">Nome Completo *</Label>
                                 <Input
                                     id="full_name"
                                     value={data.full_name}
@@ -115,10 +100,7 @@ export default function EmployeesEdit({
                                 <Select
                                     value={data.role}
                                     onValueChange={(value) =>
-                                        setData(
-                                            'role',
-                                            value as EmployeeRole,
-                                        )
+                                        setData('role', value as EmployeeRole)
                                     }
                                 >
                                     <SelectTrigger>
@@ -238,20 +220,9 @@ export default function EmployeesEdit({
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="hire_date">Data de Admissão</Label>
-                                <Input
-                                    id="hire_date"
-                                    type="date"
-                                    value={data.hire_date}
-                                    onChange={(e) =>
-                                        setData('hire_date', e.target.value)
-                                    }
-                                />
-                                <InputError message={errors.hire_date} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="base_salary">Salário Base (€)</Label>
+                                <Label htmlFor="base_salary">
+                                    Salário Base (€)
+                                </Label>
                                 <Input
                                     id="base_salary"
                                     type="number"
@@ -277,11 +248,16 @@ export default function EmployeesEdit({
                                     min="0"
                                     value={data.deduction_per_absence}
                                     onChange={(e) =>
-                                        setData('deduction_per_absence', e.target.value)
+                                        setData(
+                                            'deduction_per_absence',
+                                            e.target.value,
+                                        )
                                     }
                                     placeholder="0.00"
                                 />
-                                <InputError message={errors.deduction_per_absence} />
+                                <InputError
+                                    message={errors.deduction_per_absence}
+                                />
                             </div>
                         </div>
 

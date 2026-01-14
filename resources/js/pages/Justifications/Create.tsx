@@ -3,7 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Employee } from '@/types';
@@ -21,7 +27,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Criar', href: '/justifications/create' },
 ];
 
-export default function JustificationsCreate({ employees, selectedEmployee }: JustificationsCreateProps) {
+export default function JustificationsCreate({
+    employees,
+    selectedEmployee,
+}: JustificationsCreateProps) {
     const { data, setData, post, processing, errors } = useForm({
         employee_id: selectedEmployee?.id?.toString() || '',
         absence_date: '',
@@ -53,15 +62,21 @@ export default function JustificationsCreate({ employees, selectedEmployee }: Ju
                             <Label htmlFor="employee_id">Funcionário *</Label>
                             <Select
                                 value={data.employee_id}
-                                onValueChange={(value) => setData('employee_id', value)}
+                                onValueChange={(value) =>
+                                    setData('employee_id', value)
+                                }
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Selecione um funcionário" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {employees.map((employee) => (
-                                        <SelectItem key={employee.id} value={employee.id.toString()}>
-                                            {employee.full_name} ({employee.employee_code})
+                                        <SelectItem
+                                            key={employee.id}
+                                            value={employee.id.toString()}
+                                        >
+                                            {employee.full_name} (
+                                            {employee.employee_code})
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -70,12 +85,16 @@ export default function JustificationsCreate({ employees, selectedEmployee }: Ju
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="absence_date">Data da Ausência</Label>
+                            <Label htmlFor="absence_date">
+                                Data da Ausência
+                            </Label>
                             <Input
                                 type="date"
                                 id="absence_date"
                                 value={data.absence_date}
-                                onChange={(e) => setData('absence_date', e.target.value)}
+                                onChange={(e) =>
+                                    setData('absence_date', e.target.value)
+                                }
                             />
                             <InputError message={errors.absence_date} />
                         </div>
@@ -85,7 +104,9 @@ export default function JustificationsCreate({ employees, selectedEmployee }: Ju
                             <Textarea
                                 id="reason"
                                 value={data.reason}
-                                onChange={(e) => setData('reason', e.target.value)}
+                                onChange={(e) =>
+                                    setData('reason', e.target.value)
+                                }
                                 rows={4}
                                 placeholder="Descreva o motivo da justificativa..."
                             />

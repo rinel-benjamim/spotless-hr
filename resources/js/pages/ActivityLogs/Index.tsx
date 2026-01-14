@@ -1,7 +1,11 @@
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { type ActivityLog, type BreadcrumbItem, type PaginatedData } from '@/types';
+import {
+    type ActivityLog,
+    type BreadcrumbItem,
+    type PaginatedData,
+} from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -17,7 +21,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const getActionBadge = (action: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    const variants: Record<
+        string,
+        'default' | 'secondary' | 'destructive' | 'outline'
+    > = {
         created: 'default',
         updated: 'secondary',
         deleted: 'destructive',
@@ -58,7 +65,9 @@ export default function ActivityLogsIndex({ logs }: ActivityLogsIndexProps) {
             <div className="flex flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold">Logs de Atividade</h1>
+                        <h1 className="text-2xl font-bold">
+                            Logs de Atividade
+                        </h1>
                         <p className="text-muted-foreground">
                             Histórico de ações realizadas no sistema
                         </p>
@@ -82,7 +91,9 @@ export default function ActivityLogsIndex({ logs }: ActivityLogsIndexProps) {
                                             <div className="flex items-center gap-2">
                                                 {getActionBadge(log.action)}
                                                 <span className="text-sm text-muted-foreground">
-                                                    {getModelTypeLabel(log.model_type)}
+                                                    {getModelTypeLabel(
+                                                        log.model_type,
+                                                    )}
                                                 </span>
                                                 {log.model_id && (
                                                     <span className="text-sm text-muted-foreground">
@@ -106,7 +117,9 @@ export default function ActivityLogsIndex({ logs }: ActivityLogsIndexProps) {
                                                 <span>•</span>
                                                 <span>
                                                     {format(
-                                                        new Date(log.created_at),
+                                                        new Date(
+                                                            log.created_at,
+                                                        ),
                                                         "dd/MM/yyyy 'às' HH:mm",
                                                         { locale: ptBR },
                                                     )}
@@ -114,25 +127,29 @@ export default function ActivityLogsIndex({ logs }: ActivityLogsIndexProps) {
                                                 {log.ip_address && (
                                                     <>
                                                         <span>•</span>
-                                                        <span>{log.ip_address}</span>
+                                                        <span>
+                                                            {log.ip_address}
+                                                        </span>
                                                     </>
                                                 )}
                                             </div>
 
-                                            {log.properties && Object.keys(log.properties).length > 0 && (
-                                                <details className="mt-2">
-                                                    <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
-                                                        Ver propriedades
-                                                    </summary>
-                                                    <pre className="mt-2 overflow-x-auto rounded bg-muted p-2 text-xs">
-                                                        {JSON.stringify(
-                                                            log.properties,
-                                                            null,
-                                                            2,
-                                                        )}
-                                                    </pre>
-                                                </details>
-                                            )}
+                                            {log.properties &&
+                                                Object.keys(log.properties)
+                                                    .length > 0 && (
+                                                    <details className="mt-2">
+                                                        <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                                                            Ver propriedades
+                                                        </summary>
+                                                        <pre className="mt-2 overflow-x-auto rounded bg-muted p-2 text-xs">
+                                                            {JSON.stringify(
+                                                                log.properties,
+                                                                null,
+                                                                2,
+                                                            )}
+                                                        </pre>
+                                                    </details>
+                                                )}
                                         </div>
                                     </div>
                                 </Card>
@@ -142,8 +159,8 @@ export default function ActivityLogsIndex({ logs }: ActivityLogsIndexProps) {
                         {logs.last_page > 1 && (
                             <div className="flex items-center justify-between">
                                 <p className="text-sm text-muted-foreground">
-                                    Mostrando {logs.from} a {logs.to} de {logs.total}{' '}
-                                    registos
+                                    Mostrando {logs.from} a {logs.to} de{' '}
+                                    {logs.total} registos
                                 </p>
                                 <div className="flex gap-2">
                                     {logs.current_page > 1 && (

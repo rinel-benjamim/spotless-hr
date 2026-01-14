@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type Payroll, type PaginatedData } from '@/types';
+import { type BreadcrumbItem, type PaginatedData, type Payroll } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, DollarSign, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight, DollarSign, Plus } from 'lucide-react';
 
 interface PayrollsIndexProps {
     payrolls: PaginatedData<Payroll>;
@@ -18,8 +18,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Folhas de Pagamento', href: '/payrolls' },
 ];
 
-export default function PayrollsIndex({ payrolls, year, month }: PayrollsIndexProps) {
-    const monthName = format(new Date(year, month - 1), 'MMMM yyyy', { locale: ptBR });
+export default function PayrollsIndex({
+    payrolls,
+    year,
+    month,
+}: PayrollsIndexProps) {
+    const monthName = format(new Date(year, month - 1), 'MMMM yyyy', {
+        locale: ptBR,
+    });
 
     const navigateMonth = (direction: number) => {
         let newMonth = month + direction;
@@ -50,12 +56,22 @@ export default function PayrollsIndex({ payrolls, year, month }: PayrollsIndexPr
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold capitalize">{monthName}</h2>
+                    <h2 className="text-xl font-semibold capitalize">
+                        {monthName}
+                    </h2>
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => navigateMonth(-1)}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigateMonth(-1)}
+                        >
                             <ChevronLeft className="size-4" />
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => navigateMonth(1)}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigateMonth(1)}
+                        >
                             <ChevronRight className="size-4" />
                         </Button>
                     </div>
@@ -94,36 +110,56 @@ export default function PayrollsIndex({ payrolls, year, month }: PayrollsIndexPr
                             </thead>
                             <tbody className="divide-y">
                                 {payrolls.data.map((payroll) => (
-                                    <tr key={payroll.id} className="hover:bg-muted/50">
+                                    <tr
+                                        key={payroll.id}
+                                        className="hover:bg-muted/50"
+                                    >
                                         <td className="px-6 py-4 text-sm font-medium">
                                             {payroll.employee?.full_name}
                                             <div className="text-xs text-muted-foreground">
-                                                {payroll.employee?.employee_code}
+                                                {
+                                                    payroll.employee
+                                                        ?.employee_code
+                                                }
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm">€{payroll.base_salary.toFixed(2)}</td>
-                                        <td className="px-6 py-4 text-sm">{payroll.total_days_worked}</td>
-                                        <td className="px-6 py-4 text-sm text-red-600">{payroll.absences_count}</td>
+                                        <td className="px-6 py-4 text-sm">
+                                            €{Number(payroll.base_salary).toFixed(2)}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            {payroll.total_days_worked}
+                                        </td>
                                         <td className="px-6 py-4 text-sm text-red-600">
-                                            €{payroll.total_deductions.toFixed(2)}
+                                            {payroll.absences_count}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-red-600">
+                                            €
+                                            {Number(payroll.total_deductions).toFixed(
+                                                2,
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-sm font-semibold text-green-600">
-                                            €{payroll.net_salary.toFixed(2)}
+                                            €{Number(payroll.net_salary).toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
                                             {payroll.paid_at ? (
-                                                <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
                                                     Pago
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-700 ring-1 ring-inset ring-yellow-600/20">
+                                                <span className="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-700 ring-1 ring-yellow-600/20 ring-inset">
                                                     Pendente
                                                 </span>
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Link href={`/payrolls/${payroll.id}`}>
-                                                <Button variant="ghost" size="sm">
+                                            <Link
+                                                href={`/payrolls/${payroll.id}`}
+                                            >
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                >
                                                     <DollarSign className="size-4" />
                                                 </Button>
                                             </Link>
@@ -132,8 +168,12 @@ export default function PayrollsIndex({ payrolls, year, month }: PayrollsIndexPr
                                 ))}
                                 {payrolls.data.length === 0 && (
                                     <tr>
-                                        <td colSpan={8} className="px-6 py-12 text-center text-sm text-muted-foreground">
-                                            Nenhuma folha de pagamento encontrada para este mês.
+                                        <td
+                                            colSpan={8}
+                                            className="px-6 py-12 text-center text-sm text-muted-foreground"
+                                        >
+                                            Nenhuma folha de pagamento
+                                            encontrada para este mês.
                                         </td>
                                     </tr>
                                 )}

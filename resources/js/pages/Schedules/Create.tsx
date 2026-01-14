@@ -116,20 +116,24 @@ export default function SchedulesCreate({
                                     id="generate_month"
                                     checked={data.generate_month}
                                     onCheckedChange={(checked) =>
-                                        setData('generate_month', checked as boolean)
+                                        setData(
+                                            'generate_month',
+                                            checked as boolean,
+                                        )
                                     }
                                 />
                                 <Label
                                     htmlFor="generate_month"
-                                    className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
                                     Gerar escala para o mês completo
                                 </Label>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                                Ao marcar esta opção, será gerada automaticamente uma
-                                escala para todos os dias do mês selecionado, com dias
-                                úteis marcados como dias de trabalho.
+                                Ao marcar esta opção, será gerada
+                                automaticamente uma escala para todos os dias do
+                                mês selecionado, com dias úteis marcados como
+                                dias de trabalho.
                             </p>
                         </div>
 
@@ -245,7 +249,7 @@ export default function SchedulesCreate({
                                     />
                                     <Label
                                         htmlFor="is_working_day"
-                                        className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                        className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                     >
                                         Dia de trabalho
                                     </Label>

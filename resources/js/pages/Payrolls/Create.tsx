@@ -54,7 +54,10 @@ export default function PayrollsCreate({ employees }: PayrollsCreateProps) {
         { value: 12, label: 'Dezembro' },
     ];
 
-    const years = Array.from({ length: 5 }, (_, i) => currentDate.getFullYear() - 2 + i);
+    const years = Array.from(
+        { length: 5 },
+        (_, i) => currentDate.getFullYear() - 2 + i,
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -67,7 +70,9 @@ export default function PayrollsCreate({ employees }: PayrollsCreateProps) {
                             <ArrowLeft className="size-4" />
                         </Button>
                     </Link>
-                    <h1 className="text-2xl font-bold">Gerar Folha de Pagamento</h1>
+                    <h1 className="text-2xl font-bold">
+                        Gerar Folha de Pagamento
+                    </h1>
                 </div>
 
                 <Card className="p-6">
@@ -130,26 +135,31 @@ export default function PayrollsCreate({ employees }: PayrollsCreateProps) {
                                     id="generate_all"
                                     checked={data.generate_all}
                                     onCheckedChange={(checked) =>
-                                        setData('generate_all', checked as boolean)
+                                        setData(
+                                            'generate_all',
+                                            checked as boolean,
+                                        )
                                     }
                                 />
                                 <Label
                                     htmlFor="generate_all"
-                                    className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
                                     Gerar para todos os funcionários ativos
                                 </Label>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                                Ao marcar esta opção, as folhas de pagamento serão
-                                geradas automaticamente para todos os funcionários ativos
-                                com salário base definido.
+                                Ao marcar esta opção, as folhas de pagamento
+                                serão geradas automaticamente para todos os
+                                funcionários ativos com salário base definido.
                             </p>
                         </div>
 
                         {!data.generate_all && (
                             <div className="space-y-2">
-                                <Label htmlFor="employee_id">Funcionário *</Label>
+                                <Label htmlFor="employee_id">
+                                    Funcionário *
+                                </Label>
                                 <Select
                                     value={data.employee_id}
                                     onValueChange={(value) =>
@@ -167,7 +177,10 @@ export default function PayrollsCreate({ employees }: PayrollsCreateProps) {
                                             >
                                                 {employee.employee_code} -{' '}
                                                 {employee.full_name} (
-                                                {employee.base_salary?.toFixed(2)} €)
+                                                {Number(
+                                                    employee.base_salary,
+                                                ).toFixed(2)}{' '}
+                                                €)
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
