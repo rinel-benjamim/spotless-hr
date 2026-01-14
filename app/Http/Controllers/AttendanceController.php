@@ -6,12 +6,42 @@ use App\AttendanceType;
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Exports\AttendancesExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AttendanceController extends Controller
 {
     public function index(Request $request)
+    {
+        $query = $this->getFilteredQuery($request);
+        $attendances = $query->latest('recorded_at')->paginate(20);
+
+        return Inertia::render('Attendances/Index', [
+            'attendances' => $attendances,
+            'employees' => Employee::select('id', 'full_name')->get(),
+            'filters' => $request->only(['employee_id', 'start_date', 'end_date']),
+        ]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $attendances = $this->getFilteredQuery($request)->latest('recorded_at')->get();
+        $employee = $request->filled('employee_id') ? Employee::find($request->employee_id) : null;
+        
+        $pdf = Pdf::loadView('pdf.attendances', compact('attendances', 'employee', 'request'));
+        
+        return $pdf->download('relatorio-presencas-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        return Excel::download(new AttendancesExport($request), 'presencas-' . now()->format('Y-m-d') . '.xlsx');
+    }
+
+    private function getFilteredQuery(Request $request)
     {
         $query = Attendance::query()->with(['employee.shift']);
 
@@ -27,13 +57,7 @@ class AttendanceController extends Controller
             $query->whereDate('recorded_at', '<=', $request->end_date);
         }
 
-        $attendances = $query->latest('recorded_at')->paginate(20);
-
-        return Inertia::render('Attendances/Index', [
-            'attendances' => $attendances,
-            'employees' => Employee::select('id', 'full_name')->get(),
-            'filters' => $request->only(['employee_id', 'start_date', 'end_date']),
-        ]);
+        return $query;
     }
 
     public function store(StoreAttendanceRequest $request)

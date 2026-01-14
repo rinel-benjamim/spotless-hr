@@ -5,7 +5,7 @@ import { type BreadcrumbItem, type PaginatedData, type Payroll } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, DollarSign, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, DollarSign, FileSpreadsheet, FileText, Plus } from 'lucide-react';
 
 interface PayrollsIndexProps {
     payrolls: PaginatedData<Payroll>;
@@ -59,21 +59,37 @@ export default function PayrollsIndex({
                     <h2 className="text-xl font-semibold capitalize">
                         {monthName}
                     </h2>
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigateMonth(-1)}
-                        >
-                            <ChevronLeft className="size-4" />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigateMonth(1)}
-                        >
-                            <ChevronRight className="size-4" />
-                        </Button>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 border-r pr-4">
+                            <a href={`/payrolls/export-pdf?year=${year}&month=${month}`} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="sm">
+                                    <FileText className="mr-2 size-4" />
+                                    PDF
+                                </Button>
+                            </a>
+                            <a href={`/payrolls/export-excel?year=${year}&month=${month}`} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="sm">
+                                    <FileSpreadsheet className="mr-2 size-4" />
+                                    Excel
+                                </Button>
+                            </a>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => navigateMonth(-1)}
+                            >
+                                <ChevronLeft className="size-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => navigateMonth(1)}
+                            >
+                                <ChevronRight className="size-4" />
+                            </Button>
+                        </div>
                     </div>
                 </div>
 

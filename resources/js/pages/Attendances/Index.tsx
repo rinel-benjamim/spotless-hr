@@ -17,7 +17,7 @@ import {
     type PaginatedData,
 } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Calendar, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, Filter } from 'lucide-react';
 import { useState } from 'react';
 
 interface AttendancesIndexProps {
@@ -94,6 +94,14 @@ export default function AttendancesIndex({
         router.get('/attendances');
     };
 
+    const getExportUrl = (type: 'pdf' | 'excel') => {
+        const params = new URLSearchParams();
+        if (employeeId && employeeId !== 'all') params.append('employee_id', employeeId);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        return `/attendances/export-${type}?${params.toString()}`;
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Presenças" />
@@ -101,6 +109,20 @@ export default function AttendancesIndex({
             <div className="flex flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Presenças</h1>
+                    <div className="flex gap-2">
+                        <a href={getExportUrl('pdf')} target="_blank">
+                            <Button variant="outline">
+                                <FileText className="mr-2 size-4" />
+                                Exportar PDF
+                            </Button>
+                        </a>
+                        <a href={getExportUrl('excel')} target="_blank">
+                            <Button variant="outline">
+                                <FileSpreadsheet className="mr-2 size-4" />
+                                Exportar Excel
+                            </Button>
+                        </a>
+                    </div>
                 </div>
 
                 <Card className="p-6">

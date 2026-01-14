@@ -6,6 +6,9 @@ use App\Http\Requests\StorePayrollRequest;
 use App\Models\Employee;
 use App\Models\Payroll;
 use App\Services\PayrollService;
+use App\Exports\PayrollsExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -31,6 +34,29 @@ class PayrollController extends Controller
             'year' => $year,
             'month' => $month,
         ]);
+    }
+
+    public function exportListPdf(Request $request)
+    {
+        $year = $request->input('year', now()->year);
+        $month = $request->input('month', now()->month);
+
+        $payrolls = Payroll::with('employee')
+            ->whereYear('reference_month', $year)
+            ->whereMonth('reference_month', $month)
+            ->get();
+            
+        $pdf = Pdf::loadView('pdf.payrolls-list', compact('payrolls', 'year', 'month'))->setPaper('a4', 'landscape');
+        
+        return $pdf->download("folhas-pagamento-{$year}-{$month}.pdf");
+    }
+
+    public function exportListExcel(Request $request)
+    {
+        $year = $request->input('year', now()->year);
+        $month = $request->input('month', now()->month);
+
+        return Excel::download(new PayrollsExport($year, $month), "folhas-pagamento-{$year}-{$month}.xlsx");
     }
 
     public function create()
@@ -81,6 +107,15 @@ class PayrollController extends Controller
         return Inertia::render('Payrolls/Show', [
             'payroll' => $payroll,
         ]);
+    }
+
+    public function exportPdf(Payroll $payroll)
+    {
+        $payroll->load(['employee.shift']);
+        
+        $pdf = Pdf::loadView('pdf.payroll', compact('payroll'));
+        
+        return $pdf->download("folha-pagamento-{$payroll->employee->employee_code}-" . now()->format('Y-m-d') . ".pdf");
     }
 
     public function update(Request $request, Payroll $payroll)

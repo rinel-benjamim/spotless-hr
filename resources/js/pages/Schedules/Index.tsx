@@ -5,7 +5,7 @@ import { type BreadcrumbItem, type Employee, type Schedule } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { format, getDaysInMonth, startOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, Plus } from 'lucide-react';
 
 interface SchedulesIndexProps {
     schedules: Record<number, Schedule[]>;
@@ -79,12 +79,20 @@ export default function SchedulesIndex({
             <div className="flex flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Escalas de Trabalho</h1>
-                    <Link href="/schedules/create">
-                        <Button>
-                            <Plus className="mr-2 size-4" />
-                            Criar Escala
-                        </Button>
-                    </Link>
+                    <div className="flex gap-2">
+                        <a href={`/schedules/export-pdf?year=${year}&month=${month}`} target="_blank">
+                            <Button variant="outline">
+                                <FileText className="mr-2 size-4" />
+                                Exportar Escala Geral (PDF)
+                            </Button>
+                        </a>
+                        <Link href="/schedules/create">
+                            <Button>
+                                <Plus className="mr-2 size-4" />
+                                Criar Escala
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -119,14 +127,22 @@ export default function SchedulesIndex({
                     <div className="space-y-6">
                         {employees.map((employee) => (
                             <Card key={employee.id} className="p-4">
-                                <div className="mb-4">
-                                    <h3 className="text-lg font-semibold">
-                                        {employee.full_name}
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        {employee.employee_code} -{' '}
-                                        {employee.shift?.name}
-                                    </p>
+                                <div className="mb-4 flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-semibold">
+                                            {employee.full_name}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            {employee.employee_code} -{' '}
+                                            {employee.shift?.name}
+                                        </p>
+                                    </div>
+                                    <a href={`/schedules/export-pdf?year=${year}&month=${month}&employee_id=${employee.id}`} target="_blank">
+                                        <Button variant="ghost" size="sm">
+                                            <FileText className="mr-2 size-4" />
+                                            Exportar PDF
+                                        </Button>
+                                    </a>
                                 </div>
 
                                 <div className="overflow-x-auto">

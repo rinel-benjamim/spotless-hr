@@ -5,7 +5,7 @@ import { type BreadcrumbItem, type Payroll } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ArrowLeft, CheckCircle, RefreshCcw } from 'lucide-react';
+import { ArrowLeft, CheckCircle, FileText, RefreshCcw } from 'lucide-react';
 
 interface PayrollsShowProps {
     payroll: Payroll;
@@ -52,6 +52,12 @@ export default function PayrollsShow({ payroll }: PayrollsShowProps) {
                         </h1>
                     </div>
                     <div className="flex gap-2">
+                        <a href={`/payrolls/${payroll.id}/export-pdf`} target="_blank" rel="noopener noreferrer">
+                            <Button variant="outline">
+                                <FileText className="mr-2 size-4" />
+                                Exportar PDF
+                            </Button>
+                        </a>
                         <Button
                             variant="outline"
                             onClick={handleRecalculate}

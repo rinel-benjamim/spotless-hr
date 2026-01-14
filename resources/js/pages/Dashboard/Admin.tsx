@@ -6,7 +6,7 @@ import { type Attendance, type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ArrowRight, Clock, TrendingUp, UserCheck, Users } from 'lucide-react';
+import { ArrowRight, Clock, FileText, TrendingUp, UserCheck, Users } from 'lucide-react';
 
 interface AdminDashboardProps {
     stats: {
@@ -74,13 +74,21 @@ export default function AdminDashboard({
             <Head title="Dashboard" />
 
             <div className="flex flex-col gap-6 p-6">
-                <div>
-                    <h1 className="text-2xl font-bold">
-                        Dashboard Administrativo
-                    </h1>
-                    <p className="text-muted-foreground">
-                        Visão geral do sistema de gestão de RH
-                    </p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold">
+                            Dashboard Administrativo
+                        </h1>
+                        <p className="text-muted-foreground">
+                            Visão geral do sistema de gestão de RH
+                        </p>
+                    </div>
+                    <a href="/dashboard/export-kpis" target="_blank">
+                        <Button variant="outline">
+                            <FileText className="mr-2 size-4" />
+                            Exportar KPIs
+                        </Button>
+                    </a>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

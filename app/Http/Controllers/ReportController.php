@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Services\AttendanceService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -51,6 +52,29 @@ class ReportController extends Controller
         ]);
     }
 
+    public function exportEmployeePdf(Request $request, Employee $employee)
+    {
+        $this->authorize('view', $employee);
+
+        $year = $request->input('year', now()->year);
+        $month = $request->input('month', now()->month);
+
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
+        $endDate = Carbon::create($year, $month, 1)->endOfMonth();
+
+        $attendances = $employee->attendances()
+            ->whereBetween('recorded_at', [$startDate, $endDate])
+            ->orderBy('recorded_at', 'desc')
+            ->get();
+
+        $summary = $this->attendanceService->getMonthlySummary($employee, $year, $month);
+        $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
+        $pdf = Pdf::loadView('pdf.employee-report', compact('employee', 'attendances', 'summary', 'year', 'month', 'monthName'));
+        
+        return $pdf->download("relatorio-{$employee->employee_code}-{$monthName}.pdf");
+    }
+
     public function calendar(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);
@@ -75,5 +99,28 @@ class ReportController extends Controller
             'year' => $year,
             'month' => $month,
         ]);
+    }
+
+    public function exportCalendarPdf(Request $request, Employee $employee)
+    {
+        $this->authorize('view', $employee);
+
+        $year = $request->input('year', now()->year);
+        $month = $request->input('month', now()->month);
+
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
+        $endDate = Carbon::create($year, $month, 1)->endOfMonth();
+
+        $attendances = $employee->attendances()
+            ->whereBetween('recorded_at', [$startDate, $endDate])
+            ->get()
+            ->groupBy(fn ($a) => $a->recorded_at->format('Y-m-d'));
+
+        $absences = $this->attendanceService->getAbsences($employee, $startDate, $endDate);
+        $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
+        $pdf = Pdf::loadView('pdf.employee-calendar', compact('employee', 'attendances', 'absences', 'year', 'month', 'monthName'));
+        
+        return $pdf->download("calendario-{$employee->employee_code}-{$monthName}.pdf");
     }
 }

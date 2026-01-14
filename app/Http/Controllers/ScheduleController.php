@@ -6,6 +6,7 @@ use App\Http\Requests\StoreScheduleRequest;
 use App\Models\Employee;
 use App\Models\Schedule;
 use App\Models\Shift;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -33,9 +34,37 @@ class ScheduleController extends Controller
         return Inertia::render('Schedules/Index', [
             'schedules' => $schedules,
             'employees' => $employees,
-            'year' => $year,
-            'month' => $month,
+            'year' => (int) $year,
+            'month' => (int) $month,
         ]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $year = $request->input('year', now()->year);
+        $month = $request->input('month', now()->month);
+        $employeeId = $request->input('employee_id');
+
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
+        $endDate = Carbon::create($year, $month, 1)->endOfMonth();
+
+        $query = Schedule::with(['employee', 'shift'])
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date')
+            ->orderBy('employee_id');
+
+        if ($employeeId) {
+            $query->where('employee_id', $employeeId);
+        }
+
+        $schedules = $query->get()->groupBy('employee_id');
+        $employee = $employeeId ? Employee::find($employeeId) : null;
+        $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
+        $pdf = Pdf::loadView('pdf.schedules', compact('schedules', 'year', 'month', 'employee', 'monthName'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download("escala-{$monthName}.pdf");
     }
 
     public function create()

@@ -18,18 +18,23 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/export-kpis', [DashboardController::class, 'exportKpis'])->name('dashboard.export-kpis');
 
     Route::resource('employees', EmployeeController::class);
     Route::resource('shifts', ShiftController::class);
 
     Route::get('attendances', [AttendanceController::class, 'index'])->name('attendances.index');
+    Route::get('attendances/export-pdf', [AttendanceController::class, 'exportPdf'])->name('attendances.export-pdf');
+    Route::get('attendances/export-excel', [AttendanceController::class, 'exportExcel'])->name('attendances.export-excel');
     Route::post('attendances', [AttendanceController::class, 'store'])->name('attendances.store');
     Route::post('attendances/check-in', [AttendanceController::class, 'checkIn'])->name('attendances.check-in');
     Route::post('attendances/check-out', [AttendanceController::class, 'checkOut'])->name('attendances.check-out');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/employee/{employee}', [ReportController::class, 'employee'])->name('reports.employee');
+    Route::get('reports/employee/{employee}/export-pdf', [ReportController::class, 'exportEmployeePdf'])->name('reports.employee-pdf');
     Route::get('reports/calendar/{employee}', [ReportController::class, 'calendar'])->name('reports.calendar');
+    Route::get('reports/calendar/{employee}/export-pdf', [ReportController::class, 'exportCalendarPdf'])->name('reports.calendar-pdf');
 
     Route::get('justifications', [JustificationController::class, 'index'])->name('justifications.index');
     Route::get('justifications/create', [JustificationController::class, 'create'])->name('justifications.create');
@@ -39,14 +44,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
     Route::get('payrolls', [PayrollController::class, 'index'])->name('payrolls.index');
+    Route::get('payrolls/export-pdf', [PayrollController::class, 'exportListPdf'])->name('payrolls.export-list-pdf');
+    Route::get('payrolls/export-excel', [PayrollController::class, 'exportListExcel'])->name('payrolls.export-list-excel');
     Route::get('payrolls/create', [PayrollController::class, 'create'])->name('payrolls.create');
     Route::post('payrolls', [PayrollController::class, 'store'])->name('payrolls.store');
     Route::get('payrolls/{payroll}', [PayrollController::class, 'show'])->name('payrolls.show');
+    Route::get('payrolls/{payroll}/export-pdf', [PayrollController::class, 'exportPdf'])->name('payrolls.export-pdf');
     Route::put('payrolls/{payroll}', [PayrollController::class, 'update'])->name('payrolls.update');
     Route::post('payrolls/{payroll}/mark-paid', [PayrollController::class, 'markAsPaid'])->name('payrolls.mark-paid');
     Route::post('payrolls/{payroll}/recalculate', [PayrollController::class, 'recalculate'])->name('payrolls.recalculate');
 
     Route::get('schedules', [ScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('schedules/export-pdf', [ScheduleController::class, 'exportPdf'])->name('schedules.export-pdf');
     Route::get('schedules/create', [ScheduleController::class, 'create'])->name('schedules.create');
     Route::post('schedules', [ScheduleController::class, 'store'])->name('schedules.store');
     Route::put('schedules/{schedule}', [ScheduleController::class, 'update'])->name('schedules.update');

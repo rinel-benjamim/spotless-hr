@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\AttendanceType;
 use App\Models\Attendance;
 use App\Models\Employee;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -22,6 +23,28 @@ class DashboardController extends Controller
     }
 
     protected function adminDashboard()
+    {
+        $stats = $this->getAdminStats();
+        
+        $recentAttendances = Attendance::with('employee')
+            ->latest('recorded_at')
+            ->limit(10)
+            ->get();
+
+        return Inertia::render('Dashboard/Admin', [
+            'stats' => $stats,
+            'recentAttendances' => $recentAttendances,
+        ]);
+    }
+
+    public function exportKpis()
+    {
+        $stats = $this->getAdminStats();
+        $pdf = Pdf::loadView('pdf.dashboard-kpis', compact('stats'));
+        return $pdf->download('dashboard-kpis-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function getAdminStats()
     {
         $today = now()->startOfDay();
         $thisMonth = now()->startOfMonth();
@@ -70,20 +93,13 @@ class DashboardController extends Controller
 
         $totalHoursThisMonth = $totalMinutes / 60;
 
-        $recentAttendances = Attendance::with('employee')
-            ->latest('recorded_at')
-            ->limit(10)
-            ->get();
-
-        return Inertia::render('Dashboard/Admin', [
-            'stats' => [
-                'totalEmployees' => $totalEmployees,
-                'activeEmployees' => $activeEmployees,
-                'presentToday' => $presentToday,
-                'totalHoursThisMonth' => round($totalHoursThisMonth, 2),
-            ],
-            'recentAttendances' => $recentAttendances,
-        ]);
+        return [
+            'totalEmployees' => $totalEmployees,
+            'activeEmployees' => $activeEmployees,
+            'presentToday' => $presentToday,
+            'totalHoursThisMonth' => round($totalHoursThisMonth, 2),
+            'monthName' => now()->translatedFormat('F Y'),
+        ];
     }
 
     protected function employeeDashboard()

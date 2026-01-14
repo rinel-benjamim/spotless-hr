@@ -12,7 +12,7 @@ import {
     startOfMonth,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 
 interface CalendarProps {
     employee: Employee;
@@ -146,6 +146,12 @@ export default function Calendar({
                             {employee.employee_code} • {employee.shift?.name}
                         </p>
                     </div>
+                    <a href={`/reports/calendar/${employee.id}/export-pdf?year=${year}&month=${month}`} target="_blank">
+                        <Button variant="outline">
+                            <FileText className="mr-2 size-4" />
+                            Exportar Calendário (PDF)
+                        </Button>
+                    </a>
                 </div>
 
                 <div className="flex items-center justify-between">

@@ -101,10 +101,12 @@ export default function EmployeeReport({
                             {employee.employee_code} • {employee.shift?.name}
                         </p>
                     </div>
-                    <Button variant="outline">
-                        <Download className="mr-2 size-4" />
-                        Exportar PDF
-                    </Button>
+                    <a href={`/reports/employee/${employee.id}/export-pdf?year=${year}&month=${month}`} target="_blank">
+                        <Button variant="outline">
+                            <Download className="mr-2 size-4" />
+                            Exportar PDF
+                        </Button>
+                    </a>
                 </div>
 
                 <div className="flex items-center justify-between">
