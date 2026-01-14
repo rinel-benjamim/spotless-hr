@@ -23,6 +23,7 @@ import {
     Folder,
     LayoutGrid,
     Users,
+    UserX,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -38,11 +39,6 @@ const mainNavItems: NavItem[] = [
         icon: Users,
     },
     {
-        title: 'Presenças',
-        href: '/attendances',
-        icon: Calendar,
-    },
-    {
         title: 'Turnos',
         href: '/shifts',
         icon: Clock,
@@ -51,6 +47,16 @@ const mainNavItems: NavItem[] = [
         title: 'Escalas',
         href: '/schedules',
         icon: CalendarDays,
+    },
+    {
+        title: 'Presenças',
+        href: '/attendances',
+        icon: Calendar,
+    },
+    {
+        title: 'Faltas',
+        href: '/absences',
+        icon: UserX,
     },
     {
         title: 'Folhas de Pagamento',

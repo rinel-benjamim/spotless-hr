@@ -19,10 +19,12 @@ import { ArrowLeft, Save } from 'lucide-react';
 interface JustificationsCreateProps {
     employees: Employee[];
     selectedEmployee?: Employee;
+    absenceDate?: string;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Faltas', href: '/absences' },
     { title: 'Justificativas', href: '/justifications' },
     { title: 'Criar', href: '/justifications/create' },
 ];
@@ -30,10 +32,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function JustificationsCreate({
     employees,
     selectedEmployee,
+    absenceDate,
 }: JustificationsCreateProps) {
     const { data, setData, post, processing, errors } = useForm({
         employee_id: selectedEmployee?.id?.toString() || '',
-        absence_date: '',
+        absence_date: absenceDate || '',
         reason: '',
     });
 

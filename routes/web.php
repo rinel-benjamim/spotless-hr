@@ -41,6 +41,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('justifications', [JustificationController::class, 'store'])->name('justifications.store');
     Route::delete('justifications/{justification}', [JustificationController::class, 'destroy'])->name('justifications.destroy');
 
+    Route::get('absences', [\App\Http\Controllers\AbsenceController::class, 'index'])->name('absences.index');
+
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
     Route::get('payrolls', [PayrollController::class, 'index'])->name('payrolls.index');

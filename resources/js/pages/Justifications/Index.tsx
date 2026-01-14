@@ -21,6 +21,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/dashboard',
     },
     {
+        title: 'Faltas',
+        href: '/absences',
+    },
+    {
         title: 'Justificativas',
         href: '/justifications',
     },

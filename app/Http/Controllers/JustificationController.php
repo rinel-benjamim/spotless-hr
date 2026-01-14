@@ -32,6 +32,7 @@ class JustificationController extends Controller
         }
 
         $employeeId = $request->query('employee_id');
+        $absenceDate = $request->query('absence_date');
         $employee = $employeeId ? Employee::findOrFail($employeeId) : null;
 
         $employees = Employee::select('id', 'full_name', 'employee_code')
@@ -41,6 +42,7 @@ class JustificationController extends Controller
         return Inertia::render('Justifications/Create', [
             'employees' => $employees,
             'selectedEmployee' => $employee,
+            'absenceDate' => $absenceDate,
         ]);
     }
 
