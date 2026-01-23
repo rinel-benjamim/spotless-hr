@@ -15,6 +15,10 @@ class Employee extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public ?string $temp_password = null;
+
+    public ?string $email = null;
+
     protected $fillable = [
         'user_id',
         'employee_code',

@@ -12,12 +12,13 @@ class JustificationController extends Controller
 {
     public function index()
     {
-        if (! auth()->user()->isAdmin()) {
-            abort(403);
+        $query = Justification::with(['employee', 'attendance', 'justifiedBy']);
+
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            $query->where('employee_id', auth()->user()->employee->id);
         }
 
-        $justifications = Justification::with(['employee', 'attendance', 'justifiedBy'])
-            ->latest()
+        $justifications = $query->latest()
             ->paginate(20);
 
         return Inertia::render('Justifications/Index', [
@@ -27,17 +28,18 @@ class JustificationController extends Controller
 
     public function create(Request $request)
     {
-        if (! auth()->user()->isAdmin()) {
-            abort(403);
+        $employeeId = $request->query('employee_id');
+
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            $employeeId = auth()->user()->employee->id;
         }
 
-        $employeeId = $request->query('employee_id');
         $absenceDate = $request->query('absence_date');
         $employee = $employeeId ? Employee::findOrFail($employeeId) : null;
 
-        $employees = Employee::select('id', 'full_name', 'employee_code')
-            ->orderBy('full_name')
-            ->get();
+        $employees = (auth()->user()->isAdmin() || auth()->user()->employee?->isManager())
+            ? Employee::select('id', 'full_name', 'employee_code')->orderBy('full_name')->get()
+            : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name', 'employee_code')->get();
 
         return Inertia::render('Justifications/Create', [
             'employees' => $employees,
@@ -48,16 +50,18 @@ class JustificationController extends Controller
 
     public function store(Request $request)
     {
-        if (! auth()->user()->isAdmin()) {
-            abort(403);
-        }
-
         $validated = $request->validate([
             'employee_id' => ['required', 'exists:employees,id'],
             'attendance_id' => ['nullable', 'exists:attendances,id'],
             'absence_date' => ['nullable', 'date'],
             'reason' => ['required', 'string', 'max:1000'],
         ]);
+
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            if ($validated['employee_id'] != auth()->user()->employee->id) {
+                abort(403);
+            }
+        }
 
         $validated['justified_by'] = auth()->id();
 
@@ -76,7 +80,7 @@ class JustificationController extends Controller
 
     public function destroy(Justification $justification)
     {
-        if (! auth()->user()->isAdmin()) {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
             abort(403);
         }
 

@@ -37,12 +37,17 @@ class EmployeeController extends Controller
     {
         $data = $request->validated();
 
+        $employee = new Employee($data);
+
         if (isset($data['password'])) {
-            $data['temp_password'] = $data['password'];
-            unset($data['password']);
+            $employee->temp_password = $data['password'];
         }
 
-        Employee::create($data);
+        if (isset($data['email'])) {
+            $employee->email = $data['email'];
+        }
+
+        $employee->save();
 
         return redirect()->route('employees.index')
             ->with('success', 'Funcionário criado com sucesso.');

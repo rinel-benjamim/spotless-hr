@@ -17,7 +17,9 @@ class ReportController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Employee::class);
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            return redirect()->route('reports.employee', auth()->user()->employee->id);
+        }
 
         $employees = Employee::with('shift')->get();
 

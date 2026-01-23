@@ -27,7 +27,7 @@ class EmployeeObserver
         if ($employee->user_id === null && ! empty($employee->temp_password)) {
             $user = User::create([
                 'name' => $employee->full_name,
-                'email' => $this->generateEmail($employee),
+                'email' => $employee->email ?? $this->generateEmail($employee),
                 'password' => Hash::make($employee->temp_password),
                 'role' => $employee->role === EmployeeRole::Manager ? UserRole::Admin : UserRole::Employee,
             ]);

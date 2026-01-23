@@ -26,6 +26,7 @@ class StoreEmployeeRequest extends FormRequest
             'deduction_per_absence' => ['nullable', 'numeric', 'min:0'],
             'status' => ['sometimes', Rule::enum(EmployeeStatus::class)],
             'user_id' => ['nullable', 'exists:users,id'],
+            'email' => ['nullable', 'email', 'unique:users,email'],
             'password' => ['nullable', 'string', 'min:8'],
         ];
     }

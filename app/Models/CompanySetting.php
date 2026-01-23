@@ -13,6 +13,8 @@ class CompanySetting extends Model
         'business_hours_end',
         'timezone',
         'currency',
+        'late_deduction_amount',
+        'early_exit_deduction_amount',
     ];
 
     public static function current(): ?self

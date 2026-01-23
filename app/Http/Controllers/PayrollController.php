@@ -23,10 +23,15 @@ class PayrollController extends Controller
         $year = $request->input('year', now()->year);
         $month = $request->input('month', now()->month);
 
-        $payrolls = Payroll::with('employee')
+        $query = Payroll::with('employee')
             ->whereYear('reference_month', $year)
-            ->whereMonth('reference_month', $month)
-            ->latest('reference_month')
+            ->whereMonth('reference_month', $month);
+
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            $query->where('employee_id', auth()->user()->employee->id);
+        }
+
+        $payrolls = $query->latest('reference_month')
             ->paginate(20);
 
         return Inertia::render('Payrolls/Index', [
@@ -38,6 +43,10 @@ class PayrollController extends Controller
 
     public function exportListPdf(Request $request)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $year = $request->input('year', now()->year);
         $month = $request->input('month', now()->month);
 
@@ -53,6 +62,10 @@ class PayrollController extends Controller
 
     public function exportListExcel(Request $request)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $year = $request->input('year', now()->year);
         $month = $request->input('month', now()->month);
 
@@ -61,6 +74,10 @@ class PayrollController extends Controller
 
     public function create()
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $employees = Employee::where('status', 'active')
             ->whereNotNull('base_salary')
             ->select('id', 'full_name', 'employee_code', 'base_salary')
@@ -73,6 +90,10 @@ class PayrollController extends Controller
 
     public function store(StorePayrollRequest $request)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $data = $request->validated();
 
         if (isset($data['generate_all'])) {
@@ -102,6 +123,10 @@ class PayrollController extends Controller
 
     public function show(Payroll $payroll)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $payroll->employee_id != auth()->user()->employee->id) {
+            abort(403);
+        }
+
         $payroll->load('employee.shift');
 
         return Inertia::render('Payrolls/Show', [
@@ -111,6 +136,10 @@ class PayrollController extends Controller
 
     public function exportPdf(Payroll $payroll)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $payroll->employee_id != auth()->user()->employee->id) {
+            abort(403);
+        }
+
         $payroll->load(['employee.shift']);
         
         $pdf = Pdf::loadView('pdf.payroll', compact('payroll'));
@@ -120,6 +149,10 @@ class PayrollController extends Controller
 
     public function update(Request $request, Payroll $payroll)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $data = $request->validate([
             'total_bonus' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
@@ -134,6 +167,10 @@ class PayrollController extends Controller
 
     public function markAsPaid(Payroll $payroll)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $this->payrollService->markAsPaid($payroll);
 
         return redirect()->back()
@@ -142,6 +179,10 @@ class PayrollController extends Controller
 
     public function recalculate(Payroll $payroll)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $this->payrollService->recalculatePayroll($payroll);
 
         return redirect()->back()

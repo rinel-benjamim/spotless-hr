@@ -15,6 +15,7 @@ class Justification extends Model
         'employee_id',
         'absence_date',
         'reason',
+        'status',
         'justified_by',
     ];
 

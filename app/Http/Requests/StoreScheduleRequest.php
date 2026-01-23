@@ -14,7 +14,8 @@ class StoreScheduleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => ['required', 'exists:employees,id'],
+            'employee_ids' => ['required', 'array'],
+            'employee_ids.*' => ['exists:employees,id'],
             'date' => ['required_without:generate_month', 'date'],
             'shift_id' => ['nullable', 'exists:shifts,id'],
             'is_working_day' => ['sometimes', 'boolean'],
@@ -28,7 +29,7 @@ class StoreScheduleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'employee_id.required' => 'O funcionário é obrigatório.',
+            'employee_ids.required' => 'Pelo menos um funcionário é obrigatório.',
             'date.required_without' => 'A data é obrigatória.',
             'shift_id.exists' => 'Turno não encontrado.',
         ];

@@ -9,6 +9,16 @@ use Inertia\Inertia;
 
 class ShiftController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (! auth()->user()->isAdmin()) {
+                abort(403);
+            }
+            return $next($request);
+        });
+    }
+
     public function index()
     {
         $shifts = Shift::withCount('employees')->latest()->paginate(15);

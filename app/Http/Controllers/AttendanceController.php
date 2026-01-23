@@ -19,15 +19,23 @@ class AttendanceController extends Controller
         $query = $this->getFilteredQuery($request);
         $attendances = $query->latest('recorded_at')->paginate(20);
 
+        $employees = (auth()->user()->isAdmin() || auth()->user()->employee?->isManager())
+            ? Employee::select('id', 'full_name')->get()
+            : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name')->get();
+
         return Inertia::render('Attendances/Index', [
             'attendances' => $attendances,
-            'employees' => Employee::select('id', 'full_name')->get(),
+            'employees' => $employees,
             'filters' => $request->only(['employee_id', 'start_date', 'end_date']),
         ]);
     }
 
     public function exportPdf(Request $request)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $request->employee_id != auth()->user()->employee->id) {
+            $request->merge(['employee_id' => auth()->user()->employee->id]);
+        }
+
         $attendances = $this->getFilteredQuery($request)->latest('recorded_at')->get();
         $employee = $request->filled('employee_id') ? Employee::find($request->employee_id) : null;
         
@@ -38,6 +46,10 @@ class AttendanceController extends Controller
 
     public function exportExcel(Request $request)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $request->employee_id != auth()->user()->employee->id) {
+            $request->merge(['employee_id' => auth()->user()->employee->id]);
+        }
+
         return Excel::download(new AttendancesExport($request), 'presencas-' . now()->format('Y-m-d') . '.xlsx');
     }
 
@@ -45,7 +57,9 @@ class AttendanceController extends Controller
     {
         $query = Attendance::query()->with(['employee.shift']);
 
-        if ($request->filled('employee_id')) {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            $query->where('employee_id', auth()->user()->employee->id);
+        } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->employee_id);
         }
 
@@ -63,6 +77,10 @@ class AttendanceController extends Controller
     public function store(StoreAttendanceRequest $request)
     {
         $employeeId = $request->employee_id ?? auth()->user()->employee->id;
+
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $employeeId != auth()->user()->employee->id) {
+            abort(403);
+        }
 
         $lastAttendance = Attendance::where('employee_id', $employeeId)
             ->latest('recorded_at')

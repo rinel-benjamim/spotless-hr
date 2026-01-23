@@ -22,14 +22,21 @@ class ScheduleController extends Controller
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();
 
-        $schedules = Schedule::with(['employee', 'shift'])
-            ->whereBetween('date', [$startDate, $endDate])
-            ->orderBy('date')
+        $query = Schedule::with(['employee', 'shift'])
+            ->whereBetween('date', [$startDate, $endDate]);
+
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            $query->where('employee_id', auth()->user()->employee->id);
+        }
+
+        $schedules = $query->orderBy('date')
             ->orderBy('employee_id')
             ->get()
             ->groupBy('employee_id');
 
-        $employees = Employee::where('status', 'active')->get();
+        $employees = (auth()->user()->isAdmin() || auth()->user()->employee?->isManager())
+            ? Employee::where('status', 'active')->get()
+            : Employee::where('id', auth()->user()->employee->id)->get();
 
         return Inertia::render('Schedules/Index', [
             'schedules' => $schedules,
@@ -44,6 +51,10 @@ class ScheduleController extends Controller
         $year = $request->input('year', now()->year);
         $month = $request->input('month', now()->month);
         $employeeId = $request->input('employee_id');
+
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            $employeeId = auth()->user()->employee->id;
+        }
 
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();
@@ -69,6 +80,10 @@ class ScheduleController extends Controller
 
     public function create()
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $employees = Employee::where('status', 'active')->get();
         $shifts = Shift::all();
 
@@ -80,30 +95,41 @@ class ScheduleController extends Controller
 
     public function store(StoreScheduleRequest $request)
     {
-        $data = $request->validated();
-
-        if (isset($data['generate_month'])) {
-            $this->generateMonthSchedule(
-                $data['employee_id'],
-                $data['year'],
-                $data['month'],
-                $data['shift_id'] ?? null
-            );
-
-            return redirect()->route('schedules.index', [
-                'year' => $data['year'],
-                'month' => $data['month'],
-            ])->with('success', 'Escala mensal gerada com sucesso.');
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
         }
 
-        Schedule::create($data);
+        $data = $request->validated();
 
-        return redirect()->route('schedules.index')
-            ->with('success', 'Escala criada com sucesso.');
+        foreach ($data['employee_ids'] as $employeeId) {
+            if (isset($data['generate_month'])) {
+                $this->generateMonthSchedule(
+                    $employeeId,
+                    $data['year'],
+                    $data['month'],
+                    $data['shift_id'] ?? null
+                );
+            } else {
+                Schedule::create(array_merge($data, ['employee_id' => $employeeId]));
+            }
+        }
+
+        $message = isset($data['generate_month'])
+            ? 'Escalas mensais geradas com sucesso.'
+            : 'Escalas criadas com sucesso.';
+
+        return redirect()->route('schedules.index', [
+            'year' => $data['year'] ?? now()->year,
+            'month' => $data['month'] ?? now()->month,
+        ])->with('success', $message);
     }
 
     public function update(Request $request, Schedule $schedule)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $data = $request->validate([
             'shift_id' => ['nullable', 'exists:shifts,id'],
             'is_working_day' => ['required', 'boolean'],
@@ -118,6 +144,10 @@ class ScheduleController extends Controller
 
     public function destroy(Schedule $schedule)
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $schedule->delete();
 
         return redirect()->back()

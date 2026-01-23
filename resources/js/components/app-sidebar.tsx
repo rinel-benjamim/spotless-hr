@@ -11,8 +11,8 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
     Calendar,
@@ -37,11 +37,13 @@ const mainNavItems: NavItem[] = [
         title: 'Funcionários',
         href: '/employees',
         icon: Users,
+        isAdminOnly: true,
     },
     {
         title: 'Turnos',
         href: '/shifts',
         icon: Clock,
+        isAdminOnly: true,
     },
     {
         title: 'Escalas',
@@ -84,6 +86,16 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage<SharedData>().props;
+    const isAdmin = auth.user.role === 'admin';
+
+    const filteredNavItems = mainNavItems.filter((item) => {
+        if (item.isAdminOnly && !isAdmin) {
+            return false;
+        }
+        return true;
+    });
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -99,7 +111,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={filteredNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

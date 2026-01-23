@@ -17,6 +17,7 @@ class Payroll extends Model
         'total_days_worked',
         'absences_count',
         'late_count',
+        'early_exit_count',
         'total_deductions',
         'total_bonus',
         'net_salary',

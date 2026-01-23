@@ -15,7 +15,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() || $user->employee?->isManager()) {
             return $this->adminDashboard();
         }
 
@@ -39,6 +39,10 @@ class DashboardController extends Controller
 
     public function exportKpis()
     {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+            abort(403);
+        }
+
         $stats = $this->getAdminStats();
         $pdf = Pdf::loadView('pdf.dashboard-kpis', compact('stats'));
         return $pdf->download('dashboard-kpis-' . now()->format('Y-m-d') . '.pdf');

@@ -33,7 +33,7 @@ export default function SchedulesCreate({
 }: SchedulesCreateProps) {
     const currentDate = new Date();
     const { data, setData, post, processing, errors } = useForm({
-        employee_id: '',
+        employee_ids: [] as string[],
         date: '',
         shift_id: '',
         is_working_day: true,
@@ -46,6 +46,25 @@ export default function SchedulesCreate({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/schedules');
+    };
+
+    const toggleEmployee = (id: string) => {
+        const currentIds = [...data.employee_ids];
+        const index = currentIds.indexOf(id);
+        if (index === -1) {
+            currentIds.push(id);
+        } else {
+            currentIds.splice(index, 1);
+        }
+        setData('employee_ids', currentIds);
+    };
+
+    const toggleAllEmployees = () => {
+        if (data.employee_ids.length === employees.length) {
+            setData('employee_ids', []);
+        } else {
+            setData('employee_ids', employees.map(e => e.id.toString()));
+        }
     };
 
     const months = [
@@ -84,30 +103,38 @@ export default function SchedulesCreate({
 
                 <Card className="p-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="employee_id">Funcionário *</Label>
-                            <Select
-                                value={data.employee_id}
-                                onValueChange={(value) =>
-                                    setData('employee_id', value)
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Selecione um funcionário" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {employees.map((employee) => (
-                                        <SelectItem
-                                            key={employee.id}
-                                            value={employee.id.toString()}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label>Funcionários *</Label>
+                                <Button
+                                    type="button"
+                                    variant="link"
+                                    size="sm"
+                                    onClick={toggleAllEmployees}
+                                >
+                                    {data.employee_ids.length === employees.length
+                                        ? 'Desmarcar Todos'
+                                        : 'Selecionar Todos'}
+                                </Button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border rounded-md p-4 max-h-60 overflow-y-auto">
+                                {employees.map((employee) => (
+                                    <div key={employee.id} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`employee-${employee.id}`}
+                                            checked={data.employee_ids.includes(employee.id.toString())}
+                                            onCheckedChange={() => toggleEmployee(employee.id.toString())}
+                                        />
+                                        <Label
+                                            htmlFor={`employee-${employee.id}`}
+                                            className="text-sm font-normal cursor-pointer"
                                         >
-                                            {employee.employee_code} -{' '}
-                                            {employee.full_name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <InputError message={errors.employee_id} />
+                                            {employee.employee_code} - {employee.full_name}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                            <InputError message={errors.employee_ids} />
                         </div>
 
                         <div className="space-y-4 rounded-lg border p-4">

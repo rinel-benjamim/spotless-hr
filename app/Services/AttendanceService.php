@@ -100,6 +100,10 @@ class AttendanceService
             return false;
         }
 
+        if ($this->isJustified($attendance)) {
+            return false;
+        }
+
         $employee = $attendance->employee;
         $shift = $employee->shift;
 
@@ -117,13 +121,58 @@ class AttendanceService
         return $recordedCarbon->gt($lateThreshold);
     }
 
+    public function isEarlyExit(Attendance $attendance): bool
+    {
+        if ($attendance->type !== AttendanceType::CheckOut) {
+            return false;
+        }
+
+        if ($this->isJustified($attendance)) {
+            return false;
+        }
+
+        $employee = $attendance->employee;
+        $shift = $employee->shift;
+
+        if (! $shift) {
+            return false;
+        }
+
+        $shiftEnd = Carbon::parse($shift->end_time);
+        $recordedTime = $attendance->recorded_at->format('H:i:s');
+        $recordedCarbon = Carbon::parse($recordedTime);
+
+        return $recordedCarbon->lt($shiftEnd);
+    }
+
+    public function isJustified(Attendance $attendance): bool
+    {
+        return $attendance->employee->justifications()
+            ->where(function ($query) use ($attendance) {
+                $query->where('attendance_id', $attendance->id)
+                    ->orWhere(function ($q) use ($attendance) {
+                        $q->whereNull('attendance_id')
+                            ->whereDate('absence_date', $attendance->recorded_at->toDateString());
+                    });
+            })
+            ->where('status', 'approved')
+            ->exists();
+    }
+
     public function getAbsences(Employee $employee, Carbon $startDate, Carbon $endDate): Collection
     {
         $absences = collect();
         $currentDate = $startDate->copy();
+        $today = now()->startOfDay();
 
-        while ($currentDate->lte($endDate)) {
-            if ($currentDate->isWeekday()) {
+        while ($currentDate->lte($endDate) && $currentDate->lt($today)) {
+            $schedule = $employee->schedules()
+                ->whereDate('date', $currentDate->toDateString())
+                ->first();
+
+            $isWorkingDay = $schedule ? $schedule->is_working_day : $currentDate->isWeekday();
+
+            if ($isWorkingDay) {
                 $hasCheckIn = Attendance::where('employee_id', $employee->id)
                     ->whereDate('recorded_at', $currentDate->toDateString())
                     ->where('type', AttendanceType::CheckIn)
@@ -132,6 +181,7 @@ class AttendanceService
                 if (! $hasCheckIn) {
                     $hasJustification = $employee->justifications()
                         ->whereDate('absence_date', $currentDate->toDateString())
+                        ->where('status', 'approved')
                         ->exists();
 
                     $absences->push([
@@ -166,6 +216,14 @@ class AttendanceService
             }
         }
 
+        $checkOuts = $attendances->where('type', AttendanceType::CheckOut);
+        $earlyExitCount = 0;
+        foreach ($checkOuts as $checkOut) {
+            if ($this->isEarlyExit($checkOut)) {
+                $earlyExitCount++;
+            }
+        }
+
         $absences = $this->getAbsences($employee, $startDate, $endDate);
         $absenceCount = $absences->where('type', AbsenceType::Absence)->count();
         $justifiedCount = $absences->where('type', AbsenceType::Justified)->count();
@@ -175,6 +233,7 @@ class AttendanceService
         return [
             'days_worked' => $daysWorked,
             'late_count' => $lateCount,
+            'early_exit_count' => $earlyExitCount,
             'absence_count' => $absenceCount,
             'justified_count' => $justifiedCount,
             'total_hours' => round($totalHours, 2),

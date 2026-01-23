@@ -25,10 +25,16 @@ class PayrollService
         }
 
         $summary = $this->attendanceService->getMonthlySummary($employee, $year, $month);
+        $settings = \App\Models\CompanySetting::current();
 
         $baseSalary = $employee->base_salary ?? 0;
         $deductionPerAbsence = $employee->deduction_per_absence ?? 0;
-        $totalDeductions = $summary['absence_count'] * $deductionPerAbsence;
+
+        $lateDeduction = $summary['late_count'] * ($settings->late_deduction_amount ?? 0);
+        $earlyExitDeduction = $summary['early_exit_count'] * ($settings->early_exit_deduction_amount ?? 0);
+        $absenceDeduction = $summary['absence_count'] * $deductionPerAbsence;
+
+        $totalDeductions = $absenceDeduction + $lateDeduction + $earlyExitDeduction;
         $netSalary = $baseSalary - $totalDeductions;
 
         return Payroll::create([
@@ -38,6 +44,7 @@ class PayrollService
             'total_days_worked' => $summary['days_worked'],
             'absences_count' => $summary['absence_count'],
             'late_count' => $summary['late_count'],
+            'early_exit_count' => $summary['early_exit_count'],
             'total_deductions' => $totalDeductions,
             'total_bonus' => 0,
             'net_salary' => $netSalary,
@@ -54,10 +61,16 @@ class PayrollService
             $date->year,
             $date->month
         );
+        $settings = \App\Models\CompanySetting::current();
 
         $baseSalary = $employee->base_salary ?? $payroll->base_salary;
         $deductionPerAbsence = $employee->deduction_per_absence ?? 0;
-        $totalDeductions = $summary['absence_count'] * $deductionPerAbsence;
+
+        $lateDeduction = $summary['late_count'] * ($settings->late_deduction_amount ?? 0);
+        $earlyExitDeduction = $summary['early_exit_count'] * ($settings->early_exit_deduction_amount ?? 0);
+        $absenceDeduction = $summary['absence_count'] * $deductionPerAbsence;
+
+        $totalDeductions = $absenceDeduction + $lateDeduction + $earlyExitDeduction;
         $netSalary = $baseSalary - $totalDeductions + $payroll->total_bonus;
 
         $payroll->update([
@@ -65,6 +78,7 @@ class PayrollService
             'total_days_worked' => $summary['days_worked'],
             'absences_count' => $summary['absence_count'],
             'late_count' => $summary['late_count'],
+            'early_exit_count' => $summary['early_exit_count'],
             'total_deductions' => $totalDeductions,
             'net_salary' => $netSalary,
         ]);

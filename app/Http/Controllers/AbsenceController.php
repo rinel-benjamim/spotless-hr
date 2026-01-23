@@ -12,17 +12,17 @@ class AbsenceController extends Controller
 {
     public function index(Request $request, AttendanceService $attendanceService)
     {
-        if (! auth()->user()->isAdmin()) {
-            abort(403);
-        }
-
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : now()->startOfMonth();
         $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : now()->endOfMonth();
 
-        $employees = Employee::all();
+        $employees = auth()->user()->isAdmin() 
+            ? Employee::all() 
+            : collect([auth()->user()->employee]);
+            
         $allAbsences = collect();
 
         foreach ($employees as $employee) {
+            if (! $employee) continue;
             $absences = $attendanceService->getAbsences($employee, $startDate, $endDate);
             foreach ($absences as $absence) {
                 $allAbsences->push([
@@ -46,7 +46,9 @@ class AbsenceController extends Controller
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => $endDate->format('Y-m-d'),
             ],
-            'employees' => Employee::select('id', 'full_name')->get(),
+            'employees' => auth()->user()->isAdmin() 
+                ? Employee::select('id', 'full_name')->get()
+                : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name')->get(),
         ]);
     }
 }

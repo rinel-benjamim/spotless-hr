@@ -49,6 +49,7 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
         shift_id: '',
         base_salary: '',
         deduction_per_absence: '',
+        email: '',
         password: '',
         status: 'active',
     });
@@ -253,6 +254,24 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
                                 <InputError
                                     message={errors.deduction_per_absence}
                                 />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e) =>
+                                        setData('email', e.target.value)
+                                    }
+                                    placeholder="joao@exemplo.com"
+                                />
+                                <InputError message={errors.email} />
+                                <p className="text-sm text-muted-foreground">
+                                    Opcional. Se não fornecido, será gerado
+                                    automaticamente se a senha for preenchida.
+                                </p>
                             </div>
 
                             <div className="space-y-2">

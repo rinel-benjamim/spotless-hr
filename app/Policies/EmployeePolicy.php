@@ -19,17 +19,17 @@ class EmployeePolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager();
+        return $user->isAdmin();
     }
 
     public function update(User $user, Employee $employee): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager();
+        return $user->isAdmin();
     }
 
     public function delete(User $user, Employee $employee): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager();
+        return $user->isAdmin();
     }
 
     public function restore(User $user, Employee $employee): bool
