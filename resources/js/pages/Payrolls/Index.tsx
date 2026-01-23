@@ -159,11 +159,11 @@ export default function PayrollsIndex({
                                         </td>
                                         <td className="px-6 py-4 text-sm">
                                             {payroll.paid_at ? (
-                                                <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
+                                                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary ring-1 ring-primary/20 ring-inset">
                                                     Pago
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-700 ring-1 ring-yellow-600/20 ring-inset">
+                                                <span className="inline-flex items-center rounded-full bg-accent/20 px-2 py-1 text-xs font-medium text-accent-foreground ring-1 ring-accent/30 ring-inset">
                                                     Pendente
                                                 </span>
                                             )}

@@ -31,39 +31,39 @@ export default function AdminDashboard({
             title: 'Total de Funcionários',
             value: stats.totalEmployees,
             icon: Users,
-            color: 'text-blue-600',
-            bgColor: 'bg-blue-50',
+            color: 'text-primary',
+            bgColor: 'bg-primary/10',
         },
         {
             title: 'Funcionários Ativos',
             value: stats.activeEmployees,
             icon: UserCheck,
-            color: 'text-green-600',
-            bgColor: 'bg-green-50',
+            color: 'text-secondary',
+            bgColor: 'bg-secondary/10',
         },
         {
             title: 'Presentes Hoje',
             value: stats.presentToday,
             icon: TrendingUp,
-            color: 'text-purple-600',
-            bgColor: 'bg-purple-50',
+            color: 'text-accent-foreground',
+            bgColor: 'bg-accent/20',
         },
         {
             title: 'Horas Trabalhadas (Mês)',
             value: `${Number(stats.totalHoursThisMonth).toFixed(1)}h`,
             icon: Clock,
-            color: 'text-orange-600',
-            bgColor: 'bg-orange-50',
+            color: 'text-primary',
+            bgColor: 'bg-primary/10',
         },
     ];
 
     const getAttendanceTypeBadge = (type: string) => {
         return type === 'check_in' ? (
-            <Badge variant="default" className="bg-green-600">
+            <Badge variant="default" className="bg-primary text-primary-foreground">
                 Entrada
             </Badge>
         ) : (
-            <Badge variant="secondary" className="bg-blue-600 text-white">
+            <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                 Saída
             </Badge>
         );
@@ -176,7 +176,7 @@ export default function AdminDashboard({
                             <Link href="/employees/create">
                                 <Button
                                     variant="outline"
-                                    className="w-full justify-start"
+                                    className="w-full justify-start border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all duration-200"
                                 >
                                     <Users className="mr-2 size-4" />
                                     Adicionar Funcionário
@@ -185,7 +185,7 @@ export default function AdminDashboard({
                             <Link href="/payrolls/create">
                                 <Button
                                     variant="outline"
-                                    className="w-full justify-start"
+                                    className="w-full justify-start border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all duration-200"
                                 >
                                     <Clock className="mr-2 size-4" />
                                     Gerar Folha de Pagamento
@@ -194,7 +194,7 @@ export default function AdminDashboard({
                             <Link href="/schedules/create">
                                 <Button
                                     variant="outline"
-                                    className="w-full justify-start"
+                                    className="w-full justify-start border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all duration-200"
                                 >
                                     <TrendingUp className="mr-2 size-4" />
                                     Criar Escala
@@ -203,7 +203,7 @@ export default function AdminDashboard({
                             <Link href="/reports">
                                 <Button
                                     variant="outline"
-                                    className="w-full justify-start"
+                                    className="w-full justify-start border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all duration-200"
                                 >
                                     <UserCheck className="mr-2 size-4" />
                                     Ver Relatórios
@@ -218,19 +218,19 @@ export default function AdminDashboard({
                         Estatísticas do Mês
                     </h2>
                     <div className="grid gap-4 md:grid-cols-3">
-                        <div className="rounded-lg border p-4">
+                        <div className="rounded-lg border border-primary/10 bg-card p-4 shadow-sm">
                             <p className="text-sm text-muted-foreground">
                                 Média de Presenças Diárias
                             </p>
-                            <p className="mt-2 text-2xl font-bold">
+                            <p className="mt-2 text-2xl font-bold text-primary">
                                 {Math.round(stats.presentToday * 0.9)}
                             </p>
                         </div>
-                        <div className="rounded-lg border p-4">
+                        <div className="rounded-lg border border-primary/10 bg-card p-4 shadow-sm">
                             <p className="text-sm text-muted-foreground">
                                 Taxa de Presença
                             </p>
-                            <p className="mt-2 text-2xl font-bold">
+                            <p className="mt-2 text-2xl font-bold text-secondary">
                                 {stats.activeEmployees > 0
                                     ? Math.round(
                                           (stats.presentToday /
@@ -241,11 +241,11 @@ export default function AdminDashboard({
                                 %
                             </p>
                         </div>
-                        <div className="rounded-lg border p-4">
+                        <div className="rounded-lg border border-primary/10 bg-card p-4 shadow-sm">
                             <p className="text-sm text-muted-foreground">
                                 Média de Horas por Funcionário
                             </p>
-                            <p className="mt-2 text-2xl font-bold">
+                            <p className="mt-2 text-2xl font-bold text-primary">
                                 {stats.activeEmployees > 0
                                     ? (
                                           Number(stats.totalHoursThisMonth) /

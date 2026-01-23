@@ -72,25 +72,15 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
-    const isAdmin = auth.user.role === 'admin';
+    const isPrivileged =
+        auth.user.role === 'admin' || auth.user.employee?.role === 'manager';
 
     const filteredNavItems = mainNavItems.filter((item) => {
-        if (item.isAdminOnly && !isAdmin) {
+        if (item.isAdminOnly && !isPrivileged) {
             return false;
         }
         return true;
