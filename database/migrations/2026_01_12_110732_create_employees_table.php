@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('employee_code')->unique();
             $table->string('full_name');
-            $table->string('role')->default(EmployeeRole::Operator->value);
+            $table->string('role')->default(EmployeeRole::Employee->value);
             $table->string('contract_type')->default(ContractType::FullTime->value);
             $table->foreignId('shift_id')->nullable()->constrained()->nullOnDelete();
             $table->string('status')->default(EmployeeStatus::Active->value);

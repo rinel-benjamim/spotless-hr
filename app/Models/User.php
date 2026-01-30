@@ -47,8 +47,33 @@ class User extends Authenticatable
         return $this->role === UserRole::Admin;
     }
 
+    public function isManager(): bool
+    {
+        return $this->role === UserRole::Manager;
+    }
+
     public function isEmployee(): bool
     {
         return $this->role === UserRole::Employee;
+    }
+
+    public function canDelete(User $target): bool
+    {
+        return $this->role->canDelete($target->role);
+    }
+
+    public function canManageEmployees(): bool
+    {
+        return $this->role->canManageEmployees();
+    }
+
+    public function canViewAllData(): bool
+    {
+        return $this->role->canViewAllData();
+    }
+
+    public function canMarkAttendance(): bool
+    {
+        return $this->role->canMarkAttendance();
     }
 }

@@ -38,7 +38,7 @@ export interface User {
     avatar?: string;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
-    role: 'admin' | 'employee';
+    role: 'admin' | 'manager' | 'employee';
     employee?: Employee;
     created_at: string;
     updated_at: string;
@@ -90,14 +90,7 @@ export interface Attendance {
     updated_at: string;
 }
 
-export type EmployeeRole =
-    | 'manager'
-    | 'supervisor'
-    | 'operator'
-    | 'washer'
-    | 'ironer'
-    | 'delivery_driver'
-    | 'customer_service';
+export type EmployeeRole = 'admin' | 'manager' | 'employee';
 
 export type ContractType =
     | 'full_time'
@@ -197,4 +190,19 @@ export interface PaginatedData<T> {
     total: number;
     from: number;
     to: number;
+}
+
+export interface Report {
+    id: number;
+    created_by: number;
+    title: string;
+    description: string | null;
+    type: 'attendance' | 'payroll' | 'schedule' | 'general';
+    data: Record<string, unknown> | null;
+    file_path: string | null;
+    status: 'pending' | 'completed' | 'failed';
+    generated_at: string | null;
+    creator?: User;
+    created_at: string;
+    updated_at: string;
 }

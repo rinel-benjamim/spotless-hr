@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Report;
 use App\Services\AttendanceService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ class ReportController extends Controller
 
     public function index(Request $request)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             return redirect()->route('reports.employee', auth()->user()->employee->id);
         }
 
@@ -26,6 +27,62 @@ class ReportController extends Controller
         return Inertia::render('Reports/Index', [
             'employees' => $employees,
         ]);
+    }
+
+    public function managerReports(Request $request)
+    {
+        if (! auth()->user()->isManager()) {
+            abort(403);
+        }
+
+        $reports = Report::where('created_by', auth()->id())
+            ->latest()
+            ->paginate(20);
+
+        return Inertia::render('Reports/ManagerReports', [
+            'reports' => $reports,
+        ]);
+    }
+
+    public function adminReports(Request $request)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $reports = Report::with('creator')
+            ->latest()
+            ->paginate(20);
+
+        return Inertia::render('Reports/AdminReports', [
+            'reports' => $reports,
+        ]);
+    }
+
+    public function createReport(Request $request)
+    {
+        if (! auth()->user()->isManager()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'type' => 'required|in:attendance,payroll,schedule,general',
+            'data' => 'nullable|array',
+        ]);
+
+        $report = Report::create([
+            'created_by' => auth()->id(),
+            'title' => $request->title,
+            'description' => $request->description,
+            'type' => $request->type,
+            'data' => $request->data,
+            'status' => 'completed',
+            'generated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Relatório criado com sucesso.');
     }
 
     public function employee(Request $request, Employee $employee)

@@ -16,8 +16,8 @@ class StoreAttendanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => ['required', 'exists:employees,id'],
-            'type' => ['required', Rule::enum(AttendanceType::class)],
+            'employee_id' => ['nullable', 'exists:employees,id'],
+            'type' => ['nullable', Rule::enum(AttendanceType::class)],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
@@ -25,9 +25,7 @@ class StoreAttendanceRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'employee_id.required' => 'O funcionário é obrigatório.',
             'employee_id.exists' => 'Funcionário inválido.',
-            'type.required' => 'O tipo de registo é obrigatório.',
         ];
     }
 }

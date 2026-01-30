@@ -17,7 +17,7 @@ class AttendanceController extends Controller
         $query = $this->getFilteredQuery($request);
         $attendances = $query->latest('recorded_at')->paginate(20);
 
-        $employees = (auth()->user()->isAdmin() || auth()->user()->employee?->isManager())
+        $employees = auth()->user()->canViewAllData()
             ? Employee::select('id', 'full_name')->get()
             : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name')->get();
 
@@ -30,7 +30,7 @@ class AttendanceController extends Controller
 
     public function exportPdf(Request $request)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $request->employee_id != auth()->user()->employee->id) {
+        if (! auth()->user()->canViewAllData() && $request->employee_id != auth()->user()->employee->id) {
             $request->merge(['employee_id' => auth()->user()->employee->id]);
         }
 
@@ -46,7 +46,7 @@ class AttendanceController extends Controller
     {
         $query = Attendance::query()->with(['employee.shift']);
 
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             $query->where('employee_id', auth()->user()->employee->id);
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->employee_id);
@@ -67,7 +67,7 @@ class AttendanceController extends Controller
     {
         $employeeId = $request->employee_id ?? auth()->user()->employee->id;
 
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $employeeId != auth()->user()->employee->id) {
+        if (! auth()->user()->canMarkAttendance() && $employeeId != auth()->user()->employee->id) {
             abort(403);
         }
 

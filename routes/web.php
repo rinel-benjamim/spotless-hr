@@ -30,6 +30,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('attendances/check-out', [AttendanceController::class, 'checkOut'])->name('attendances.check-out');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/manager', [ReportController::class, 'managerReports'])->name('reports.manager');
+    Route::get('reports/admin', [ReportController::class, 'adminReports'])->name('reports.admin');
+    Route::post('reports', [ReportController::class, 'createReport'])->name('reports.create');
     Route::get('reports/employee/{employee}', [ReportController::class, 'employee'])->name('reports.employee');
     Route::get('reports/employee/{employee}/export-pdf', [ReportController::class, 'exportEmployeePdf'])->name('reports.employee-pdf');
     Route::get('reports/calendar/{employee}', [ReportController::class, 'calendar'])->name('reports.calendar');

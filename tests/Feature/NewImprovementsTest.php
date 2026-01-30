@@ -23,7 +23,7 @@ it('creates a user when an employee is created', function () {
 
     $response = $this->actingAs($admin)->post(route('employees.store'), [
         'full_name' => 'John Doe',
-        'role' => \App\EmployeeRole::Operator->value,
+        'role' => \App\EmployeeRole::Employee->value,
         'contract_type' => \App\ContractType::FullTime->value,
         'shift_id' => $shift->id,
         'base_salary' => 1000,
@@ -187,7 +187,7 @@ it('does not deduct for late/early exit with approved justification', function (
 });
 
 it('allows managers to see all payrolls and attendances', function () {
-    $managerUser = User::factory()->create(['role' => UserRole::Employee]);
+    $managerUser = User::factory()->create(['role' => UserRole::Manager]);
     $managerEmployee = Employee::factory()->create([
         'user_id' => $managerUser->id,
         'role' => \App\EmployeeRole::Manager

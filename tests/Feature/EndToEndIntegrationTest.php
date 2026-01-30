@@ -19,7 +19,7 @@ test('automated user creation via employee store', function () {
 
     $response = $this->actingAs($admin)->post(route('employees.store'), [
         'full_name' => 'Automated User Test',
-        'role' => EmployeeRole::Operator->value,
+        'role' => EmployeeRole::Employee->value,
         'contract_type' => ContractType::FullTime->value,
         'shift_id' => $shift->id,
         'base_salary' => 1500,
