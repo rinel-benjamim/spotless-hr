@@ -80,14 +80,14 @@ export default function Calendar({
         const dateStr = format(day, 'yyyy-MM-dd');
 
         if (!isSameMonth(day, currentDate)) {
-            return { status: 'other-month', label: '', color: 'bg-gray-50' };
+            return { status: 'other-month', label: '', color: 'bg-gray-200 text-gray-400' };
         }
 
         if (isWeekend(day)) {
             return {
                 status: 'weekend',
                 label: 'Fim de Semana',
-                color: 'bg-gray-100',
+                color: 'bg-gray-300 text-gray-700',
             };
         }
 
@@ -97,13 +97,13 @@ export default function Calendar({
                 return {
                     status: 'justified',
                     label: 'Justificada',
-                    color: 'bg-green-100 border-green-300',
+                    color: 'bg-green-200 border-green-500 text-green-800',
                 };
             }
             return {
                 status: 'absence',
                 label: 'Falta',
-                color: 'bg-red-100 border-red-300',
+                color: 'bg-red-200 border-red-500 text-red-800',
             };
         }
 
@@ -118,7 +118,7 @@ export default function Calendar({
             return {
                 status: 'present',
                 label: checkIn && checkOut ? 'Completo' : 'Parcial',
-                color: 'bg-blue-50 border-blue-300',
+                color: 'bg-blue-200 border-blue-500 text-blue-800',
                 checkIn: checkIn
                     ? format(new Date(checkIn.recorded_at), 'HH:mm')
                     : null,
@@ -128,7 +128,7 @@ export default function Calendar({
             };
         }
 
-        return { status: 'no-data', label: '', color: '' };
+        return { status: 'no-data', label: '', color: 'bg-white border-gray-300 text-gray-600' };
     };
 
     const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -182,19 +182,19 @@ export default function Calendar({
 
                 <div className="flex gap-4">
                     <div className="flex items-center gap-2">
-                        <div className="size-4 rounded border-2 border-blue-300 bg-blue-50"></div>
+                        <div className="size-4 rounded border-2 border-blue-500 bg-blue-200"></div>
                         <span className="text-sm">Presente</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="size-4 rounded border-2 border-red-300 bg-red-100"></div>
+                        <div className="size-4 rounded border-2 border-red-500 bg-red-200"></div>
                         <span className="text-sm">Falta</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="size-4 rounded border-2 border-green-300 bg-green-100"></div>
+                        <div className="size-4 rounded border-2 border-green-500 bg-green-200"></div>
                         <span className="text-sm">Justificada</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="size-4 rounded bg-gray-100"></div>
+                        <div className="size-4 rounded bg-gray-300"></div>
                         <span className="text-sm">Fim de Semana</span>
                     </div>
                 </div>
@@ -224,7 +224,7 @@ export default function Calendar({
                                     key={day.toISOString()}
                                     className={`min-h-[100px] rounded-lg border-2 p-2 ${dayStatus.color}`}
                                 >
-                                    <div className="text-sm font-semibold">
+                                    <div className="text-sm font-semibold text-gray-900">
                                         {format(day, 'd')}
                                     </div>
                                     {dayStatus.label && (
@@ -234,14 +234,14 @@ export default function Calendar({
                                     )}
                                     {dayStatus.checkIn && (
                                         <div className="mt-2 text-xs">
-                                            <div className="text-green-700">
+                                            <div className="font-semibold text-green-800">
                                                 ↓ {dayStatus.checkIn}
                                             </div>
                                         </div>
                                     )}
                                     {dayStatus.checkOut && (
                                         <div className="text-xs">
-                                            <div className="text-blue-700">
+                                            <div className="font-semibold text-red-800">
                                                 ↑ {dayStatus.checkOut}
                                             </div>
                                         </div>
