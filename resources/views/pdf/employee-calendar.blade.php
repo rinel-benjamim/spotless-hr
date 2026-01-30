@@ -60,8 +60,8 @@
                             <td>
                                 <span class="day-number">{{ $currentDay }}</span>
                                 @foreach($dayAttendances as $att)
-                                    <div class="event {{ $att->type === 'check_in' ? 'check-in' : 'check-out' }}">
-                                        {{ $att->type === 'check_in' ? 'ENT' : 'SAÍ' }}: {{ \Carbon\Carbon::parse($att->recorded_at)->format('H:i') }}
+                                    <div class="event {{ $att->type->value === 'check_in' ? 'check-in' : 'check-out' }}">
+                                        {{ $att->type->value === 'check_in' ? 'ENT' : 'SAÍ' }}: {{ \Carbon\Carbon::parse($att->recorded_at)->format('H:i') }}
                                     </div>
                                 @endforeach
                                 @if($dayAbsence)

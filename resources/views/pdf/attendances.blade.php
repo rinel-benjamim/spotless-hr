@@ -52,8 +52,8 @@
                 <tr>
                     @if(!$employee) <td>{{ $attendance->employee->full_name }}</td> @endif
                     <td>
-                        <span class="badge {{ $attendance->type === 'check_in' ? 'badge-in' : 'badge-out' }}">
-                            {{ $attendance->type === 'check_in' ? 'Entrada' : 'Saída' }}
+                        <span class="badge {{ $attendance->type->value === 'check_in' ? 'badge-in' : 'badge-out' }}">
+                            {{ $attendance->type->value === 'check_in' ? 'Entrada' : 'Saída' }}
                         </span>
                     </td>
                     <td>{{ \Carbon\Carbon::parse($attendance->recorded_at)->format('d/m/Y') }}</td>

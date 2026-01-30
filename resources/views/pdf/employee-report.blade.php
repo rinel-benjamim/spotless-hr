@@ -85,7 +85,7 @@
                 <tr>
                     <td>{{ \Carbon\Carbon::parse($attendance->recorded_at)->format('d/m/Y') }}</td>
                     <td>{{ \Carbon\Carbon::parse($attendance->recorded_at)->format('H:i') }}</td>
-                    <td>{{ $attendance->type === 'check_in' ? 'Entrada' : 'Saída' }}</td>
+                    <td>{{ $attendance->type->value === 'check_in' ? 'Entrada' : 'Saída' }}</td>
                     <td>{{ $attendance->notes ?? '-' }}</td>
                 </tr>
             @endforeach
