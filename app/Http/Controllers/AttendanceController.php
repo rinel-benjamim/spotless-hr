@@ -6,9 +6,7 @@ use App\AttendanceType;
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Models\Attendance;
 use App\Models\Employee;
-use App\Exports\AttendancesExport;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -42,15 +40,6 @@ class AttendanceController extends Controller
         $pdf = Pdf::loadView('pdf.attendances', compact('attendances', 'employee', 'request'));
         
         return $pdf->download('relatorio-presencas-' . now()->format('Y-m-d') . '.pdf');
-    }
-
-    public function exportExcel(Request $request)
-    {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $request->employee_id != auth()->user()->employee->id) {
-            $request->merge(['employee_id' => auth()->user()->employee->id]);
-        }
-
-        return Excel::download(new AttendancesExport($request), 'presencas-' . now()->format('Y-m-d') . '.xlsx');
     }
 
     private function getFilteredQuery(Request $request)

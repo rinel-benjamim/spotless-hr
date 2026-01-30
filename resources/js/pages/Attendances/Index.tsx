@@ -17,7 +17,7 @@ import {
     type PaginatedData,
 } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Calendar, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, Filter } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, FileText, Filter } from 'lucide-react';
 import { useState } from 'react';
 
 interface AttendancesIndexProps {
@@ -114,12 +114,6 @@ export default function AttendancesIndex({
                             <Button variant="outline">
                                 <FileText className="mr-2 size-4" />
                                 Exportar PDF
-                            </Button>
-                        </a>
-                        <a href={getExportUrl('excel')} target="_blank">
-                            <Button variant="outline">
-                                <FileSpreadsheet className="mr-2 size-4" />
-                                Exportar Excel
                             </Button>
                         </a>
                     </div>

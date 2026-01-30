@@ -205,13 +205,13 @@
             <tbody>
                 <tr>
                     <td>Salário Base</td>
-                    <td class="text-right">€{{ number_format($payroll->base_salary, 2, ',', '.') }}</td>
+                    <td class="text-right">Kz {{ number_format($payroll->base_salary, 2, ',', '.') }}</td>
                     <td class="text-right">-</td>
                 </tr>
                 @if($payroll->total_bonus > 0)
                 <tr>
                     <td>Bónus / Extras</td>
-                    <td class="text-right text-green">+ €{{ number_format($payroll->total_bonus, 2, ',', '.') }}</td>
+                    <td class="text-right text-green">+ Kz {{ number_format($payroll->total_bonus, 2, ',', '.') }}</td>
                     <td class="text-right">-</td>
                 </tr>
                 @endif
@@ -219,12 +219,12 @@
                 <tr>
                     <td>Descontos (Faltas e Atrasos)</td>
                     <td class="text-right">-</td>
-                    <td class="text-right text-red">- €{{ number_format($payroll->total_deductions, 2, ',', '.') }}</td>
+                    <td class="text-right text-red">- Kz {{ number_format($payroll->total_deductions, 2, ',', '.') }}</td>
                 </tr>
                 @endif
                 <tr class="total-row">
                     <td>LÍQUIDO A RECEBER</td>
-                    <td colspan="2" class="text-right text-green">€{{ number_format($payroll->net_salary, 2, ',', '.') }}</td>
+                    <td colspan="2" class="text-right text-green">Kz {{ number_format($payroll->net_salary, 2, ',', '.') }}</td>
                 </tr>
             </tbody>
         </table>

@@ -6,9 +6,7 @@ use App\Http\Requests\StorePayrollRequest;
 use App\Models\Employee;
 use App\Models\Payroll;
 use App\Services\PayrollService;
-use App\Exports\PayrollsExport;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -58,18 +56,6 @@ class PayrollController extends Controller
         $pdf = Pdf::loadView('pdf.payrolls-list', compact('payrolls', 'year', 'month'))->setPaper('a4', 'landscape');
         
         return $pdf->download("folhas-pagamento-{$year}-{$month}.pdf");
-    }
-
-    public function exportListExcel(Request $request)
-    {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
-            abort(403);
-        }
-
-        $year = $request->input('year', now()->year);
-        $month = $request->input('month', now()->month);
-
-        return Excel::download(new PayrollsExport($year, $month), "folhas-pagamento-{$year}-{$month}.xlsx");
     }
 
     public function create()

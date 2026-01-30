@@ -5,7 +5,7 @@ import { type BreadcrumbItem, type PaginatedData, type Payroll } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, DollarSign, FileSpreadsheet, FileText, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, DollarSign, FileText, Plus } from 'lucide-react';
 
 interface PayrollsIndexProps {
     payrolls: PaginatedData<Payroll>;
@@ -64,13 +64,7 @@ export default function PayrollsIndex({
                             <a href={`/payrolls/export-pdf?year=${year}&month=${month}`} target="_blank" rel="noopener noreferrer">
                                 <Button variant="outline" size="sm">
                                     <FileText className="mr-2 size-4" />
-                                    PDF
-                                </Button>
-                            </a>
-                            <a href={`/payrolls/export-excel?year=${year}&month=${month}`} target="_blank" rel="noopener noreferrer">
-                                <Button variant="outline" size="sm">
-                                    <FileSpreadsheet className="mr-2 size-4" />
-                                    Excel
+                                    Exportar PDF
                                 </Button>
                             </a>
                         </div>
@@ -140,7 +134,7 @@ export default function PayrollsIndex({
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm">
-                                            €{Number(payroll.base_salary).toFixed(2)}
+                                            Kz {Number(payroll.base_salary).toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
                                             {payroll.total_days_worked}
@@ -149,13 +143,13 @@ export default function PayrollsIndex({
                                             {payroll.absences_count}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-red-600">
-                                            €
+                                            Kz
                                             {Number(payroll.total_deductions).toFixed(
                                                 2,
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-sm font-semibold text-green-600">
-                                            €{Number(payroll.net_salary).toFixed(2)}
+                                            Kz {Number(payroll.net_salary).toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
                                             {payroll.paid_at ? (

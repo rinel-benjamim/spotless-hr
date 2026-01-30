@@ -105,12 +105,12 @@
                 <tr>
                     <td>{{ $payroll->employee->employee_code }}</td>
                     <td class="font-bold">{{ $payroll->employee->full_name }}</td>
-                    <td class="text-right">€{{ number_format($payroll->base_salary, 2, ',', '.') }}</td>
+                    <td class="text-right">Kz {{ number_format($payroll->base_salary, 2, ',', '.') }}</td>
                     <td class="text-right">{{ $payroll->total_days_worked }}</td>
                     <td class="text-right">{{ $payroll->absences_count }}</td>
-                    <td class="text-right text-green">€{{ number_format($payroll->total_bonus, 2, ',', '.') }}</td>
-                    <td class="text-right text-red">€{{ number_format($payroll->total_deductions, 2, ',', '.') }}</td>
-                    <td class="text-right font-bold">€{{ number_format($payroll->net_salary, 2, ',', '.') }}</td>
+                    <td class="text-right text-green">Kz {{ number_format($payroll->total_bonus, 2, ',', '.') }}</td>
+                    <td class="text-right text-red">Kz {{ number_format($payroll->total_deductions, 2, ',', '.') }}</td>
+                    <td class="text-right font-bold">Kz {{ number_format($payroll->net_salary, 2, ',', '.') }}</td>
                     <td>{{ $payroll->paid_at ? 'Pago' : 'Pendente' }}</td>
                 </tr>
             @endforeach
@@ -122,19 +122,19 @@
         <table style="width: 100%; font-size: 12px;">
             <tr>
                 <td>Total Salários Base:</td>
-                <td class="text-right">€{{ number_format($totalBase, 2, ',', '.') }}</td>
+                <td class="text-right">Kz {{ number_format($totalBase, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td>Total Bónus:</td>
-                <td class="text-right text-green">€{{ number_format($totalBonus, 2, ',', '.') }}</td>
+                <td class="text-right text-green">Kz {{ number_format($totalBonus, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td>Total Descontos:</td>
-                <td class="text-right text-red">€{{ number_format($totalDeductions, 2, ',', '.') }}</td>
+                <td class="text-right text-red">Kz {{ number_format($totalDeductions, 2, ',', '.') }}</td>
             </tr>
             <tr style="font-weight: bold; border-top: 1px solid #e2e8f0;">
                 <td style="padding-top: 5px;">TOTAL LÍQUIDO:</td>
-                <td class="text-right style="padding-top: 5px;">€{{ number_format($totalNet, 2, ',', '.') }}</td>
+                <td class="text-right style="padding-top: 5px;">Kz {{ number_format($totalNet, 2, ',', '.') }}</td>
             </tr>
         </table>
     </div>

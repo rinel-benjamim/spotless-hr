@@ -25,7 +25,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('attendances', [AttendanceController::class, 'index'])->name('attendances.index');
     Route::get('attendances/export-pdf', [AttendanceController::class, 'exportPdf'])->name('attendances.export-pdf');
-    Route::get('attendances/export-excel', [AttendanceController::class, 'exportExcel'])->name('attendances.export-excel');
     Route::post('attendances', [AttendanceController::class, 'store'])->name('attendances.store');
     Route::post('attendances/check-in', [AttendanceController::class, 'checkIn'])->name('attendances.check-in');
     Route::post('attendances/check-out', [AttendanceController::class, 'checkOut'])->name('attendances.check-out');
@@ -47,7 +46,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('payrolls', [PayrollController::class, 'index'])->name('payrolls.index');
     Route::get('payrolls/export-pdf', [PayrollController::class, 'exportListPdf'])->name('payrolls.export-list-pdf');
-    Route::get('payrolls/export-excel', [PayrollController::class, 'exportListExcel'])->name('payrolls.export-list-excel');
     Route::get('payrolls/create', [PayrollController::class, 'create'])->name('payrolls.create');
     Route::post('payrolls', [PayrollController::class, 'store'])->name('payrolls.store');
     Route::get('payrolls/{payroll}', [PayrollController::class, 'show'])->name('payrolls.show');
