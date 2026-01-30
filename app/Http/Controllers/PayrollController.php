@@ -18,8 +18,12 @@ class PayrollController extends Controller
 
     public function index(Request $request)
     {
-        $year = $request->input('year', now()->year);
-        $month = $request->input('month', now()->month);
+        $year = (int) $request->input('year', now()->year);
+        $month = (int) $request->input('month', now()->month);
+        
+        // Validar valores de ano e mês
+        $year = max(2020, min(2030, $year));
+        $month = max(1, min(12, $month));
 
         $query = Payroll::with('employee')
             ->whereYear('reference_month', $year)

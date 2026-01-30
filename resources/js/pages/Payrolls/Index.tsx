@@ -23,13 +23,17 @@ export default function PayrollsIndex({
     year,
     month,
 }: PayrollsIndexProps) {
-    const monthName = format(new Date(year, month - 1), 'MMMM yyyy', {
+    // Garantir que year e month são números válidos
+    const currentYear = Number(year) || new Date().getFullYear();
+    const currentMonth = Number(month) || new Date().getMonth() + 1;
+    
+    const monthName = format(new Date(currentYear, currentMonth - 1, 1), 'MMMM yyyy', {
         locale: ptBR,
     });
 
     const navigateMonth = (direction: number) => {
-        let newMonth = month + direction;
-        let newYear = year;
+        let newMonth = currentMonth + direction;
+        let newYear = currentYear;
         if (newMonth > 12) {
             newMonth = 1;
             newYear++;
@@ -61,7 +65,7 @@ export default function PayrollsIndex({
                     </h2>
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 border-r pr-4">
-                            <a href={`/payrolls/export-pdf?year=${year}&month=${month}`} target="_blank" rel="noopener noreferrer">
+                            <a href={`/payrolls/export-pdf?year=${currentYear}&month=${currentMonth}`} target="_blank" rel="noopener noreferrer">
                                 <Button variant="outline" size="sm">
                                     <FileText className="mr-2 size-4" />
                                     Exportar PDF

@@ -48,7 +48,11 @@ export default function Calendar({
         },
     ];
 
-    const currentDate = new Date(year, month - 1, 1);
+    // Garantir que year e month são números válidos
+    const currentYear = Number(year) || new Date().getFullYear();
+    const currentMonth = Number(month) || new Date().getMonth() + 1;
+    
+    const currentDate = new Date(currentYear, currentMonth - 1, 1);
     const monthName = format(currentDate, 'MMMM yyyy', { locale: ptBR });
 
     const monthStart = startOfMonth(currentDate);
@@ -56,8 +60,8 @@ export default function Calendar({
     const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
     const navigateMonth = (direction: number) => {
-        let newMonth = month + direction;
-        let newYear = year;
+        let newMonth = currentMonth + direction;
+        let newYear = currentYear;
 
         if (newMonth > 12) {
             newMonth = 1;
@@ -146,7 +150,7 @@ export default function Calendar({
                             {employee.employee_code} • {employee.shift?.name}
                         </p>
                     </div>
-                    <a href={`/reports/calendar/${employee.id}/export-pdf?year=${year}&month=${month}`} target="_blank">
+                    <a href={`/reports/calendar/${employee.id}/export-pdf?year=${currentYear}&month=${currentMonth}`} target="_blank">
                         <Button variant="outline">
                             <FileText className="mr-2 size-4" />
                             Exportar Calendário (PDF)

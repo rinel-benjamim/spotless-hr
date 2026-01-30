@@ -32,8 +32,12 @@ class ReportController extends Controller
     {
         $this->authorize('view', $employee);
 
-        $year = $request->input('year', now()->year);
-        $month = $request->input('month', now()->month);
+        $year = (int) $request->input('year', now()->year);
+        $month = (int) $request->input('month', now()->month);
+        
+        // Validar valores de ano e mês
+        $year = max(2020, min(2030, $year));
+        $month = max(1, min(12, $month));
 
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();
@@ -81,8 +85,12 @@ class ReportController extends Controller
     {
         $this->authorize('view', $employee);
 
-        $year = $request->input('year', now()->year);
-        $month = $request->input('month', now()->month);
+        $year = (int) $request->input('year', now()->year);
+        $month = (int) $request->input('month', now()->month);
+        
+        // Validar valores de ano e mês
+        $year = max(2020, min(2030, $year));
+        $month = max(1, min(12, $month));
 
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();
