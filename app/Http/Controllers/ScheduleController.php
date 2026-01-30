@@ -102,7 +102,7 @@ class ScheduleController extends Controller
         $data = $request->validated();
 
         foreach ($data['employee_ids'] as $employeeId) {
-            if (isset($data['generate_month'])) {
+            if (filter_var($data['generate_month'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                 $this->generateMonthSchedule(
                     $employeeId,
                     $data['year'],
@@ -114,7 +114,7 @@ class ScheduleController extends Controller
             }
         }
 
-        $message = isset($data['generate_month'])
+        $message = filter_var($data['generate_month'] ?? false, FILTER_VALIDATE_BOOLEAN)
             ? 'Escalas mensais geradas com sucesso.'
             : 'Escalas criadas com sucesso.';
 
@@ -157,7 +157,7 @@ class ScheduleController extends Controller
     protected function generateMonthSchedule(int $employeeId, int $year, int $month, ?int $shiftId): void
     {
         $employee = Employee::findOrFail($employeeId);
-        $shiftId = $shiftId ?? $employee->shift_id;
+        $shiftId = $shiftId ?: $employee->shift_id; // Usar ?: em vez de ??
 
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();
@@ -168,7 +168,7 @@ class ScheduleController extends Controller
             Schedule::updateOrCreate(
                 [
                     'employee_id' => $employeeId,
-                    'date' => $date,
+                    'date' => $date->format('Y-m-d'),
                 ],
                 [
                     'shift_id' => $shiftId,

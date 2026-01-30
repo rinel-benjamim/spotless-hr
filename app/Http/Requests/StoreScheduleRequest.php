@@ -13,17 +13,24 @@ class StoreScheduleRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $rules = [
             'employee_ids' => ['required', 'array'],
             'employee_ids.*' => ['exists:employees,id'],
-            'date' => ['required_without:generate_month', 'date'],
             'shift_id' => ['nullable', 'exists:shifts,id'],
             'is_working_day' => ['sometimes', 'boolean'],
             'notes' => ['nullable', 'string', 'max:500'],
             'generate_month' => ['sometimes', 'boolean'],
-            'year' => ['required_with:generate_month', 'integer', 'min:2020', 'max:2100'],
-            'month' => ['required_with:generate_month', 'integer', 'min:1', 'max:12'],
         ];
+        
+        // Se for para gerar mês completo, year e month são obrigatórios
+        if ($this->boolean('generate_month')) {
+            $rules['year'] = ['required', 'integer', 'min:2020', 'max:2100'];
+            $rules['month'] = ['required', 'integer', 'min:1', 'max:12'];
+        } else {
+            $rules['date'] = ['required', 'date'];
+        }
+        
+        return $rules;
     }
 
     public function messages(): array
