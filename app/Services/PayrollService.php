@@ -101,8 +101,16 @@ class PayrollService
 
         $count = 0;
         foreach ($employees as $employee) {
-            $this->generatePayroll($employee, $year, $month);
-            $count++;
+            try {
+                $this->generatePayroll($employee, $year, $month);
+                $count++;
+            } catch (\Exception $e) {
+                \Log::error('Erro ao gerar folha para funcionário', [
+                    'employee_id' => $employee->id, 
+                    'name' => $employee->full_name,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
 
         return $count;

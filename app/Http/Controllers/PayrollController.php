@@ -86,7 +86,7 @@ class PayrollController extends Controller
 
         $data = $request->validated();
 
-        if (isset($data['generate_all'])) {
+        if (filter_var($data['generate_all'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
             $count = $this->payrollService->generateForAllEmployees(
                 $data['year'],
                 $data['month']

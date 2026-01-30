@@ -177,10 +177,9 @@ export default function PayrollsCreate({ employees }: PayrollsCreateProps) {
                                             >
                                                 {employee.employee_code} -{' '}
                                                 {employee.full_name} (
-                                                {Number(
+                                                Kz {Number(
                                                     employee.base_salary,
-                                                ).toFixed(2)}{' '}
-                                                €)
+                                                ).toFixed(2)})
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

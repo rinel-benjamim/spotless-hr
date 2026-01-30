@@ -13,12 +13,18 @@ class StorePayrollRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'employee_id' => ['required_without:generate_all', 'exists:employees,id'],
+        $rules = [
             'year' => ['required', 'integer', 'min:2020', 'max:2100'],
             'month' => ['required', 'integer', 'min:1', 'max:12'],
             'generate_all' => ['sometimes', 'boolean'],
         ];
+        
+        // Se não for para gerar para todos, employee_id é obrigatório
+        if (!$this->boolean('generate_all')) {
+            $rules['employee_id'] = ['required', 'exists:employees,id'];
+        }
+        
+        return $rules;
     }
 
     public function messages(): array
