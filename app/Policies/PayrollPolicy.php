@@ -14,21 +14,21 @@ class PayrollPolicy
 
     public function view(User $user, Payroll $payroll): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager() || $user->employee?->id === $payroll->employee_id;
+        return $user->canViewAllData() || $user->employee?->id === $payroll->employee_id;
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager();
+        return $user->canManageEmployees();
     }
 
     public function update(User $user, Payroll $payroll): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager();
+        return $user->canManageEmployees();
     }
 
     public function delete(User $user, Payroll $payroll): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager();
+        return $user->canManageEmployees();
     }
 }

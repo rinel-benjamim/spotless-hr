@@ -14,7 +14,7 @@ class JustificationPolicy
 
     public function view(User $user, Justification $justification): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager() || $user->employee?->id === $justification->employee_id;
+        return $user->canViewAllData() || $user->employee?->id === $justification->employee_id;
     }
 
     public function create(User $user): bool
@@ -24,11 +24,11 @@ class JustificationPolicy
 
     public function update(User $user, Justification $justification): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager();
+        return $user->canManageEmployees();
     }
 
     public function delete(User $user, Justification $justification): bool
     {
-        return $user->isAdmin() || $user->employee?->isManager();
+        return $user->canManageEmployees();
     }
 }

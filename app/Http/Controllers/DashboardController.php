@@ -15,7 +15,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isAdmin() || $user->employee?->isManager()) {
+        if ($user->canViewAllData()) {
             return $this->adminDashboard();
         }
 
@@ -39,7 +39,7 @@ class DashboardController extends Controller
 
     public function exportKpis()
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             abort(403);
         }
 

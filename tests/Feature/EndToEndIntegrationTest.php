@@ -57,7 +57,7 @@ test('bulk schedule creation via schedules store', function () {
 });
 
 test('manager can access admin dashboard inertia component', function () {
-    $managerUser = User::factory()->create(['role' => UserRole::Employee]);
+    $managerUser = User::factory()->create(['role' => UserRole::Manager]);
     $managerEmployee = Employee::factory()->create([
         'user_id' => $managerUser->id,
         'role' => EmployeeRole::Manager

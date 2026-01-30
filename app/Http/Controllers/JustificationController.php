@@ -14,7 +14,7 @@ class JustificationController extends Controller
     {
         $query = Justification::with(['employee', 'attendance', 'justifiedBy']);
 
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             $query->where('employee_id', auth()->user()->employee->id);
         }
 
@@ -30,14 +30,14 @@ class JustificationController extends Controller
     {
         $employeeId = $request->query('employee_id');
 
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             $employeeId = auth()->user()->employee->id;
         }
 
         $absenceDate = $request->query('absence_date');
         $employee = $employeeId ? Employee::findOrFail($employeeId) : null;
 
-        $employees = (auth()->user()->isAdmin() || auth()->user()->employee?->isManager())
+        $employees = auth()->user()->canViewAllData()
             ? Employee::select('id', 'full_name', 'employee_code')->orderBy('full_name')->get()
             : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name', 'employee_code')->get();
 
@@ -57,7 +57,7 @@ class JustificationController extends Controller
             'reason' => ['required', 'string', 'max:1000'],
         ]);
 
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             if ($validated['employee_id'] != auth()->user()->employee->id) {
                 abort(403);
             }
@@ -80,7 +80,7 @@ class JustificationController extends Controller
 
     public function destroy(Justification $justification)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 

@@ -29,7 +29,7 @@ class PayrollController extends Controller
             ->whereYear('reference_month', $year)
             ->whereMonth('reference_month', $month);
 
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             $query->where('employee_id', auth()->user()->employee->id);
         }
 
@@ -45,7 +45,7 @@ class PayrollController extends Controller
 
     public function exportListPdf(Request $request)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
@@ -64,7 +64,7 @@ class PayrollController extends Controller
 
     public function create()
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
@@ -80,7 +80,7 @@ class PayrollController extends Controller
 
     public function store(StorePayrollRequest $request)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
@@ -113,7 +113,7 @@ class PayrollController extends Controller
 
     public function show(Payroll $payroll)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $payroll->employee_id != auth()->user()->employee->id) {
+        if (! auth()->user()->canViewAllData() && $payroll->employee_id != auth()->user()->employee->id) {
             abort(403);
         }
 
@@ -126,7 +126,7 @@ class PayrollController extends Controller
 
     public function exportPdf(Payroll $payroll)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager() && $payroll->employee_id != auth()->user()->employee->id) {
+        if (! auth()->user()->canViewAllData() && $payroll->employee_id != auth()->user()->employee->id) {
             abort(403);
         }
 
@@ -139,7 +139,7 @@ class PayrollController extends Controller
 
     public function update(Request $request, Payroll $payroll)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
@@ -157,7 +157,7 @@ class PayrollController extends Controller
 
     public function markAsPaid(Payroll $payroll)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
@@ -169,7 +169,7 @@ class PayrollController extends Controller
 
     public function recalculate(Payroll $payroll)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 

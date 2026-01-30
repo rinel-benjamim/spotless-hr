@@ -8,7 +8,7 @@ class StoreScheduleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->isAdmin() || $this->user()->employee?->isManager();
+        return $this->user()->canManageEmployees();
     }
 
     public function rules(): array

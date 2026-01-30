@@ -25,7 +25,7 @@ class ScheduleController extends Controller
         $query = Schedule::with(['employee', 'shift'])
             ->whereBetween('date', [$startDate, $endDate]);
 
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             $query->where('employee_id', auth()->user()->employee->id);
         }
 
@@ -34,7 +34,7 @@ class ScheduleController extends Controller
             ->get()
             ->groupBy('employee_id');
 
-        $employees = (auth()->user()->isAdmin() || auth()->user()->employee?->isManager())
+        $employees = auth()->user()->canViewAllData()
             ? Employee::where('status', 'active')->get()
             : Employee::where('id', auth()->user()->employee->id)->get();
 
@@ -52,7 +52,7 @@ class ScheduleController extends Controller
         $month = $request->input('month', now()->month);
         $employeeId = $request->input('employee_id');
 
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canViewAllData()) {
             $employeeId = auth()->user()->employee->id;
         }
 
@@ -80,7 +80,7 @@ class ScheduleController extends Controller
 
     public function create()
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
@@ -95,7 +95,7 @@ class ScheduleController extends Controller
 
     public function store(StoreScheduleRequest $request)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
@@ -126,7 +126,7 @@ class ScheduleController extends Controller
 
     public function update(Request $request, Schedule $schedule)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
@@ -144,7 +144,7 @@ class ScheduleController extends Controller
 
     public function destroy(Schedule $schedule)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->employee?->isManager()) {
+        if (! auth()->user()->canManageEmployees()) {
             abort(403);
         }
 
