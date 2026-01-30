@@ -54,8 +54,10 @@
                     <td class="employee-name">{{ $emp->full_name }}</td>
                     @for($i = 1; $i <= $daysInMonth; $i++)
                         @php 
-                            $dateStr = \Carbon\Carbon::create($year, $month, $i)->toDateString();
-                            $schedule = $empSchedules->firstWhere('date', $dateStr);
+                            $currentDate = \Carbon\Carbon::create($year, $month, $i);
+                            $schedule = $empSchedules->first(function($s) use ($currentDate) {
+                                return $s->date->format('Y-m-d') === $currentDate->format('Y-m-d');
+                            });
                         @endphp
                         @if($schedule && $schedule->is_working_day)
                             <td class="working-day">
