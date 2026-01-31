@@ -44,6 +44,30 @@ class Employee extends Model
         ];
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::saving(function ($employee) {
+            // Ensure role is valid before saving
+            if (is_string($employee->role)) {
+                // Convert old roles to new system if needed
+                $roleMapping = [
+                    'operator' => EmployeeRole::Employee,
+                    'washer' => EmployeeRole::Employee,
+                    'ironer' => EmployeeRole::Employee,
+                    'supervisor' => EmployeeRole::Manager,
+                    'delivery_driver' => EmployeeRole::Employee,
+                    'customer_service' => EmployeeRole::Employee,
+                ];
+                
+                if (isset($roleMapping[$employee->role])) {
+                    $employee->role = $roleMapping[$employee->role];
+                }
+            }
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
