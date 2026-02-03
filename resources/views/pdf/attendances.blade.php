@@ -19,9 +19,19 @@
 </head>
 <body>
     <div class="header">
-        <span class="title">Spotlight HR - Relatório de Presenças</span>
-        <div style="float: right;">Gerado em {{ now()->format('d/m/Y H:i') }}</div>
-        <div style="clear: both;"></div>
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 60px; vertical-align: middle; border: none;">
+                    <img src="{{ public_path('assets/logo.png') }}" alt="Spotless HR" style="height: 30px; width: auto;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px; border: none;">
+                    <span class="title">Spotless HR - Relatório de Presenças</span>
+                </td>
+                <td style="text-align: right; vertical-align: middle; border: none;">
+                    <div>Gerado em {{ now()->format('d/m/Y H:i') }}</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div class="info">
@@ -65,7 +75,7 @@
     </table>
 
     <div class="footer">
-        Spotlight HR - Gestão de Presenças
+        Spotless HR - Gestão de Presenças
     </div>
 </body>
 </html>

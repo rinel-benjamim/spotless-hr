@@ -120,8 +120,13 @@
     <div class="header">
         <table style="width: 100%">
             <tr>
-                <td><span class="company-name">Spotlight HR</span></td>
-                <td class="text-right">
+                <td style="width: 60px; vertical-align: middle;">
+                    <img src="{{ public_path('assets/logo.png') }}" alt="Spotless HR" style="height: 40px; width: auto;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 15px;">
+                    <span class="company-name">Spotless HR</span>
+                </td>
+                <td class="text-right" style="vertical-align: middle;">
                     <span class="document-title">Recibo de Vencimento</span><br>
                     <span style="font-size: 14px; color: #94a3b8">#{{ str_pad($payroll->id, 6, '0', STR_PAD_LEFT) }}</span>
                 </td>
@@ -254,7 +259,7 @@
     </div>
 
     <div class="footer">
-        Gerado automaticamente por Spotlight HR em {{ now()->format('d/m/Y H:i') }}
+        Gerado automaticamente por Spotless HR em {{ now()->format('d/m/Y H:i') }}
     </div>
 </body>
 </html>

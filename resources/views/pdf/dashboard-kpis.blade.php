@@ -18,8 +18,19 @@
 </head>
 <body>
     <div class="header">
-        <span class="title">Spotlight HR</span>
-        <span class="date">{{ now()->format('d/m/Y H:i') }}</span>
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 60px; vertical-align: middle; border: none;">
+                    <img src="{{ public_path('assets/logo.png') }}" alt="Spotless HR" style="height: 40px; width: auto;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 15px; border: none;">
+                    <span class="title">Spotless HR</span>
+                </td>
+                <td style="text-align: right; vertical-align: middle; border: none;">
+                    <span class="date">{{ now()->format('d/m/Y H:i') }}</span>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div class="section-title">Indicadores de Desempenho ({{ $stats['monthName'] }})</div>
@@ -76,7 +87,7 @@
 
     <div class="footer">
         Este relatório contém dados consolidados até o momento de sua geração.<br>
-        Spotlight HR - Sistema de Gestão de Recursos Humanos
+        Spotless HR - Sistema de Gestão de Recursos Humanos
     </div>
 </body>
 </html>
