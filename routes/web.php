@@ -12,6 +12,9 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ShiftController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/setup', [\App\Http\Controllers\SetupController::class, 'index'])->name('setup');
+Route::post('/setup', [\App\Http\Controllers\SetupController::class, 'store']);
+
 Route::get('/', function () {
     return redirect()->route('dashboard');
 })->name('home');
