@@ -194,7 +194,7 @@ export default function PayrollsCreate({ employees }: PayrollsCreateProps) {
                                     Cancelar
                                 </Button>
                             </Link>
-                            <Button type="submit" disabled={processing}>
+                            <Button type="submit" disabled={true}>
                                 <Save className="mr-2 size-4" />
                                 Gerar Folha
                             </Button>

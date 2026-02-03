@@ -69,7 +69,7 @@ export default function PayrollsIndex({
                         {monthName}
                     </h2>
                     <div className="flex items-center gap-4">
-                        {canCreatePayroll && (
+                        {canCreatePayroll && false && (
                             <div className="flex items-center gap-2 border-r pr-4">
                                 <a href={`/payrolls/export-pdf?year=${currentYear}&month=${currentMonth}`} target="_blank" rel="noopener noreferrer">
                                     <Button variant="outline" size="sm">
