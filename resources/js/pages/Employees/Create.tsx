@@ -205,7 +205,7 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
 
                             <div className="space-y-2">
                                 <Label htmlFor="base_salary">
-                                    Salário Base (€)
+                                    Salário Base (Kz)
                                 </Label>
                                 <Input
                                     id="base_salary"
@@ -223,7 +223,7 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
 
                             <div className="space-y-2">
                                 <Label htmlFor="deduction_per_absence">
-                                    Dedução por Falta (€)
+                                    Dedução por Falta (Kz)
                                 </Label>
                                 <Input
                                     id="deduction_per_absence"
