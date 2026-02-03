@@ -15,7 +15,7 @@ class AbsenceController extends Controller
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : now()->startOfMonth();
         $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : now()->endOfMonth();
 
-        $employees = auth()->user()->isAdmin() 
+        $employees = auth()->user()->canViewAllData() 
             ? Employee::all() 
             : collect([auth()->user()->employee]);
             
@@ -46,7 +46,7 @@ class AbsenceController extends Controller
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => $endDate->format('Y-m-d'),
             ],
-            'employees' => auth()->user()->isAdmin() 
+            'employees' => auth()->user()->canViewAllData() 
                 ? Employee::select('id', 'full_name')->get()
                 : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name')->get(),
         ]);

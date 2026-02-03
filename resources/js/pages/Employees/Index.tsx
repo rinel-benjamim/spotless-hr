@@ -5,8 +5,9 @@ import {
     type BreadcrumbItem,
     type Employee,
     type PaginatedData,
+    type SharedData,
 } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     ChevronLeft,
     ChevronRight,
@@ -59,6 +60,9 @@ const handleDelete = (id: number) => {
 };
 
 export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
+    const { auth } = usePage<SharedData>().props;
+    const isAdmin = auth.user.role === 'admin';
+    
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Funcionários" />
@@ -66,12 +70,14 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
             <div className="flex flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Funcionários</h1>
-                    <Link href="/employees/create">
-                        <Button>
-                            <Plus className="mr-2 size-4" />
-                            Novo Funcionário
-                        </Button>
-                    </Link>
+                    {isAdmin && (
+                        <Link href="/employees/create">
+                            <Button>
+                                <Plus className="mr-2 size-4" />
+                                Novo Funcionário
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 <Card className="overflow-hidden">
@@ -84,6 +90,9 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                     </th>
                                     <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
                                         Nome
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
+                                        Email
                                     </th>
                                     <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
                                         Função
@@ -108,6 +117,9 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium">
                                                 {employee.full_name}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-muted-foreground">
+                                                {employee.user?.email || '-'}
                                             </td>
                                             <td className="px-6 py-4 text-sm">
                                                 {getEmployeeRoleLabel(
@@ -134,27 +146,31 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                                             <Eye className="size-4" />
                                                         </Button>
                                                     </Link>
-                                                    <Link
-                                                        href={`/employees/${employee.id}/edit`}
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                        >
-                                                            <Pencil className="size-4" />
-                                                        </Button>
-                                                    </Link>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                employee.id,
-                                                            )
-                                                        }
-                                                    >
-                                                        <Trash2 className="size-4 text-destructive" />
-                                                    </Button>
+                                                    {isAdmin && (
+                                                        <>
+                                                            <Link
+                                                                href={`/employees/${employee.id}/edit`}
+                                                            >
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                >
+                                                                    <Pencil className="size-4" />
+                                                                </Button>
+                                                            </Link>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() =>
+                                                                    handleDelete(
+                                                                        employee.id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <Trash2 className="size-4 text-destructive" />
+                                                            </Button>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -162,7 +178,7 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan={6}
+                                            colSpan={7}
                                             className="px-6 py-12 text-center text-sm text-muted-foreground"
                                         >
                                             Nenhum funcionário encontrado

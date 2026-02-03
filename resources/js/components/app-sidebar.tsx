@@ -37,7 +37,6 @@ const mainNavItems: NavItem[] = [
         title: 'Funcionários',
         href: '/employees',
         icon: Users,
-        isAdminOnly: true,
     },
     {
         title: 'Turnos',
@@ -64,6 +63,7 @@ const mainNavItems: NavItem[] = [
         title: 'Folhas de Pagamento',
         href: '/payrolls',
         icon: DollarSign,
+        isAdminOnly: true,
     },
     {
         title: 'Relatórios',
@@ -76,11 +76,14 @@ const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
-    const isPrivileged =
-        auth.user.role === 'admin' || auth.user.employee?.role === 'manager';
+    const isPrivileged = auth.user.role === 'admin';
+    const canManageEmployees = auth.user.role === 'admin' || auth.user.role === 'manager';
 
     const filteredNavItems = mainNavItems.filter((item) => {
-        if (item.isAdminOnly && !isPrivileged) {
+        if (item.isAdminOnly && auth.user.role !== 'admin') {
+            return false;
+        }
+        if (item.href === '/employees' && !canManageEmployees) {
             return false;
         }
         return true;

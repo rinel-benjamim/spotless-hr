@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type PaginatedData, type Payroll } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { type BreadcrumbItem, type PaginatedData, type Payroll, type SharedData } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, DollarSign, FileText, Plus } from 'lucide-react';
@@ -23,6 +23,9 @@ export default function PayrollsIndex({
     year,
     month,
 }: PayrollsIndexProps) {
+    const { auth } = usePage<SharedData>().props;
+    const canCreatePayroll = auth.user.role === 'admin' || auth.user.role === 'manager';
+    
     // Garantir que year e month são números válidos
     const currentYear = Number(year) || new Date().getFullYear();
     const currentMonth = Number(month) || new Date().getMonth() + 1;
@@ -51,12 +54,14 @@ export default function PayrollsIndex({
             <div className="flex flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Folhas de Pagamento</h1>
-                    <Link href="/payrolls/create">
-                        <Button>
-                            <Plus className="mr-2 size-4" />
-                            Gerar Folha
-                        </Button>
-                    </Link>
+                    {canCreatePayroll && (
+                        <Link href="/payrolls/create">
+                            <Button>
+                                <Plus className="mr-2 size-4" />
+                                Gerar Folha
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -64,14 +69,16 @@ export default function PayrollsIndex({
                         {monthName}
                     </h2>
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 border-r pr-4">
-                            <a href={`/payrolls/export-pdf?year=${currentYear}&month=${currentMonth}`} target="_blank" rel="noopener noreferrer">
-                                <Button variant="outline" size="sm">
-                                    <FileText className="mr-2 size-4" />
-                                    Exportar PDF
-                                </Button>
-                            </a>
-                        </div>
+                        {canCreatePayroll && (
+                            <div className="flex items-center gap-2 border-r pr-4">
+                                <a href={`/payrolls/export-pdf?year=${currentYear}&month=${currentMonth}`} target="_blank" rel="noopener noreferrer">
+                                    <Button variant="outline" size="sm">
+                                        <FileText className="mr-2 size-4" />
+                                        Exportar PDF
+                                    </Button>
+                                </a>
+                            </div>
+                        )}
                         <div className="flex gap-2">
                             <Button
                                 variant="outline"

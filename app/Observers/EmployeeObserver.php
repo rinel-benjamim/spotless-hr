@@ -29,7 +29,7 @@ class EmployeeObserver
                 'name' => $employee->full_name,
                 'email' => $employee->email ?? $this->generateEmail($employee),
                 'password' => Hash::make($employee->temp_password),
-                'role' => $employee->role === EmployeeRole::Manager ? UserRole::Admin : UserRole::Employee,
+                'role' => $employee->role->value,
             ]);
 
             $employee->update(['user_id' => $user->id]);
