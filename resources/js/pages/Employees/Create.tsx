@@ -103,26 +103,14 @@ export default function EmployeesCreate({ shifts }: EmployeesCreateProps) {
                                         <SelectValue placeholder="Selecione uma função" />
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value="admin">
+                                            Diretor Geral
+                                        </SelectItem>
                                         <SelectItem value="manager">
                                             Gerente
                                         </SelectItem>
-                                        <SelectItem value="supervisor">
-                                            Supervisor
-                                        </SelectItem>
-                                        <SelectItem value="operator">
-                                            Operador
-                                        </SelectItem>
-                                        <SelectItem value="washer">
-                                            Lavador
-                                        </SelectItem>
-                                        <SelectItem value="ironer">
-                                            Passador
-                                        </SelectItem>
-                                        <SelectItem value="delivery_driver">
-                                            Motorista de Entrega
-                                        </SelectItem>
-                                        <SelectItem value="customer_service">
-                                            Atendimento ao Cliente
+                                        <SelectItem value="employee">
+                                            Funcionário
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>

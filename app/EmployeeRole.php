@@ -11,8 +11,8 @@ enum EmployeeRole: string
     public function label(): string
     {
         return match ($this) {
-            self::Admin => 'Administrador',
-            self::Manager => 'Gestor',
+            self::Admin => 'Diretor Geral',
+            self::Manager => 'Gerente',
             self::Employee => 'Funcionário',
         };
     }

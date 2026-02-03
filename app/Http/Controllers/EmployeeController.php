@@ -78,7 +78,14 @@ class EmployeeController extends Controller
 
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
-        $employee->update($request->validated());
+        $data = $request->validated();
+        
+        // Se o role foi alterado e o funcionário tem um usuário associado, sincronizar
+        if (isset($data['role']) && $employee->user) {
+            $employee->user->update(['role' => $data['role']]);
+        }
+        
+        $employee->update($data);
 
         return redirect()->route('employees.index')
             ->with('success', 'Funcionário atualizado com sucesso.');
