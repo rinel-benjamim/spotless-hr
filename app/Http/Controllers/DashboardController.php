@@ -61,37 +61,28 @@ class DashboardController extends Controller
             ->distinct('employee_id')
             ->count('employee_id');
 
-        // Calculate total hours this month in a DB-agnostic way (works on SQLite).
+        // Calculate total hours this month
         $events = Attendance::whereDate('recorded_at', '>=', $thisMonth)
-            ->whereIn('type', [AttendanceType::CheckIn->value, AttendanceType::CheckOut->value])
             ->orderBy('employee_id')
             ->orderBy('recorded_at')
-            ->get(['employee_id', 'type', 'recorded_at']);
+            ->get();
 
         $totalMinutes = 0;
+        $currentCheckIn = null;
+        $lastEmployeeId = null;
 
-        $grouped = $events->groupBy(function ($item) {
-            return $item->employee_id.'|'.(\Illuminate\Support\Carbon::parse($item->recorded_at)->toDateString());
-        });
+        foreach ($events as $event) {
+            // Reset check-in if employee changes
+            if ($lastEmployeeId !== $event->employee_id) {
+                $currentCheckIn = null;
+                $lastEmployeeId = $event->employee_id;
+            }
 
-        foreach ($grouped as $group) {
-            $start = null;
-
-            foreach ($group as $event) {
-                $time = $event->recorded_at instanceof \Illuminate\Support\Carbon
-                    ? $event->recorded_at
-                    : \Illuminate\Support\Carbon::parse($event->recorded_at);
-
-                if ($event->type === AttendanceType::CheckIn->value) {
-                    $start = $time;
-
-                    continue;
-                }
-
-                if ($event->type === AttendanceType::CheckOut->value && $start) {
-                    $totalMinutes += $time->diffInMinutes($start);
-                    $start = null;
-                }
+            if ($event->type === AttendanceType::CheckIn) {
+                $currentCheckIn = $event->recorded_at;
+            } elseif ($event->type === AttendanceType::CheckOut && $currentCheckIn) {
+                $totalMinutes += $currentCheckIn->diffInMinutes($event->recorded_at);
+                $currentCheckIn = null;
             }
         }
 

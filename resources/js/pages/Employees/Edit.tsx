@@ -113,8 +113,17 @@ export default function EmployeesEdit({
                                         <SelectItem value="manager">
                                             Gerente
                                         </SelectItem>
-                                        <SelectItem value="employee">
-                                            Funcionário
+                                        <SelectItem value="washer">
+                                            Lavador
+                                        </SelectItem>
+                                        <SelectItem value="ironer">
+                                            Passador
+                                        </SelectItem>
+                                        <SelectItem value="attendant">
+                                            Atendente
+                                        </SelectItem>
+                                        <SelectItem value="driver">
+                                            Motorista
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>

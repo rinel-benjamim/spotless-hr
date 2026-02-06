@@ -90,7 +90,7 @@ export interface Attendance {
     updated_at: string;
 }
 
-export type EmployeeRole = 'admin' | 'manager' | 'employee';
+export type EmployeeRole = 'admin' | 'manager' | 'employee' | 'washer' | 'ironer' | 'attendant' | 'driver';
 
 export type ContractType =
     | 'full_time'

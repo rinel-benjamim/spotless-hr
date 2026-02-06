@@ -26,13 +26,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const getEmployeeRoleLabel = (role: string) => {
     const roles: Record<string, string> = {
+        admin: 'Diretor Geral',
         manager: 'Gerente',
-        supervisor: 'Supervisor',
-        operator: 'Operador',
+        employee: 'Funcionário',
         washer: 'Lavador',
         ironer: 'Passador',
-        delivery_driver: 'Motorista de Entrega',
-        customer_service: 'Atendimento ao Cliente',
+        attendant: 'Atendente',
+        driver: 'Motorista',
     };
     return roles[role] || role;
 };

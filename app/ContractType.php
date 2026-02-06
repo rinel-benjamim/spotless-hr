@@ -8,6 +8,7 @@ enum ContractType: string
     case PartTime = 'part_time';
     case Temporary = 'temporary';
     case Freelance = 'freelance';
+    case Internship = 'internship';
 
     public function label(): string
     {
@@ -16,6 +17,7 @@ enum ContractType: string
             self::PartTime => 'Meio Período',
             self::Temporary => 'Temporário',
             self::Freelance => 'Freelancer',
+            self::Internship => 'Estágio',
         };
     }
 }

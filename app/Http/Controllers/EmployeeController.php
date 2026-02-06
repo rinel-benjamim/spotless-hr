@@ -82,7 +82,8 @@ class EmployeeController extends Controller
         
         // Se o role foi alterado e o funcionário tem um usuário associado, sincronizar
         if (isset($data['role']) && $employee->user) {
-            $employee->user->update(['role' => $data['role']]);
+            $newRole = \App\EmployeeRole::from($data['role']);
+            $employee->user->update(['role' => $newRole->getUserRole()]);
         }
         
         $employee->update($data);

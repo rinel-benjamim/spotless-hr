@@ -37,6 +37,10 @@ const getEmployeeRoleLabel = (role: string) => {
         admin: 'Diretor Geral',
         manager: 'Gerente',
         employee: 'Funcionário',
+        washer: 'Lavador',
+        ironer: 'Passador',
+        attendant: 'Atendente',
+        driver: 'Motorista',
     };
     return roles[role] || role;
 };
