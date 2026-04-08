@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\AttendanceType;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\Justification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
 

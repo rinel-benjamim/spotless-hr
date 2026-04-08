@@ -1,6 +1,7 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
+import { Badge } from '@/components/ui/badge';
 import {
     Sidebar,
     SidebarContent,
@@ -14,13 +15,11 @@ import { dashboard } from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
-    BookOpen,
     Calendar,
     CalendarDays,
     Clock,
     DollarSign,
     FileText,
-    Folder,
     LayoutGrid,
     Users,
     UserX,
@@ -75,9 +74,11 @@ const mainNavItems: NavItem[] = [
 const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, pendingJustificationsCount = 0 } =
+        usePage<SharedData>().props;
     const isPrivileged = auth.user.role === 'admin';
-    const canManageEmployees = auth.user.role === 'admin' || auth.user.role === 'manager';
+    const canManageEmployees =
+        auth.user.role === 'admin' || auth.user.role === 'manager';
 
     const filteredNavItems = mainNavItems.filter((item) => {
         if (item.isAdminOnly && auth.user.role !== 'admin') {
@@ -87,6 +88,24 @@ export function AppSidebar() {
             return false;
         }
         return true;
+    });
+
+    const navItemsWithBadge = filteredNavItems.map((item) => {
+        if (
+            item.href === '/absences' &&
+            pendingJustificationsCount > 0 &&
+            isPrivileged
+        ) {
+            return {
+                ...item,
+                badge: () => (
+                    <Badge className="bg-orange-500 text-white">
+                        {pendingJustificationsCount}
+                    </Badge>
+                ),
+            };
+        }
+        return item;
     });
 
     return (
@@ -104,7 +123,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={filteredNavItems} />
+                <NavMain items={navItemsWithBadge} />
             </SidebarContent>
 
             <SidebarFooter>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Justification;
 use App\Services\AttendanceService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,14 +16,16 @@ class AbsenceController extends Controller
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : now()->startOfMonth();
         $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : now()->endOfMonth();
 
-        $employees = auth()->user()->canViewAllData() 
-            ? Employee::all() 
+        $employees = auth()->user()->canViewAllData()
+            ? Employee::all()
             : collect([auth()->user()->employee]);
-            
+
         $allAbsences = collect();
 
         foreach ($employees as $employee) {
-            if (! $employee) continue;
+            if (! $employee) {
+                continue;
+            }
             $absences = $attendanceService->getAbsences($employee, $startDate, $endDate);
             foreach ($absences as $absence) {
                 $allAbsences->push([
@@ -40,15 +43,20 @@ class AbsenceController extends Controller
         // Sort by date desc
         $allAbsences = $allAbsences->sortByDesc('date')->values();
 
+        $pendingJustificationsCount = auth()->user()->isAdmin()
+            ? Justification::where('status', 'pending')->count()
+            : 0;
+
         return Inertia::render('Absences/Index', [
             'absences' => $allAbsences,
             'filters' => [
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => $endDate->format('Y-m-d'),
             ],
-            'employees' => auth()->user()->canViewAllData() 
+            'employees' => auth()->user()->canViewAllData()
                 ? Employee::select('id', 'full_name')->get()
                 : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name')->get(),
+            'pendingJustificationsCount' => $pendingJustificationsCount,
         ]);
     }
 }

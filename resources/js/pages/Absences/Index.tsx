@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { type BreadcrumbItem, type Employee } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, Filter, UserCheck } from 'lucide-react';
+import { Filter, UserCheck } from 'lucide-react';
 import { useState } from 'react';
 
 interface Absence {
@@ -27,6 +28,7 @@ interface AbsencesIndexProps {
         end_date: string;
     };
     employees: Employee[];
+    pendingJustificationsCount?: number;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -44,6 +46,7 @@ export default function AbsencesIndex({
     absences,
     filters,
     employees,
+    pendingJustificationsCount = 0,
 }: AbsencesIndexProps) {
     const [startDate, setStartDate] = useState(filters.start_date);
     const [endDate, setEndDate] = useState(filters.end_date);
@@ -75,6 +78,11 @@ export default function AbsencesIndex({
                     <Link href="/justifications">
                         <Button variant="outline">
                             Ver Justificativas
+                            {pendingJustificationsCount > 0 && (
+                                <Badge className="ml-2 bg-orange-500 text-white">
+                                    {pendingJustificationsCount}
+                                </Badge>
+                            )}
                         </Button>
                     </Link>
                 </div>
@@ -185,7 +193,8 @@ export default function AbsencesIndex({
                                             colSpan={5}
                                             className="px-6 py-12 text-center text-sm text-muted-foreground"
                                         >
-                                            Nenhuma falta encontrada no período selecionado.
+                                            Nenhuma falta encontrada no período
+                                            selecionado.
                                         </td>
                                     </tr>
                                 )}

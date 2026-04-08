@@ -28,6 +28,7 @@ interface AdminDashboardProps {
     };
     recentAttendances: Attendance[];
     dashboardTitle: string;
+    pendingJustificationsCount: number;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -38,6 +39,7 @@ export default function AdminDashboard({
     stats,
     recentAttendances,
     dashboardTitle,
+    pendingJustificationsCount,
 }: AdminDashboardProps) {
     const statCards = [
         {
