@@ -21,9 +21,19 @@
 </head>
 <body>
     <div class="header">
-        <span class="title">Calendário de Presenças Individual</span>
-        <div style="float: right;">{{ $monthName }} - {{ $employee->full_name }}</div>
-        <div style="clear: both;"></div>
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 60px; vertical-align: middle; border: none;">
+                    <img src="{{ public_path('assets/logo.png') }}" alt="Spotless HR" style="height: 30px; width: auto;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px; border: none;">
+                    <span class="title">Spotless HR - Calendário de Presenças</span>
+                </td>
+                <td style="text-align: right; vertical-align: middle; border: none;">
+                    <div>{{ $monthName }} - {{ $employee->full_name }}</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     @php
@@ -80,7 +90,7 @@
     </table>
 
     <div class="footer">
-        Gerado em {{ now()->format('d/m/Y H:i') }} | Spotlight HR
+        Gerado em {{ now()->format('d/m/Y H:i') }} | Spotless HR - Sistema de Gestão de Recursos Humanos
     </div>
 </body>
 </html>

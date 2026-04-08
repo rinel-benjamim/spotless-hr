@@ -12,6 +12,7 @@ interface SchedulesIndexProps {
     employees: Employee[];
     year: number;
     month: number;
+    canCreateSchedule: boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -24,6 +25,7 @@ export default function SchedulesIndex({
     employees,
     year,
     month,
+    canCreateSchedule,
 }: SchedulesIndexProps) {
     const monthName = format(new Date(year, month - 1), 'MMMM yyyy', {
         locale: ptBR,
@@ -80,18 +82,23 @@ export default function SchedulesIndex({
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Escalas de Trabalho</h1>
                     <div className="flex gap-2">
-                        <a href={`/schedules/export-pdf?year=${year}&month=${month}`} target="_blank">
+                        <a
+                            href={`/schedules/export-pdf?year=${year}&month=${month}`}
+                            target="_blank"
+                        >
                             <Button variant="outline">
                                 <FileText className="mr-2 size-4" />
                                 Exportar Escala Geral (PDF)
                             </Button>
                         </a>
-                        <Link href="/schedules/create">
-                            <Button>
-                                <Plus className="mr-2 size-4" />
-                                Criar Escala
-                            </Button>
-                        </Link>
+                        {canCreateSchedule && (
+                            <Link href="/schedules/create">
+                                <Button>
+                                    <Plus className="mr-2 size-4" />
+                                    Criar Escala
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                 </div>
 
@@ -137,7 +144,10 @@ export default function SchedulesIndex({
                                             {employee.shift?.name}
                                         </p>
                                     </div>
-                                    <a href={`/schedules/export-pdf?year=${year}&month=${month}&employee_id=${employee.id}`} target="_blank">
+                                    <a
+                                        href={`/schedules/export-pdf?year=${year}&month=${month}&employee_id=${employee.id}`}
+                                        target="_blank"
+                                    >
                                         <Button variant="ghost" size="sm">
                                             <FileText className="mr-2 size-4" />
                                             Exportar PDF

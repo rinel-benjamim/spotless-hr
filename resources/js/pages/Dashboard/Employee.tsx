@@ -21,6 +21,7 @@ interface EmployeeDashboardProps {
     todayAttendances: Attendance[];
     monthAttendances: Attendance[];
     message?: string;
+    dashboardTitle?: string;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -33,6 +34,7 @@ export default function EmployeeDashboard({
     todayAttendances,
     monthAttendances,
     message,
+    dashboardTitle = 'Dashboard',
 }: EmployeeDashboardProps) {
     if (message || !employee) {
         return (

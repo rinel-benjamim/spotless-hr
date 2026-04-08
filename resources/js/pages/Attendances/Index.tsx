@@ -17,7 +17,13 @@ import {
     type PaginatedData,
 } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Calendar, ChevronLeft, ChevronRight, FileText, Filter } from 'lucide-react';
+import {
+    Calendar,
+    ChevronLeft,
+    ChevronRight,
+    FileText,
+    Filter,
+} from 'lucide-react';
 import { useState } from 'react';
 
 interface AttendancesIndexProps {
@@ -28,6 +34,7 @@ interface AttendancesIndexProps {
         start_date?: string;
         end_date?: string;
     };
+    canViewAllData: boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -67,8 +74,13 @@ export default function AttendancesIndex({
     attendances,
     employees,
     filters,
+    canViewAllData,
 }: AttendancesIndexProps) {
-    const [employeeId, setEmployeeId] = useState(filters.employee_id ?? 'all');
+    const [employeeId, setEmployeeId] = useState(
+        canViewAllData
+            ? (filters.employee_id ?? 'all')
+            : (employees[0]?.id.toString() ?? ''),
+    );
     const [startDate, setStartDate] = useState(filters.start_date || '');
     const [endDate, setEndDate] = useState(filters.end_date || '');
 
@@ -88,7 +100,9 @@ export default function AttendancesIndex({
     };
 
     const handleClearFilters = () => {
-        setEmployeeId('all');
+        setEmployeeId(
+            canViewAllData ? 'all' : (employees[0]?.id.toString() ?? ''),
+        );
         setStartDate('');
         setEndDate('');
         router.get('/attendances');
@@ -96,7 +110,8 @@ export default function AttendancesIndex({
 
     const getExportUrl = (type: 'pdf' | 'excel') => {
         const params = new URLSearchParams();
-        if (employeeId && employeeId !== 'all') params.append('employee_id', employeeId);
+        if (employeeId && employeeId !== 'all')
+            params.append('employee_id', employeeId);
         if (startDate) params.append('start_date', startDate);
         if (endDate) params.append('end_date', endDate);
         return `/attendances/export-${type}?${params.toString()}`;
@@ -131,10 +146,20 @@ export default function AttendancesIndex({
                                 onValueChange={setEmployeeId}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Todos" />
+                                    <SelectValue
+                                        placeholder={
+                                            canViewAllData
+                                                ? 'Todos'
+                                                : 'Selecione'
+                                        }
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Todos</SelectItem>
+                                    {canViewAllData && (
+                                        <SelectItem value="all">
+                                            Todos
+                                        </SelectItem>
+                                    )}
                                     {employees.map((employee) => (
                                         <SelectItem
                                             key={employee.id}

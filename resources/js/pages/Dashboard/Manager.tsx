@@ -1,31 +1,38 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { type Attendance, type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { type Attendance, type BreadcrumbItem, type Employee } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
     ArrowRight,
     Clock,
     FileText,
+    LogIn,
+    LogOut,
     TrendingUp,
     UserCheck,
     Users,
 } from 'lucide-react';
+import { useState } from 'react';
 
-interface AdminDashboardProps {
+interface ManagerDashboardProps {
     stats: {
-        totalEmployees: number;
         activeEmployees: number;
         presentToday: number;
         totalHoursThisMonth: number;
-        averageDailyAttendance: number;
-        averageHoursPerEmployee: number;
-        totalAbsencesThisMonth: number;
-        totalLatesThisMonth: number;
+        monthName: string;
     };
+    employees: Employee[];
     recentAttendances: Attendance[];
     dashboardTitle: string;
 }
@@ -34,19 +41,29 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
 ];
 
-export default function AdminDashboard({
+export default function ManagerDashboard({
     stats,
+    employees,
     recentAttendances,
     dashboardTitle,
-}: AdminDashboardProps) {
+}: ManagerDashboardProps) {
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
+
+    const handleCheckInEmployee = () => {
+        if (!selectedEmployeeId) return;
+        router.post('/attendances/check-in-employee', {
+            employee_id: parseInt(selectedEmployeeId),
+        });
+    };
+
+    const handleCheckOutEmployee = () => {
+        if (!selectedEmployeeId) return;
+        router.post('/attendances/check-out-employee', {
+            employee_id: parseInt(selectedEmployeeId),
+        });
+    };
+
     const statCards = [
-        {
-            title: 'Total de Funcionários',
-            value: stats.totalEmployees,
-            icon: Users,
-            color: 'text-primary',
-            bgColor: 'bg-primary/10',
-        },
         {
             title: 'Funcionários Ativos',
             value: stats.activeEmployees,
@@ -72,17 +89,11 @@ export default function AdminDashboard({
 
     const getAttendanceTypeBadge = (type: string) => {
         return type === 'check_in' ? (
-            <Badge
-                variant="default"
-                className="bg-primary text-primary-foreground"
-            >
+            <Badge variant="default" className="bg-green-600 text-white">
                 Entrada
             </Badge>
         ) : (
-            <Badge
-                variant="secondary"
-                className="bg-secondary text-secondary-foreground"
-            >
+            <Badge variant="secondary" className="bg-blue-600 text-white">
                 Saída
             </Badge>
         );
@@ -97,18 +108,12 @@ export default function AdminDashboard({
                     <div>
                         <h1 className="text-2xl font-bold">{dashboardTitle}</h1>
                         <p className="text-muted-foreground">
-                            Visão geral do sistema de gestão de RH
+                            Gestão de equipe e presenças
                         </p>
                     </div>
-                    <a href="/dashboard/export-kpis" target="_blank">
-                        <Button variant="outline">
-                            <FileText className="mr-2 size-4" />
-                            Exportar KPIs
-                        </Button>
-                    </a>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-3">
                     {statCards.map((stat, index) => (
                         <Card key={index} className="p-6">
                             <div className="flex items-center justify-between">
@@ -132,6 +137,52 @@ export default function AdminDashboard({
                     ))}
                 </div>
 
+                <Card className="p-6">
+                    <h2 className="mb-4 text-lg font-semibold">
+                        Registar Presença de Funcionário
+                    </h2>
+                    <div className="flex flex-wrap items-end gap-4">
+                        <div className="w-64">
+                            <Select
+                                value={selectedEmployeeId}
+                                onValueChange={setSelectedEmployeeId}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecione o funcionário" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {employees.map((employee) => (
+                                        <SelectItem
+                                            key={employee.id}
+                                            value={employee.id.toString()}
+                                        >
+                                            {employee.full_name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={handleCheckInEmployee}
+                                disabled={!selectedEmployeeId}
+                                className="bg-green-600 hover:bg-green-700"
+                            >
+                                <LogIn className="mr-2 size-4" />
+                                Entrada
+                            </Button>
+                            <Button
+                                onClick={handleCheckOutEmployee}
+                                disabled={!selectedEmployeeId}
+                                variant="secondary"
+                            >
+                                <LogOut className="mr-2 size-4" />
+                                Saída
+                            </Button>
+                        </div>
+                    </div>
+                </Card>
+
                 <div className="grid gap-6 lg:grid-cols-2">
                     <Card className="p-6">
                         <div className="mb-4 flex items-center justify-between">
@@ -152,35 +203,37 @@ export default function AdminDashboard({
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {recentAttendances.map((attendance) => (
-                                    <div
-                                        key={attendance.id}
-                                        className="flex items-center justify-between rounded-lg border p-3"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div>
-                                                <p className="font-medium">
-                                                    {
-                                                        attendance.employee
-                                                            ?.full_name
-                                                    }
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {format(
-                                                        new Date(
-                                                            attendance.recorded_at,
-                                                        ),
-                                                        "dd/MM/yyyy 'às' HH:mm",
-                                                        { locale: ptBR },
-                                                    )}
-                                                </p>
+                                {recentAttendances
+                                    .slice(0, 8)
+                                    .map((attendance) => (
+                                        <div
+                                            key={attendance.id}
+                                            className="flex items-center justify-between rounded-lg border p-3"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div>
+                                                    <p className="font-medium">
+                                                        {
+                                                            attendance.employee
+                                                                ?.full_name
+                                                        }
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {format(
+                                                            new Date(
+                                                                attendance.recorded_at,
+                                                            ),
+                                                            "dd/MM/yyyy 'às' HH:mm",
+                                                            { locale: ptBR },
+                                                        )}
+                                                    </p>
+                                                </div>
                                             </div>
+                                            {getAttendanceTypeBadge(
+                                                attendance.type,
+                                            )}
                                         </div>
-                                        {getAttendanceTypeBadge(
-                                            attendance.type,
-                                        )}
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         )}
                     </Card>
@@ -190,31 +243,22 @@ export default function AdminDashboard({
                             Ações Rápidas
                         </h2>
                         <div className="grid gap-3">
-                            <Link href="/employees/create">
+                            <Link href="/employees">
                                 <Button
                                     variant="outline"
                                     className="w-full justify-start border-primary/20 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
                                 >
                                     <Users className="mr-2 size-4" />
-                                    Adicionar Funcionário
+                                    Ver Funcionários
                                 </Button>
                             </Link>
-                            <Link href="/payrolls/create">
+                            <Link href="/attendances">
                                 <Button
                                     variant="outline"
                                     className="w-full justify-start border-primary/20 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
                                 >
-                                    <Clock className="mr-2 size-4" />
-                                    Gerar Folha de Pagamento
-                                </Button>
-                            </Link>
-                            <Link href="/schedules/create">
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-start border-primary/20 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
-                                >
-                                    <TrendingUp className="mr-2 size-4" />
-                                    Criar Escala
+                                    <UserCheck className="mr-2 size-4" />
+                                    Ver Presenças
                                 </Button>
                             </Link>
                             <Link href="/reports">
@@ -222,7 +266,7 @@ export default function AdminDashboard({
                                     variant="outline"
                                     className="w-full justify-start border-primary/20 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
                                 >
-                                    <UserCheck className="mr-2 size-4" />
+                                    <FileText className="mr-2 size-4" />
                                     Ver Relatórios
                                 </Button>
                             </Link>
@@ -234,15 +278,7 @@ export default function AdminDashboard({
                     <h2 className="mb-4 text-lg font-semibold">
                         Estatísticas do Mês
                     </h2>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <div className="rounded-lg border border-primary/10 bg-card p-4 shadow-sm">
-                            <p className="text-sm text-muted-foreground">
-                                Média Presenças Diárias
-                            </p>
-                            <p className="mt-2 text-2xl font-bold text-primary">
-                                {stats.averageDailyAttendance}
-                            </p>
-                        </div>
+                    <div className="grid gap-4 md:grid-cols-2">
                         <div className="rounded-lg border border-primary/10 bg-card p-4 shadow-sm">
                             <p className="text-sm text-muted-foreground">
                                 Taxa de Presença
@@ -260,10 +296,16 @@ export default function AdminDashboard({
                         </div>
                         <div className="rounded-lg border border-primary/10 bg-card p-4 shadow-sm">
                             <p className="text-sm text-muted-foreground">
-                                Média de Horas/Funcionário
+                                Média de Horas por Funcionário
                             </p>
                             <p className="mt-2 text-2xl font-bold text-primary">
-                                {stats.averageHoursPerEmployee}h
+                                {stats.activeEmployees > 0
+                                    ? (
+                                          Number(stats.totalHoursThisMonth) /
+                                          stats.activeEmployees
+                                      ).toFixed(1)
+                                    : 0}
+                                h
                             </p>
                         </div>
                     </div>

@@ -259,7 +259,7 @@
     </div>
 
     <div class="footer">
-        Gerado automaticamente por Spotless HR em {{ now()->format('d/m/Y H:i') }}
+        Gerado automaticamente por Spotless HR - Sistema de Gestão de Recursos Humanos em {{ now()->format('d/m/Y H:i') }}
     </div>
 </body>
 </html>

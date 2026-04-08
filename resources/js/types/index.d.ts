@@ -90,7 +90,14 @@ export interface Attendance {
     updated_at: string;
 }
 
-export type EmployeeRole = 'admin' | 'manager' | 'employee' | 'washer' | 'ironer' | 'attendant' | 'driver';
+export type EmployeeRole =
+    | 'admin'
+    | 'manager'
+    | 'employee'
+    | 'washer'
+    | 'ironer'
+    | 'attendant'
+    | 'driver';
 
 export type ContractType =
     | 'full_time'
@@ -109,6 +116,7 @@ export interface Justification {
     absence_date: string | null;
     reason: string;
     justified_by: number;
+    status: 'pending' | 'approved' | 'rejected';
     employee?: Employee;
     attendance?: Attendance;
     justifiedBy?: User;

@@ -43,6 +43,7 @@ class ScheduleController extends Controller
             'employees' => $employees,
             'year' => (int) $year,
             'month' => (int) $month,
+            'canCreateSchedule' => auth()->user()->isAdmin(),
         ]);
     }
 

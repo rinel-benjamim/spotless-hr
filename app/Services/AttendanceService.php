@@ -178,6 +178,27 @@ class AttendanceService
                     ->where('type', AttendanceType::CheckIn)
                     ->exists();
 
+                $hasEarlyExit = false;
+                if ($hasCheckIn) {
+                    $earlyExitAttendance = Attendance::where('employee_id', $employee->id)
+                        ->whereDate('recorded_at', $currentDate->toDateString())
+                        ->where('type', AttendanceType::CheckOut)
+                        ->get()
+                        ->filter(fn ($att) => $this->isEarlyExit($att))
+                        ->isNotEmpty();
+
+                    if ($earlyExitAttendance) {
+                        $hasJustification = $employee->justifications()
+                            ->whereDate('absence_date', $currentDate->toDateString())
+                            ->where('status', 'approved')
+                            ->exists();
+
+                        if (! $hasJustification) {
+                            $hasEarlyExit = true;
+                        }
+                    }
+                }
+
                 if (! $hasCheckIn) {
                     $hasJustification = $employee->justifications()
                         ->whereDate('absence_date', $currentDate->toDateString())
@@ -187,6 +208,12 @@ class AttendanceService
                     $absences->push([
                         'date' => $currentDate->copy(),
                         'type' => $hasJustification ? AbsenceType::Justified : AbsenceType::Absence,
+                    ]);
+                } elseif ($hasEarlyExit) {
+                    $absences->push([
+                        'date' => $currentDate->copy(),
+                        'type' => AbsenceType::Absence,
+                        'reason' => 'Saída antecipada sem justificativa',
                     ]);
                 }
             }
@@ -207,7 +234,19 @@ class AttendanceService
             ->get();
 
         $checkIns = $attendances->where('type', AttendanceType::CheckIn);
-        $daysWorked = $checkIns->pluck('recorded_at')->map(fn ($date) => $date->format('Y-m-d'))->unique()->count();
+        $checkOuts = $attendances->where('type', AttendanceType::CheckOut);
+
+        $daysWorked = 0;
+        foreach ($checkIns as $checkIn) {
+            $checkInDate = $checkIn->recorded_at->format('Y-m-d');
+            $hasValidCheckout = $checkOuts->contains(function ($checkout) use ($checkInDate) {
+                return $checkout->recorded_at->format('Y-m-d') === $checkInDate
+                    && ! $this->isEarlyExit($checkout);
+            });
+            if ($hasValidCheckout) {
+                $daysWorked++;
+            }
+        }
 
         $lateCount = 0;
         foreach ($checkIns as $checkIn) {
@@ -216,7 +255,6 @@ class AttendanceService
             }
         }
 
-        $checkOuts = $attendances->where('type', AttendanceType::CheckOut);
         $earlyExitCount = 0;
         foreach ($checkOuts as $checkOut) {
             if ($this->isEarlyExit($checkOut)) {

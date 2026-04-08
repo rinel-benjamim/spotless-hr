@@ -6,7 +6,6 @@ use App\AttendanceType;
 use App\Models\Attendance;
 use App\Models\Employee;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -15,8 +14,12 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->canViewAllData()) {
+        if ($user->isAdmin()) {
             return $this->adminDashboard();
+        }
+
+        if ($user->isManager()) {
+            return $this->managerDashboard();
         }
 
         return $this->employeeDashboard();
@@ -25,35 +28,48 @@ class DashboardController extends Controller
     protected function adminDashboard()
     {
         $stats = $this->getAdminStats();
-        
+
         $recentAttendances = Attendance::with('employee')
             ->latest('recorded_at')
             ->limit(10)
             ->get();
 
+        $pendingJustificationsCount = Justification::where('status', 'pending')->count();
+
         return Inertia::render('Dashboard/Admin', [
             'stats' => $stats,
             'recentAttendances' => $recentAttendances,
+            'dashboardTitle' => 'Dashboard do Diretor',
+            'pendingJustificationsCount' => $pendingJustificationsCount,
         ]);
     }
 
-    public function exportKpis()
+    protected function managerDashboard()
     {
-        if (! auth()->user()->canViewAllData()) {
-            abort(403);
-        }
+        $stats = $this->getManagerStats();
 
-        $stats = $this->getAdminStats();
-        $pdf = Pdf::loadView('pdf.dashboard-kpis', compact('stats'));
-        return $pdf->download('dashboard-kpis-' . now()->format('Y-m-d') . '.pdf');
+        $employees = Employee::where('status', 'active')
+            ->with('shift')
+            ->get();
+
+        $recentAttendances = Attendance::with('employee')
+            ->latest('recorded_at')
+            ->limit(10)
+            ->get();
+
+        return Inertia::render('Dashboard/Manager', [
+            'stats' => $stats,
+            'employees' => $employees,
+            'recentAttendances' => $recentAttendances,
+            'dashboardTitle' => 'Dashboard do Gerente',
+        ]);
     }
 
-    private function getAdminStats()
+    private function getManagerStats()
     {
         $today = now()->startOfDay();
         $thisMonth = now()->startOfMonth();
 
-        $totalEmployees = Employee::count();
         $activeEmployees = Employee::where('status', 'active')->count();
 
         $presentToday = Attendance::whereDate('recorded_at', $today)
@@ -61,7 +77,6 @@ class DashboardController extends Controller
             ->distinct('employee_id')
             ->count('employee_id');
 
-        // Calculate total hours this month
         $events = Attendance::whereDate('recorded_at', '>=', $thisMonth)
             ->orderBy('employee_id')
             ->orderBy('recorded_at')
@@ -72,7 +87,6 @@ class DashboardController extends Controller
         $lastEmployeeId = null;
 
         foreach ($events as $event) {
-            // Reset check-in if employee changes
             if ($lastEmployeeId !== $event->employee_id) {
                 $currentCheckIn = null;
                 $lastEmployeeId = $event->employee_id;
@@ -89,11 +103,95 @@ class DashboardController extends Controller
         $totalHoursThisMonth = $totalMinutes / 60;
 
         return [
+            'activeEmployees' => $activeEmployees,
+            'presentToday' => $presentToday,
+            'totalHoursThisMonth' => round($totalHoursThisMonth, 2),
+            'monthName' => now()->translatedFormat('F Y'),
+        ];
+    }
+
+    public function exportKpis()
+    {
+        if (! auth()->user()->canViewAllData()) {
+            abort(403);
+        }
+
+        $stats = $this->getAdminStats();
+        $pdf = Pdf::loadView('pdf.dashboard-kpis', compact('stats'));
+
+        return $pdf->download('dashboard-kpis-'.now()->format('Y-m-d').'.pdf');
+    }
+
+    private function getAdminStats()
+    {
+        $today = now()->startOfDay();
+        $thisMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
+
+        $totalEmployees = Employee::count();
+        $activeEmployees = Employee::where('status', 'active')->count();
+
+        $presentToday = Attendance::whereDate('recorded_at', $today)
+            ->where('type', AttendanceType::CheckIn)
+            ->distinct('employee_id')
+            ->count('employee_id');
+
+        $events = Attendance::whereDate('recorded_at', '>=', $thisMonth)
+            ->orderBy('employee_id')
+            ->orderBy('recorded_at')
+            ->get();
+
+        $totalMinutes = 0;
+        $currentCheckIn = null;
+        $lastEmployeeId = null;
+
+        foreach ($events as $event) {
+            if ($lastEmployeeId !== $event->employee_id) {
+                $currentCheckIn = null;
+                $lastEmployeeId = $event->employee_id;
+            }
+
+            if ($event->type === AttendanceType::CheckIn) {
+                $currentCheckIn = $event->recorded_at;
+            } elseif ($event->type === AttendanceType::CheckOut && $currentCheckIn) {
+                $totalMinutes += $currentCheckIn->diffInMinutes($event->recorded_at);
+                $currentCheckIn = null;
+            }
+        }
+
+        $totalHoursThisMonth = $totalMinutes / 60;
+
+        $daysInMonth = now()->daysInMonth;
+        $currentDay = now()->day;
+        $averageDailyAttendance = $currentDay > 0
+            ? round($events->where('type', AttendanceType::CheckIn)->groupBy(fn ($e) => $e->recorded_at->format('Y-m-d'))->count() / $currentDay, 1)
+            : 0;
+
+        $attendanceService = new \App\Services\AttendanceService;
+        $allEmployees = Employee::where('status', 'active')->get();
+        $totalAbsences = 0;
+        $totalLates = 0;
+
+        foreach ($allEmployees as $employee) {
+            $summary = $attendanceService->getMonthlySummary($employee, now()->year, now()->month);
+            $totalAbsences += $summary['absence_count'];
+            $totalLates += $summary['late_count'];
+        }
+
+        $averageHoursPerEmployee = $activeEmployees > 0
+            ? round($totalHoursThisMonth / $activeEmployees, 1)
+            : 0;
+
+        return [
             'totalEmployees' => $totalEmployees,
             'activeEmployees' => $activeEmployees,
             'presentToday' => $presentToday,
             'totalHoursThisMonth' => round($totalHoursThisMonth, 2),
             'monthName' => now()->translatedFormat('F Y'),
+            'averageDailyAttendance' => $averageDailyAttendance,
+            'averageHoursPerEmployee' => $averageHoursPerEmployee,
+            'totalAbsencesThisMonth' => $totalAbsences,
+            'totalLatesThisMonth' => $totalLates,
         ];
     }
 
@@ -127,6 +225,7 @@ class DashboardController extends Controller
             'lastAttendance' => $lastAttendance,
             'todayAttendances' => $todayAttendances,
             'monthAttendances' => $monthAttendances,
+            'dashboardTitle' => 'Dashboard do Funcionário',
         ]);
     }
 }

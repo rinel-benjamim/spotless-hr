@@ -25,6 +25,7 @@ class AttendanceController extends Controller
             'attendances' => $attendances,
             'employees' => $employees,
             'filters' => $request->only(['employee_id', 'start_date', 'end_date']),
+            'canViewAllData' => auth()->user()->canViewAllData(),
         ]);
     }
 
@@ -36,10 +37,10 @@ class AttendanceController extends Controller
 
         $attendances = $this->getFilteredQuery($request)->latest('recorded_at')->get();
         $employee = $request->filled('employee_id') ? Employee::find($request->employee_id) : null;
-        
+
         $pdf = Pdf::loadView('pdf.attendances', compact('attendances', 'employee', 'request'));
-        
-        return $pdf->download('relatorio-presencas-' . now()->format('Y-m-d') . '.pdf');
+
+        return $pdf->download('relatorio-presencas-'.now()->format('Y-m-d').'.pdf');
     }
 
     private function getFilteredQuery(Request $request)
@@ -108,6 +109,48 @@ class AttendanceController extends Controller
     public function checkOut(Request $request)
     {
         $employeeId = auth()->user()->employee->id;
+
+        Attendance::create([
+            'employee_id' => $employeeId,
+            'type' => AttendanceType::CheckOut,
+            'recorded_at' => now(),
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Saída registada com sucesso.');
+    }
+
+    public function checkInEmployee(Request $request)
+    {
+        if (! auth()->user()->canMarkAttendance()) {
+            abort(403);
+        }
+
+        $employeeId = $request->validate([
+            'employee_id' => ['required', 'exists:employees,id'],
+        ])['employee_id'];
+
+        Attendance::create([
+            'employee_id' => $employeeId,
+            'type' => AttendanceType::CheckIn,
+            'recorded_at' => now(),
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Entrada registada com sucesso.');
+    }
+
+    public function checkOutEmployee(Request $request)
+    {
+        if (! auth()->user()->canMarkAttendance()) {
+            abort(403);
+        }
+
+        $employeeId = $request->validate([
+            'employee_id' => ['required', 'exists:employees,id'],
+        ])['employee_id'];
 
         Attendance::create([
             'employee_id' => $employeeId,

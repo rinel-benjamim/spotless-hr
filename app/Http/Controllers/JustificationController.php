@@ -23,6 +23,7 @@ class JustificationController extends Controller
 
         return Inertia::render('Justifications/Index', [
             'justifications' => $justifications,
+            'canApprove' => auth()->user()->isAdmin(),
         ]);
     }
 
@@ -64,18 +65,63 @@ class JustificationController extends Controller
         }
 
         $validated['justified_by'] = auth()->id();
+        $validated['status'] = 'pending';
 
         $justification = Justification::create($validated);
 
         ActivityLog::log(
             'justification_created',
             $justification,
-            'Justificativa criada para funcionário',
+            'Justificativa submetida para aprovação',
             ['employee_id' => $validated['employee_id']]
         );
 
         return redirect()->route('justifications.index')
-            ->with('success', 'Justificativa criada com sucesso.');
+            ->with('success', 'Justificativa submetida. Aguarde aprovação do administrador.');
+    }
+
+    public function approve(Justification $justification)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $justification->update([
+            'status' => 'approved',
+            'justified_by' => auth()->id(),
+        ]);
+
+        ActivityLog::log(
+            'justification_approved',
+            $justification,
+            'Justificativa aprovada',
+            ['employee_id' => $justification->employee_id]
+        );
+
+        return redirect()->back()
+            ->with('success', 'Justificativa aprovada com sucesso.');
+    }
+
+    public function reject(Justification $justification)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $justification->update([
+            'status' => 'rejected',
+            'justified_by' => auth()->id(),
+        ]);
+
+        ActivityLog::log(
+            'justification_rejected',
+            $justification,
+            'Justificativa rejeitada',
+            ['employee_id' => $justification->employee_id]
+        );
+
+        return redirect()->back()
+            ->with('success', 'Justificativa rejeitada.');
     }
 
     public function destroy(Justification $justification)

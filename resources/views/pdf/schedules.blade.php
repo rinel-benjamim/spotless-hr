@@ -21,9 +21,19 @@
 </head>
 <body>
     <div class="header">
-        <span class="title">Spotlight HR - Escala de Serviço</span>
-        <div style="float: right;">{{ $monthName }}</div>
-        <div style="clear: both;"></div>
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 50px; vertical-align: middle; border: none;">
+                    <img src="{{ public_path('assets/logo.png') }}" alt="Spotless HR" style="height: 25px; width: auto;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px; border: none;">
+                    <span class="title">Spotless HR - Escala de Serviço</span>
+                </td>
+                <td style="text-align: right; vertical-align: middle; border: none;">
+                    <div>{{ $monthName }}</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     @if($employee)
@@ -74,7 +84,7 @@
     </table>
 
     <div class="footer">
-        Gerado em {{ now()->format('d/m/Y H:i') }} | Spotlight HR
+        Gerado em {{ now()->format('d/m/Y H:i') }} | Spotless HR - Sistema de Gestão de Recursos Humanos
     </div>
 </body>
 </html>

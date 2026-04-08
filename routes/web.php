@@ -31,6 +31,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('attendances', [AttendanceController::class, 'store'])->name('attendances.store');
     Route::post('attendances/check-in', [AttendanceController::class, 'checkIn'])->name('attendances.check-in');
     Route::post('attendances/check-out', [AttendanceController::class, 'checkOut'])->name('attendances.check-out');
+    Route::post('attendances/check-in-employee', [AttendanceController::class, 'checkInEmployee'])->name('attendances.check-in-employee');
+    Route::post('attendances/check-out-employee', [AttendanceController::class, 'checkOutEmployee'])->name('attendances.check-out-employee');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/manager', [ReportController::class, 'managerReports'])->name('reports.manager');
@@ -45,6 +47,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('justifications/create', [JustificationController::class, 'create'])->name('justifications.create');
     Route::post('justifications', [JustificationController::class, 'store'])->name('justifications.store');
     Route::delete('justifications/{justification}', [JustificationController::class, 'destroy'])->name('justifications.destroy');
+    Route::post('justifications/{justification}/approve', [JustificationController::class, 'approve'])->name('justifications.approve');
+    Route::post('justifications/{justification}/reject', [JustificationController::class, 'reject'])->name('justifications.reject');
 
     Route::get('absences', [\App\Http\Controllers\AbsenceController::class, 'index'])->name('absences.index');
 

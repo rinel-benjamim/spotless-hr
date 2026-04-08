@@ -69,9 +69,19 @@
 </head>
 <body>
     <div class="header">
-        <span class="company-name">Spotlight HR</span>
-        <span class="report-title">Folhas de Pagamento - {{ \Carbon\Carbon::create($year, $month)->translatedFormat('F Y') }}</span>
-        <div style="clear: both;"></div>
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 60px; vertical-align: middle; border: none;">
+                    <img src="{{ public_path('assets/logo.png') }}" alt="Spotless HR" style="height: 35px; width: auto;">
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px; border: none;">
+                    <span class="company-name">Spotless HR</span>
+                </td>
+                <td style="text-align: right; vertical-align: middle; border: none;">
+                    <span class="report-title">Folhas de Pagamento - {{ \Carbon\Carbon::create($year, $month)->translatedFormat('F Y') }}</span>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <table>
@@ -140,7 +150,7 @@
     </div>
 
     <div class="footer" style="clear: both;">
-        Gerado em {{ now()->format('d/m/Y H:i') }} | Spotlight HR
+        Gerado em {{ now()->format('d/m/Y H:i') }} | Spotless HR - Sistema de Gestão de Recursos Humanos
     </div>
 </body>
 </html>

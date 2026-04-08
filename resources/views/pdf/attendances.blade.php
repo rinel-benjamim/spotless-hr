@@ -75,7 +75,7 @@
     </table>
 
     <div class="footer">
-        Spotless HR - Gestão de Presenças
+        Spotless HR - Sistema de Gestão de Recursos Humanos
     </div>
 </body>
 </html>
