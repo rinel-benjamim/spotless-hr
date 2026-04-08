@@ -178,28 +178,15 @@ class AttendanceService
                     ->where('type', AttendanceType::CheckIn)
                     ->exists();
 
-                $hasEarlyExit = false;
-                if ($hasCheckIn) {
-                    $earlyExitAttendance = Attendance::where('employee_id', $employee->id)
-                        ->whereDate('recorded_at', $currentDate->toDateString())
-                        ->where('type', AttendanceType::CheckOut)
-                        ->get()
-                        ->filter(fn ($att) => $this->isEarlyExit($att))
-                        ->isNotEmpty();
+                $checkOutsToday = Attendance::where('employee_id', $employee->id)
+                    ->whereDate('recorded_at', $currentDate->toDateString())
+                    ->where('type', AttendanceType::CheckOut)
+                    ->get();
 
-                    if ($earlyExitAttendance) {
-                        $hasJustification = $employee->justifications()
-                            ->whereDate('absence_date', $currentDate->toDateString())
-                            ->where('status', 'approved')
-                            ->exists();
+                $hasEarlyExit = $checkOutsToday->filter(fn ($att) => $this->isEarlyExit($att))->isNotEmpty();
+                $hasValidCheckout = $checkOutsToday->filter(fn ($att) => ! $this->isEarlyExit($att))->isNotEmpty();
 
-                        if (! $hasJustification) {
-                            $hasEarlyExit = true;
-                        }
-                    }
-                }
-
-                if (! $hasCheckIn) {
+                if (! $hasCheckIn && ! $hasValidCheckout) {
                     $hasJustification = $employee->justifications()
                         ->whereDate('absence_date', $currentDate->toDateString())
                         ->where('status', 'approved')
@@ -209,12 +196,32 @@ class AttendanceService
                         'date' => $currentDate->copy(),
                         'type' => $hasJustification ? AbsenceType::Justified : AbsenceType::Absence,
                     ]);
+                } elseif ($hasCheckIn && ! $hasValidCheckout) {
+                    $hasJustification = $employee->justifications()
+                        ->whereDate('absence_date', $currentDate->toDateString())
+                        ->where('status', 'approved')
+                        ->exists();
+
+                    if (! $hasJustification) {
+                        $absences->push([
+                            'date' => $currentDate->copy(),
+                            'type' => AbsenceType::Absence,
+                            'reason' => 'Saída antecipada sem justificativa',
+                        ]);
+                    }
                 } elseif ($hasEarlyExit) {
-                    $absences->push([
-                        'date' => $currentDate->copy(),
-                        'type' => AbsenceType::Absence,
-                        'reason' => 'Saída antecipada sem justificativa',
-                    ]);
+                    $hasJustification = $employee->justifications()
+                        ->whereDate('absence_date', $currentDate->toDateString())
+                        ->where('status', 'approved')
+                        ->exists();
+
+                    if (! $hasJustification) {
+                        $absences->push([
+                            'date' => $currentDate->copy(),
+                            'type' => AbsenceType::Absence,
+                            'reason' => 'Saída antecipada sem justificativa',
+                        ]);
+                    }
                 }
             }
 
@@ -248,23 +255,12 @@ class AttendanceService
             }
         }
 
-        $lateCount = 0;
-        foreach ($checkIns as $checkIn) {
-            if ($this->isLate($checkIn)) {
-                $lateCount++;
-            }
-        }
-
-        $earlyExitCount = 0;
-        foreach ($checkOuts as $checkOut) {
-            if ($this->isEarlyExit($checkOut)) {
-                $earlyExitCount++;
-            }
-        }
-
         $absences = $this->getAbsences($employee, $startDate, $endDate);
         $absenceCount = $absences->where('type', AbsenceType::Absence)->count();
         $justifiedCount = $absences->where('type', AbsenceType::Justified)->count();
+
+        $lateCount = $checkIns->filter(fn ($checkIn) => $this->isLate($checkIn))->count();
+        $earlyExitCount = $checkOuts->filter(fn ($checkOut) => $this->isEarlyExit($checkOut))->count();
 
         $totalHours = $this->calculateWorkedHours($employee, $startDate, $endDate);
 
