@@ -44,6 +44,7 @@ class ScheduleController extends Controller
             'year' => (int) $year,
             'month' => (int) $month,
             'canCreateSchedule' => auth()->user()->isAdmin(),
+            'canExportGeneral' => auth()->user()->canViewAllData(),
         ]);
     }
 

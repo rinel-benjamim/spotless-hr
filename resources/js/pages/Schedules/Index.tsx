@@ -13,6 +13,7 @@ interface SchedulesIndexProps {
     year: number;
     month: number;
     canCreateSchedule: boolean;
+    canExportGeneral: boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,6 +27,7 @@ export default function SchedulesIndex({
     year,
     month,
     canCreateSchedule,
+    canExportGeneral,
 }: SchedulesIndexProps) {
     const monthName = format(new Date(year, month - 1), 'MMMM yyyy', {
         locale: ptBR,
@@ -82,15 +84,17 @@ export default function SchedulesIndex({
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Escalas de Trabalho</h1>
                     <div className="flex gap-2">
-                        <a
-                            href={`/schedules/export-pdf?year=${year}&month=${month}`}
-                            target="_blank"
-                        >
-                            <Button variant="outline">
-                                <FileText className="mr-2 size-4" />
-                                Exportar Escala Geral (PDF)
-                            </Button>
-                        </a>
+                        {canExportGeneral && (
+                            <a
+                                href={`/schedules/export-pdf?year=${year}&month=${month}`}
+                                target="_blank"
+                            >
+                                <Button variant="outline">
+                                    <FileText className="mr-2 size-4" />
+                                    Exportar Escala Geral (PDF)
+                                </Button>
+                            </a>
+                        )}
                         {canCreateSchedule && (
                             <Link href="/schedules/create">
                                 <Button>
