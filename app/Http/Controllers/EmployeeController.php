@@ -63,6 +63,7 @@ class EmployeeController extends Controller
 
         return Inertia::render('Employees/Show', [
             'employee' => $employee,
+            'canEdit' => auth()->user()->isAdmin(),
         ]);
     }
 
@@ -79,13 +80,13 @@ class EmployeeController extends Controller
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
         $data = $request->validated();
-        
+
         // Se o role foi alterado e o funcionário tem um usuário associado, sincronizar
         if (isset($data['role']) && $employee->user) {
             $newRole = \App\EmployeeRole::from($data['role']);
             $employee->user->update(['role' => $newRole->getUserRole()]);
         }
-        
+
         $employee->update($data);
 
         return redirect()->route('employees.index')

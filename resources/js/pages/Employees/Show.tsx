@@ -7,6 +7,7 @@ import { ArrowLeft, Calendar, Pencil } from 'lucide-react';
 
 interface EmployeesShowProps {
     employee: Employee;
+    canEdit: boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -69,7 +70,10 @@ const formatDateTime = (dateTime: string) => {
     });
 };
 
-export default function EmployeesShow({ employee }: EmployeesShowProps) {
+export default function EmployeesShow({
+    employee,
+    canEdit,
+}: EmployeesShowProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={employee.full_name} />
@@ -86,12 +90,14 @@ export default function EmployeesShow({ employee }: EmployeesShowProps) {
                             {employee.full_name}
                         </h1>
                     </div>
-                    <Link href={`/employees/${employee.id}/edit`}>
-                        <Button>
-                            <Pencil className="mr-2 size-4" />
-                            Editar
-                        </Button>
-                    </Link>
+                    {canEdit && (
+                        <Link href={`/employees/${employee.id}/edit`}>
+                            <Button>
+                                <Pencil className="mr-2 size-4" />
+                                Editar
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2">
