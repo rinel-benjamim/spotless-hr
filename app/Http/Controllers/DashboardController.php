@@ -68,15 +68,11 @@ class DashboardController extends Controller
 
     private function getManagerStats()
     {
-        $today = now()->startOfDay();
         $thisMonth = now()->startOfMonth();
 
         $activeEmployees = Employee::where('status', 'active')->count();
 
-        $presentToday = Attendance::whereDate('recorded_at', $today)
-            ->where('type', AttendanceType::CheckIn)
-            ->distinct('employee_id')
-            ->count('employee_id');
+        $presentToday = $this->getPresentTodayCount();
 
         $events = Attendance::whereDate('recorded_at', '>=', $thisMonth)
             ->orderBy('employee_id')
@@ -111,6 +107,40 @@ class DashboardController extends Controller
         ];
     }
 
+    private function getPresentTodayCount(): int
+    {
+        $today = now()->toDateString();
+        $attendanceService = app(\App\Services\AttendanceService::class);
+
+        $employeesWithCheckIn = Attendance::whereDate('recorded_at', $today)
+            ->where('type', AttendanceType::CheckIn)
+            ->pluck('employee_id')
+            ->unique();
+
+        $presentToday = 0;
+        foreach ($employeesWithCheckIn as $employeeId) {
+            $employee = Employee::find($employeeId);
+            if (! $employee || ! $employee->shift) {
+                $presentToday++;
+
+                continue;
+            }
+
+            $hasValidCheckout = Attendance::where('employee_id', $employeeId)
+                ->whereDate('recorded_at', $today)
+                ->where('type', AttendanceType::CheckOut)
+                ->get()
+                ->filter(fn ($att) => ! $attendanceService->isEarlyExit($att))
+                ->isNotEmpty();
+
+            if ($hasValidCheckout) {
+                $presentToday++;
+            }
+        }
+
+        return $presentToday;
+    }
+
     public function exportKpis()
     {
         if (! auth()->user()->canViewAllData()) {
@@ -125,17 +155,13 @@ class DashboardController extends Controller
 
     private function getAdminStats()
     {
-        $today = now()->startOfDay();
         $thisMonth = now()->startOfMonth();
         $endOfMonth = now()->endOfMonth();
 
         $totalEmployees = Employee::count();
         $activeEmployees = Employee::where('status', 'active')->count();
 
-        $presentToday = Attendance::whereDate('recorded_at', $today)
-            ->where('type', AttendanceType::CheckIn)
-            ->distinct('employee_id')
-            ->count('employee_id');
+        $presentToday = $this->getPresentTodayCount();
 
         $events = Attendance::whereDate('recorded_at', '>=', $thisMonth)
             ->orderBy('employee_id')
