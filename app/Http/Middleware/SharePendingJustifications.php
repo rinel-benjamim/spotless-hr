@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SharePendingJustifications
 {
+    // Compartilha contagem de justificativas pendentes com todas as páginas
     public function handle(Request $request, Closure $next): Response
     {
         $pendingCount = 0;

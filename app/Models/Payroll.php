@@ -10,6 +10,7 @@ class Payroll extends Model
 {
     use HasFactory;
 
+    // Campos permitidos
     protected $fillable = [
         'employee_id',
         'reference_month',
@@ -25,6 +26,7 @@ class Payroll extends Model
         'notes',
     ];
 
+    // Conversões de tipo
     protected function casts(): array
     {
         return [
@@ -37,11 +39,13 @@ class Payroll extends Model
         ];
     }
 
+    // Relation: funcionário
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
+    // Verifica se já foi pago
     public function isPaid(): bool
     {
         return $this->paid_at !== null;

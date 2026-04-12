@@ -12,6 +12,7 @@ use Inertia\Inertia;
 
 class AttendanceController extends Controller
 {
+    // Lista registros de ponto com filtros
     public function index(Request $request)
     {
         $query = $this->getFilteredQuery($request);
@@ -29,6 +30,7 @@ class AttendanceController extends Controller
         ]);
     }
 
+    // Exporta registros de ponto para PDF
     public function exportPdf(Request $request)
     {
         if (! auth()->user()->canViewAllData() && $request->employee_id != auth()->user()->employee->id) {
@@ -43,6 +45,7 @@ class AttendanceController extends Controller
         return $pdf->download('relatorio-presencas-'.now()->format('Y-m-d').'.pdf');
     }
 
+    // Aplica filtros na query de attendances
     private function getFilteredQuery(Request $request)
     {
         $query = Attendance::query()->with(['employee.shift']);
@@ -64,6 +67,7 @@ class AttendanceController extends Controller
         return $query;
     }
 
+    // Registra ponto (check-in ou check-out automático)
     public function store(StoreAttendanceRequest $request)
     {
         $employeeId = $request->employee_id ?? auth()->user()->employee->id;
@@ -91,6 +95,7 @@ class AttendanceController extends Controller
             ->with('success', 'Ponto registado com sucesso.');
     }
 
+    // Registra entrada (check-in)
     public function checkIn(Request $request)
     {
         $employeeId = auth()->user()->employee->id;
@@ -106,6 +111,7 @@ class AttendanceController extends Controller
             ->with('success', 'Entrada registada com sucesso.');
     }
 
+    // Registra saída (check-out)
     public function checkOut(Request $request)
     {
         $employeeId = auth()->user()->employee->id;
@@ -121,6 +127,7 @@ class AttendanceController extends Controller
             ->with('success', 'Saída registada com sucesso.');
     }
 
+    // Registra entrada para um funcionário (gerente/admin)
     public function checkInEmployee(Request $request)
     {
         if (! auth()->user()->canMarkAttendance()) {
@@ -142,6 +149,7 @@ class AttendanceController extends Controller
             ->with('success', 'Entrada registada com sucesso.');
     }
 
+    // Registra saída para um funcionário (gerente/admin)
     public function checkOutEmployee(Request $request)
     {
         if (! auth()->user()->canMarkAttendance()) {

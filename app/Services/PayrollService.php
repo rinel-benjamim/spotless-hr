@@ -12,6 +12,7 @@ class PayrollService
         protected AttendanceService $attendanceService
     ) {}
 
+    // Gera folha de pagamento para um funcionário
     public function generatePayroll(Employee $employee, int $year, int $month): Payroll
     {
         $referenceMonth = Carbon::create($year, $month, 1);
@@ -51,6 +52,7 @@ class PayrollService
         ]);
     }
 
+    // Recalcula folha de pagamento
     public function recalculatePayroll(Payroll $payroll): Payroll
     {
         $employee = $payroll->employee;
@@ -86,6 +88,7 @@ class PayrollService
         return $payroll->fresh();
     }
 
+    // Marca folha como paga
     public function markAsPaid(Payroll $payroll): Payroll
     {
         $payroll->update(['paid_at' => now()]);
@@ -93,6 +96,7 @@ class PayrollService
         return $payroll->fresh();
     }
 
+    // Gera folhas para todos os funcionários ativos
     public function generateForAllEmployees(int $year, int $month): int
     {
         $employees = Employee::where('status', 'active')
@@ -106,9 +110,9 @@ class PayrollService
                 $count++;
             } catch (\Exception $e) {
                 \Log::error('Erro ao gerar folha para funcionário', [
-                    'employee_id' => $employee->id, 
+                    'employee_id' => $employee->id,
                     'name' => $employee->full_name,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }

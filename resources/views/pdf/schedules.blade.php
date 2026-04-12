@@ -1,3 +1,4 @@
+{{-- PDF de Escalas de Trabalho - Mostra a escala mensal de todos os funcionários --}}
 <!DOCTYPE html>
 <html>
 <head>

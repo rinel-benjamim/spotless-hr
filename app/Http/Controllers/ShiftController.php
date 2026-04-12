@@ -9,16 +9,19 @@ use Inertia\Inertia;
 
 class ShiftController extends Controller
 {
+    // Apenas admin pode acessar turnos
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
             if (! auth()->user()->isAdmin()) {
                 abort(403);
             }
+
             return $next($request);
         });
     }
 
+    // Lista todos os turnos
     public function index()
     {
         $shifts = Shift::withCount('employees')->latest()->paginate(15);
@@ -28,11 +31,13 @@ class ShiftController extends Controller
         ]);
     }
 
+    // Formulário para criar turno
     public function create()
     {
         return Inertia::render('Shifts/Create');
     }
 
+    // Cria novo turno
     public function store(StoreShiftRequest $request)
     {
         Shift::create($request->validated());
@@ -41,6 +46,7 @@ class ShiftController extends Controller
             ->with('success', 'Turno criado com sucesso.');
     }
 
+    // Detalhes de um turno
     public function show(Shift $shift)
     {
         $shift->load('employees');
@@ -50,6 +56,7 @@ class ShiftController extends Controller
         ]);
     }
 
+    // Formulário para editar turno
     public function edit(Shift $shift)
     {
         return Inertia::render('Shifts/Edit', [
@@ -57,6 +64,7 @@ class ShiftController extends Controller
         ]);
     }
 
+    // Atualiza turno
     public function update(UpdateShiftRequest $request, Shift $shift)
     {
         $shift->update($request->validated());
@@ -65,6 +73,7 @@ class ShiftController extends Controller
             ->with('success', 'Turno atualizado com sucesso.');
     }
 
+    // Remove turno
     public function destroy(Shift $shift)
     {
         $shift->delete();

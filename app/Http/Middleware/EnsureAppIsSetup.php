@@ -9,10 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureAppIsSetup
 {
+    // Garante que o setup inicial seja feito antes de acessar o sistema
     public function handle(Request $request, Closure $next): Response
     {
         // Se não há usuários admin, redirecionar para setup
-        if (!User::where('role', 'admin')->exists() && !$request->is('setup*')) {
+        if (! User::where('role', 'admin')->exists() && ! $request->is('setup*')) {
             return redirect('/setup');
         }
 

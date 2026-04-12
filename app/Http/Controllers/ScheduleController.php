@@ -14,6 +14,7 @@ use Inertia\Inertia;
 
 class ScheduleController extends Controller
 {
+    // Lista escalas de trabalho com navegação por mês/ano
     public function index(Request $request)
     {
         $year = $request->input('year', now()->year);
@@ -48,6 +49,7 @@ class ScheduleController extends Controller
         ]);
     }
 
+    // Exporta escala para PDF
     public function exportPdf(Request $request)
     {
         $year = $request->input('year', now()->year);
@@ -80,6 +82,7 @@ class ScheduleController extends Controller
         return $pdf->download("escala-{$monthName}.pdf");
     }
 
+    // Formulário para criar nova escala
     public function create()
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -95,6 +98,7 @@ class ScheduleController extends Controller
         ]);
     }
 
+    // Cria nova escala (individual ou mensal)
     public function store(StoreScheduleRequest $request)
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -126,6 +130,7 @@ class ScheduleController extends Controller
         ])->with('success', $message);
     }
 
+    // Atualiza uma escala existente
     public function update(Request $request, Schedule $schedule)
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -144,6 +149,7 @@ class ScheduleController extends Controller
             ->with('success', 'Escala atualizada com sucesso.');
     }
 
+    // Remove uma escala
     public function destroy(Schedule $schedule)
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -156,10 +162,11 @@ class ScheduleController extends Controller
             ->with('success', 'Escala removida com sucesso.');
     }
 
+    // Gera escala automática para um mês inteiro
     protected function generateMonthSchedule(int $employeeId, int $year, int $month, ?int $shiftId): void
     {
         $employee = Employee::findOrFail($employeeId);
-        $shiftId = $shiftId ?: $employee->shift_id; // Usar ?: em vez de ??
+        $shiftId = $shiftId ?: $employee->shift_id;
 
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();

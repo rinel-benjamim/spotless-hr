@@ -1,3 +1,4 @@
+{{-- PDF de Lista de Folhas de Pagamento - Overview mensal de todos os funcionários --}}
 <!DOCTYPE html>
 <html>
 <head>

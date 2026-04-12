@@ -1,3 +1,4 @@
+{{-- PDF de Recibo de Vencimento - Detalhes do salário de um funcionário --}}
 <!DOCTYPE html>
 <html>
 <head>

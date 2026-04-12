@@ -10,6 +10,7 @@ use Inertia\Inertia;
 
 class EmployeeController extends Controller
 {
+    // Lista todos os funcionários
     public function index()
     {
         $this->authorize('viewAny', Employee::class);
@@ -24,6 +25,7 @@ class EmployeeController extends Controller
         ]);
     }
 
+    // Formulário para criar funcionário
     public function create()
     {
         $this->authorize('create', Employee::class);
@@ -33,6 +35,7 @@ class EmployeeController extends Controller
         ]);
     }
 
+    // Cria novo funcionário
     public function store(StoreEmployeeRequest $request)
     {
         $data = $request->validated();
@@ -53,6 +56,7 @@ class EmployeeController extends Controller
             ->with('success', 'Funcionário criado com sucesso.');
     }
 
+    // Detalhes de um funcionário
     public function show(Employee $employee)
     {
         $this->authorize('view', $employee);
@@ -67,6 +71,7 @@ class EmployeeController extends Controller
         ]);
     }
 
+    // Formulário para editar funcionário
     public function edit(Employee $employee)
     {
         $this->authorize('update', $employee);
@@ -77,11 +82,12 @@ class EmployeeController extends Controller
         ]);
     }
 
+    // Atualiza funcionário
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
         $data = $request->validated();
 
-        // Se o role foi alterado e o funcionário tem um usuário associado, sincronizar
+        // Sincroniza role se alterado
         if (isset($data['role']) && $employee->user) {
             $newRole = \App\EmployeeRole::from($data['role']);
             $employee->user->update(['role' => $newRole->getUserRole()]);
@@ -93,6 +99,7 @@ class EmployeeController extends Controller
             ->with('success', 'Funcionário atualizado com sucesso.');
     }
 
+    // Remove funcionário
     public function destroy(Employee $employee)
     {
         $this->authorize('delete', $employee);

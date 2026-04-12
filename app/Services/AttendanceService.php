@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 
 class AttendanceService
 {
+    // Registra ponto (entrada/saída)
     public function recordAttendance(Employee $employee, AttendanceType $type, ?string $notes = null): Attendance
     {
         return Attendance::create([
@@ -21,6 +22,7 @@ class AttendanceService
         ]);
     }
 
+    // Verifica se pode fazer check-in
     public function canCheckIn(Employee $employee, ?Carbon $date = null): bool
     {
         $date = $date ?? now();
@@ -33,6 +35,7 @@ class AttendanceService
         return ! $lastCheckIn;
     }
 
+    // Verifica se pode fazer check-out
     public function canCheckOut(Employee $employee, ?Carbon $date = null): bool
     {
         $date = $date ?? now();
@@ -50,6 +53,7 @@ class AttendanceService
         return $lastCheckIn && ! $lastCheckOut;
     }
 
+    // Calcula horas trabalhadas em um período
     public function calculateWorkedHours(Employee $employee, Carbon $startDate, Carbon $endDate): float
     {
         $attendances = Attendance::where('employee_id', $employee->id)
@@ -72,6 +76,7 @@ class AttendanceService
         return $totalMinutes / 60;
     }
 
+    // Calcula horas trabalhadas em um dia
     public function calculateDailyWorkedHours(Employee $employee, Carbon $date): float
     {
         $attendances = Attendance::where('employee_id', $employee->id)
@@ -94,6 +99,7 @@ class AttendanceService
         return $totalMinutes / 60;
     }
 
+    // Verifica se é atraso
     public function isLate(Attendance $attendance): bool
     {
         if ($attendance->type !== AttendanceType::CheckIn) {
@@ -121,6 +127,7 @@ class AttendanceService
         return $recordedCarbon->gt($lateThreshold);
     }
 
+    // Verifica se é saída antecipada
     public function isEarlyExit(Attendance $attendance): bool
     {
         if ($attendance->type !== AttendanceType::CheckOut) {
@@ -145,6 +152,7 @@ class AttendanceService
         return $recordedCarbon->lt($shiftEnd);
     }
 
+    // Verifica se tem justificativa aprovada
     public function isJustified(Attendance $attendance): bool
     {
         return $attendance->employee->justifications()
@@ -159,6 +167,7 @@ class AttendanceService
             ->exists();
     }
 
+    // Lista ausências em um período
     public function getAbsences(Employee $employee, Carbon $startDate, Carbon $endDate): Collection
     {
         $absences = collect();
@@ -231,6 +240,7 @@ class AttendanceService
         return $absences;
     }
 
+    // Resumo mensal de attendances
     public function getMonthlySummary(Employee $employee, int $year, int $month): array
     {
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();

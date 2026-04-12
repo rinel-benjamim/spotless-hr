@@ -1,3 +1,4 @@
+{{-- PDF de KPIs do Dashboard - Métricas gerais da empresa --}}
 <!DOCTYPE html>
 <html>
 <head>

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ActivityLog extends Model
 {
+    // Campos permitidos
     protected $fillable = [
         'user_id',
         'action',
@@ -17,6 +18,7 @@ class ActivityLog extends Model
         'ip_address',
     ];
 
+    // Conversões de tipo
     protected function casts(): array
     {
         return [
@@ -24,11 +26,13 @@ class ActivityLog extends Model
         ];
     }
 
+    // Relation: usuário que realizou a ação
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    // Cria um novo log de atividade
     public static function log(string $action, ?Model $model = null, ?string $description = null, ?array $properties = null): self
     {
         return self::create([

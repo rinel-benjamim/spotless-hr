@@ -12,6 +12,7 @@ class Attendance extends Model
 {
     use HasFactory;
 
+    // Campos permitidos
     protected $fillable = [
         'employee_id',
         'type',
@@ -19,6 +20,7 @@ class Attendance extends Model
         'notes',
     ];
 
+    // Conversões de tipo
     protected function casts(): array
     {
         return [
@@ -27,11 +29,13 @@ class Attendance extends Model
         ];
     }
 
+    // Relation: funcionário
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
+    // Relation: justificativa associada
     public function justification(): HasOne
     {
         return $this->hasOne(Justification::class);

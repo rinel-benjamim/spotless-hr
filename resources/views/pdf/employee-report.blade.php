@@ -1,3 +1,4 @@
+{{-- PDF de Relatório de Funcionário - Histórico de ponto e métricas mensais --}}
 <!DOCTYPE html>
 <html>
 <head>

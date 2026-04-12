@@ -16,6 +16,7 @@ class ReportController extends Controller
         protected AttendanceService $attendanceService
     ) {}
 
+    // Lista funcionários para gerar relatórios
     public function index(Request $request)
     {
         if (! auth()->user()->canViewAllData()) {
@@ -29,6 +30,7 @@ class ReportController extends Controller
         ]);
     }
 
+    // Lista relatórios do gerente
     public function managerReports(Request $request)
     {
         if (! auth()->user()->isManager()) {
@@ -44,6 +46,7 @@ class ReportController extends Controller
         ]);
     }
 
+    // Lista relatórios do admin
     public function adminReports(Request $request)
     {
         if (! auth()->user()->isAdmin()) {
@@ -59,6 +62,7 @@ class ReportController extends Controller
         ]);
     }
 
+    // Cria novo relatório
     public function createReport(Request $request)
     {
         if (! auth()->user()->isManager()) {
@@ -85,14 +89,15 @@ class ReportController extends Controller
         return redirect()->back()->with('success', 'Relatório criado com sucesso.');
     }
 
+    // Relatório de um funcionário
     public function employee(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);
 
         $year = (int) $request->input('year', now()->year);
         $month = (int) $request->input('month', now()->month);
-        
-        // Validar valores de ano e mês
+
+        // Valida ano e mês
         $year = max(2020, min(2030, $year));
         $month = max(1, min(12, $month));
 
@@ -115,6 +120,7 @@ class ReportController extends Controller
         ]);
     }
 
+    // Exporta relatório para PDF
     public function exportEmployeePdf(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);
@@ -134,18 +140,19 @@ class ReportController extends Controller
         $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
 
         $pdf = Pdf::loadView('pdf.employee-report', compact('employee', 'attendances', 'summary', 'year', 'month', 'monthName'));
-        
+
         return $pdf->download("relatorio-{$employee->employee_code}-{$monthName}.pdf");
     }
 
+    // Calendário de presença
     public function calendar(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);
 
         $year = (int) $request->input('year', now()->year);
         $month = (int) $request->input('month', now()->month);
-        
-        // Validar valores de ano e mês
+
+        // Valida ano e mês
         $year = max(2020, min(2030, $year));
         $month = max(1, min(12, $month));
 
@@ -168,6 +175,7 @@ class ReportController extends Controller
         ]);
     }
 
+    // Exporta calendário para PDF
     public function exportCalendarPdf(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);
@@ -187,7 +195,7 @@ class ReportController extends Controller
         $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
 
         $pdf = Pdf::loadView('pdf.employee-calendar', compact('employee', 'attendances', 'absences', 'year', 'month', 'monthName'));
-        
+
         return $pdf->download("calendario-{$employee->employee_code}-{$monthName}.pdf");
     }
 }

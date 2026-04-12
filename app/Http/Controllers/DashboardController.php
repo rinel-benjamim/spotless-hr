@@ -11,6 +11,7 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
+    // Redireciona para o dashboard correto conforme o tipo de usuário
     public function index()
     {
         $user = auth()->user();
@@ -26,6 +27,7 @@ class DashboardController extends Controller
         return $this->employeeDashboard();
     }
 
+    // Dashboard do Administrador (Diretor) - métricas completas
     protected function adminDashboard()
     {
         $stats = $this->getAdminStats();
@@ -45,6 +47,7 @@ class DashboardController extends Controller
         ]);
     }
 
+    // Dashboard do Gerente - métricas limitadas
     protected function managerDashboard()
     {
         $stats = $this->getManagerStats();
@@ -66,6 +69,7 @@ class DashboardController extends Controller
         ]);
     }
 
+    // Calcula métricas para o dashboard do gerente
     private function getManagerStats()
     {
         $thisMonth = now()->startOfMonth();
@@ -107,6 +111,7 @@ class DashboardController extends Controller
         ];
     }
 
+    // Conta funcionários presentes hoje (com check-out válido)
     private function getPresentTodayCount(): int
     {
         $today = now()->toDateString();
@@ -141,6 +146,7 @@ class DashboardController extends Controller
         return $presentToday;
     }
 
+    // Exporta KPIs do dashboard para PDF
     public function exportKpis()
     {
         if (! auth()->user()->canViewAllData()) {
@@ -153,6 +159,7 @@ class DashboardController extends Controller
         return $pdf->download('dashboard-kpis-'.now()->format('Y-m-d').'.pdf');
     }
 
+    // Calcula métricas completas para o dashboard do administrador
     private function getAdminStats()
     {
         $thisMonth = now()->startOfMonth();
@@ -222,6 +229,7 @@ class DashboardController extends Controller
         ];
     }
 
+    // Dashboard do Funcionário - histórico de ponto pessoal
     protected function employeeDashboard()
     {
         $employee = auth()->user()->employee;

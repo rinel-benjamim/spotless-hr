@@ -10,6 +10,7 @@ class Justification extends Model
 {
     use HasFactory;
 
+    // Campos permitidos
     protected $fillable = [
         'attendance_id',
         'employee_id',
@@ -19,6 +20,7 @@ class Justification extends Model
         'justified_by',
     ];
 
+    // Conversões de tipo
     protected function casts(): array
     {
         return [
@@ -26,16 +28,19 @@ class Justification extends Model
         ];
     }
 
+    // Relation: attendance associada
     public function attendance(): BelongsTo
     {
         return $this->belongsTo(Attendance::class);
     }
 
+    // Relation: funcionário
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
+    // Relation: quem justificou
     public function justifiedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'justified_by');

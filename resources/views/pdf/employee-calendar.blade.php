@@ -1,3 +1,4 @@
+{{-- PDF de Calendário de Presenças - Visualização mensal estilo calendário --}}
 <!DOCTYPE html>
 <html>
 <head>

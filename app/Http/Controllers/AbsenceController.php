@@ -11,6 +11,7 @@ use Inertia\Inertia;
 
 class AbsenceController extends Controller
 {
+    // Lista ausências com filtros de data
     public function index(Request $request, AttendanceService $attendanceService)
     {
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : now()->startOfMonth();
@@ -40,7 +41,7 @@ class AbsenceController extends Controller
             }
         }
 
-        // Sort by date desc
+        // Ordena por data decrescente
         $allAbsences = $allAbsences->sortByDesc('date')->values();
 
         $pendingJustificationsCount = auth()->user()->isAdmin()

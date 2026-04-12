@@ -10,6 +10,7 @@ use Inertia\Inertia;
 
 class JustificationController extends Controller
 {
+    // Lista justificativas com filtros
     public function index()
     {
         $query = Justification::with(['employee', 'attendance', 'justifiedBy']);
@@ -27,6 +28,7 @@ class JustificationController extends Controller
         ]);
     }
 
+    // Formulário para criar justificativa
     public function create(Request $request)
     {
         $employeeId = $request->query('employee_id');
@@ -49,6 +51,7 @@ class JustificationController extends Controller
         ]);
     }
 
+    // Cria nova justificativa (status: pending)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -80,6 +83,7 @@ class JustificationController extends Controller
             ->with('success', 'Justificativa submetida. Aguarde aprovação do administrador.');
     }
 
+    // Aprova justificativa (admin)
     public function approve(Justification $justification)
     {
         if (! auth()->user()->isAdmin()) {
@@ -102,6 +106,7 @@ class JustificationController extends Controller
             ->with('success', 'Justificativa aprovada com sucesso.');
     }
 
+    // Rejeita justificativa (admin)
     public function reject(Justification $justification)
     {
         if (! auth()->user()->isAdmin()) {
@@ -124,6 +129,7 @@ class JustificationController extends Controller
             ->with('success', 'Justificativa rejeitada.');
     }
 
+    // Remove justificativa
     public function destroy(Justification $justification)
     {
         if (! auth()->user()->canManageEmployees()) {

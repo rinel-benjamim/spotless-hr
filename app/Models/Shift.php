@@ -10,6 +10,7 @@ class Shift extends Model
 {
     use HasFactory;
 
+    // Campos permitidos
     protected $fillable = [
         'name',
         'start_time',
@@ -18,6 +19,7 @@ class Shift extends Model
         'description',
     ];
 
+    // Conversões de tipo
     protected function casts(): array
     {
         return [
@@ -25,6 +27,7 @@ class Shift extends Model
         ];
     }
 
+    // Relation: funcionários com este turno
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);

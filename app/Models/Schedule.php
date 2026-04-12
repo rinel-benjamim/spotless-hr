@@ -10,6 +10,7 @@ class Schedule extends Model
 {
     use HasFactory;
 
+    // Campos permitidos
     protected $fillable = [
         'employee_id',
         'date',
@@ -18,6 +19,7 @@ class Schedule extends Model
         'notes',
     ];
 
+    // Conversões de tipo
     protected function casts(): array
     {
         return [
@@ -26,11 +28,13 @@ class Schedule extends Model
         ];
     }
 
+    // Relation: funcionário
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
+    // Relation: turno
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);

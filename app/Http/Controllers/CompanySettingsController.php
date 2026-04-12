@@ -9,6 +9,7 @@ use Inertia\Inertia;
 
 class CompanySettingsController extends Controller
 {
+    // Formulário de configurações da empresa
     public function edit()
     {
         if (! auth()->user()->isAdmin()) {
@@ -26,6 +27,7 @@ class CompanySettingsController extends Controller
         ]);
     }
 
+    // Atualiza configurações da empresa
     public function update(Request $request)
     {
         if (! auth()->user()->isAdmin()) {

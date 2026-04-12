@@ -11,11 +11,13 @@ use Inertia\Inertia;
 
 class SetupController extends Controller
 {
+    // Página inicial de configuração (primeiro acesso)
     public function index()
     {
         return Inertia::render('Setup/Index');
     }
 
+    // Cria o primeiro administrador do sistema
     public function store(Request $request)
     {
         $request->validate([

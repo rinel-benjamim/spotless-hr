@@ -10,6 +10,7 @@ class Report extends Model
 {
     use HasFactory;
 
+    // Campos permitidos
     protected $fillable = [
         'created_by',
         'title',
@@ -21,6 +22,7 @@ class Report extends Model
         'generated_at',
     ];
 
+    // Conversões de tipo
     protected function casts(): array
     {
         return [
@@ -29,6 +31,7 @@ class Report extends Model
         ];
     }
 
+    // Relation: criador do relatório
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

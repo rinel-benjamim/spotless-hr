@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CompanySetting extends Model
 {
+    // Campos permitidos
     protected $fillable = [
         'company_name',
         'logo_path',
@@ -17,6 +18,7 @@ class CompanySetting extends Model
         'early_exit_deduction_amount',
     ];
 
+    // Obtém as configurações atuais
     public static function current(): ?self
     {
         return self::first();

@@ -15,10 +15,12 @@ class Employee extends Model
 {
     use HasFactory, SoftDeletes;
 
+    // Campos temporários para criação
     public ?string $temp_password = null;
 
     public ?string $email = null;
 
+    // Campos permitidos em mass assignment
     protected $fillable = [
         'user_id',
         'employee_code',
@@ -32,6 +34,7 @@ class Employee extends Model
         'status',
     ];
 
+    // Conversões de tipo automático
     protected function casts(): array
     {
         return [
@@ -44,14 +47,13 @@ class Employee extends Model
         ];
     }
 
+    // Converte roles antigos para novos
     protected static function boot()
     {
         parent::boot();
-        
+
         static::saving(function ($employee) {
-            // Ensure role is valid before saving
             if (is_string($employee->role)) {
-                // Convert old roles to new system if needed
                 $roleMapping = [
                     'operator' => EmployeeRole::Employee,
                     'washer' => EmployeeRole::Employee,
@@ -60,7 +62,7 @@ class Employee extends Model
                     'delivery_driver' => EmployeeRole::Employee,
                     'customer_service' => EmployeeRole::Employee,
                 ];
-                
+
                 if (isset($roleMapping[$employee->role])) {
                     $employee->role = $roleMapping[$employee->role];
                 }
@@ -68,41 +70,49 @@ class Employee extends Model
         });
     }
 
+    // Relation: usuário associado
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    // Relation: turno padrão
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);
     }
 
+    // Relation: registros de ponto
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
     }
 
+    // Relation: justificativas
     public function justifications(): HasMany
     {
         return $this->hasMany(Justification::class);
     }
 
+    // Relation: folhas de pagamento
     public function payrolls(): HasMany
     {
         return $this->hasMany(Payroll::class);
     }
 
+    // Relation: escalas
     public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class);
     }
 
+    // Verifica se funcionário está ativo
     public function isActive(): bool
     {
         return $this->status === EmployeeStatus::Active;
     }
 
+    // Verifica se é gerente
     public function isManager(): bool
     {
         return $this->role === EmployeeRole::Manager;

@@ -13,6 +13,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
+    // Campos permitidos
     protected $fillable = [
         'name',
         'email',
@@ -20,6 +21,7 @@ class User extends Authenticatable
         'role',
     ];
 
+    // Campos ocultos (serialização)
     protected $hidden = [
         'password',
         'two_factor_secret',
@@ -27,6 +29,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    // Conversões de tipo
     protected function casts(): array
     {
         return [
@@ -37,41 +40,49 @@ class User extends Authenticatable
         ];
     }
 
+    // Relation: funcionário associado
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class);
     }
 
+    // Verifica se é admin
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;
     }
 
+    // Verifica se é gerente
     public function isManager(): bool
     {
         return $this->role === UserRole::Manager;
     }
 
+    // Verifica se é funcionário
     public function isEmployee(): bool
     {
         return $this->role === UserRole::Employee;
     }
 
+    // Verifica se pode excluir outro usuário
     public function canDelete(User $target): bool
     {
         return $this->role->canDelete($target->role);
     }
 
+    // Verifica se pode gerenciar funcionários
     public function canManageEmployees(): bool
     {
         return $this->role->canManageEmployees();
     }
 
+    // Verifica se pode ver todos os dados
     public function canViewAllData(): bool
     {
         return $this->role->canViewAllData();
     }
 
+    // Verifica se pode marcar ponto
     public function canMarkAttendance(): bool
     {
         return $this->role->canMarkAttendance();

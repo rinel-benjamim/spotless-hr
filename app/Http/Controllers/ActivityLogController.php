@@ -8,6 +8,7 @@ use Inertia\Inertia;
 
 class ActivityLogController extends Controller
 {
+    // Lista logs de atividade (apenas admin)
     public function index(Request $request)
     {
         if (! auth()->user()->isAdmin()) {

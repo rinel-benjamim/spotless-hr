@@ -1,3 +1,4 @@
+{{-- PDF de Registros de Ponto - Listacheck-ins e check-outs de um período --}}
 <!DOCTYPE html>
 <html>
 <head>
