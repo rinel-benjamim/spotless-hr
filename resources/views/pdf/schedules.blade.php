@@ -12,8 +12,9 @@
         th { background: #f8fafc; text-align: center; padding: 4px; border: 1px solid #e2e8f0; color: #475569; font-size: 8px; }
         td { padding: 4px; border: 1px solid #e2e8f0; text-align: center; height: 30px; }
         .employee-name { text-align: left; width: 120px; font-weight: bold; background: #f8fafc; }
-        .day-off { background: #f1f5f9; color: #94a3b8; }
-        .working-day { background: #ffffff; }
+        .day-off { background: #2563eb; color: #ffffff; }
+        .working-day { background: #16a34a; color: #ffffff; }
+        .no-schedule { background: #ffffff; color: #6b7280; }
         .shift-name { font-size: 7px; display: block; }
         .footer { margin-top: 15px; text-align: center; color: #94a3b8; font-size: 8px; }
         @page { margin: 1cm; }
@@ -74,8 +75,10 @@
                                 <span style="font-weight: bold;">{{ $schedule->shift->name ?? 'S' }}</span>
                                 <span class="shift-name">{{ substr($schedule->shift->start_time ?? '', 0, 5) }}</span>
                             </td>
-                        @else
+                        @elseif($schedule && !$schedule->is_working_day)
                             <td class="day-off">FOLGA</td>
+                        @else
+                            <td class="no-schedule"></td>
                         @endif
                     @endfor
                 </tr>

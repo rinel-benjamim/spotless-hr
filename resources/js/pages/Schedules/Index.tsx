@@ -66,14 +66,14 @@ export default function SchedulesIndex({
         const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
         if (!schedule) {
-            return isWeekend ? 'bg-muted' : 'bg-card';
+            return 'bg-white text-gray-500 border-gray-300';
         }
 
         if (schedule.is_working_day) {
-            return 'bg-primary/10 text-primary border-primary/20';
+            return 'bg-green-600 text-white border-green-700';
         }
 
-        return 'bg-muted text-muted-foreground';
+        return 'bg-blue-600 text-white border-blue-700';
     };
 
     return (
@@ -212,15 +212,15 @@ export default function SchedulesIndex({
                     <h3 className="mb-2 font-semibold">Legenda:</h3>
                     <div className="flex flex-wrap gap-4 text-sm">
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded border border-primary/20 bg-primary/10"></div>
+                            <div className="size-4 rounded border border-green-700 bg-green-600"></div>
                             <span>Dia de Trabalho</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded border bg-muted"></div>
+                            <div className="size-4 rounded border border-blue-700 bg-blue-600"></div>
                             <span>Folga / Fim de Semana</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded border bg-card"></div>
+                            <div className="size-4 rounded border border-gray-300 bg-white"></div>
                             <span>Sem Escala</span>
                         </div>
                     </div>
