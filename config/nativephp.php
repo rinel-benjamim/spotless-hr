@@ -167,7 +167,7 @@ return [
         'php artisan optimize', // Run another command before the build
     ],
     'postbuild' => [
-        'npm run release', // Run a command after the build
+        // 'npm run release', // Run a command after the build
     ],
 
     /**
