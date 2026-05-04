@@ -185,7 +185,10 @@ class AttendanceService
                 $hasCheckIn = Attendance::where('employee_id', $employee->id)
                     ->whereDate('recorded_at', $currentDate->toDateString())
                     ->where('type', AttendanceType::CheckIn)
-                    ->exists();
+                    ->get();
+
+                $checkInOnTime = $hasCheckIn->firstWhere(fn ($att) => ! $this->isLate($att));
+                $hasLateCheckIn = $hasCheckIn->filter(fn ($att) => $this->isLate($att))->isNotEmpty();
 
                 $checkOutsToday = Attendance::where('employee_id', $employee->id)
                     ->whereDate('recorded_at', $currentDate->toDateString())
@@ -195,7 +198,7 @@ class AttendanceService
                 $hasEarlyExit = $checkOutsToday->filter(fn ($att) => $this->isEarlyExit($att))->isNotEmpty();
                 $hasValidCheckout = $checkOutsToday->filter(fn ($att) => ! $this->isEarlyExit($att))->isNotEmpty();
 
-                if (! $hasCheckIn && ! $hasValidCheckout) {
+                if (! $hasCheckIn->isNotEmpty() && ! $hasValidCheckout) {
                     $hasJustification = $employee->justifications()
                         ->whereDate('absence_date', $currentDate->toDateString())
                         ->where('status', 'approved')
@@ -205,7 +208,20 @@ class AttendanceService
                         'date' => $currentDate->copy(),
                         'type' => $hasJustification ? AbsenceType::Justified : AbsenceType::Absence,
                     ]);
-                } elseif ($hasCheckIn && ! $hasValidCheckout) {
+                } elseif ($hasCheckIn->isNotEmpty() && $hasLateCheckIn && ! $hasValidCheckout) {
+                    $hasJustification = $employee->justifications()
+                        ->whereDate('absence_date', $currentDate->toDateString())
+                        ->where('status', 'approved')
+                        ->exists();
+
+                    if (! $hasJustification) {
+                        $absences->push([
+                            'date' => $currentDate->copy(),
+                            'type' => AbsenceType::Absence,
+                            'reason' => 'Atraso sem justificativa',
+                        ]);
+                    }
+                } elseif ($hasCheckIn->isNotEmpty() && ! $hasValidCheckout) {
                     $hasJustification = $employee->justifications()
                         ->whereDate('absence_date', $currentDate->toDateString())
                         ->where('status', 'approved')
@@ -256,11 +272,15 @@ class AttendanceService
         $daysWorked = 0;
         foreach ($checkIns as $checkIn) {
             $checkInDate = $checkIn->recorded_at->format('Y-m-d');
+
+            $hasLateCheckIn = $this->isLate($checkIn);
+
             $hasValidCheckout = $checkOuts->contains(function ($checkout) use ($checkInDate) {
                 return $checkout->recorded_at->format('Y-m-d') === $checkInDate
                     && ! $this->isEarlyExit($checkout);
             });
-            if ($hasValidCheckout) {
+
+            if ($hasValidCheckout && ! $hasLateCheckIn) {
                 $daysWorked++;
             }
         }
