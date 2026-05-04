@@ -13,7 +13,7 @@ enum AbsenceType: string
         return match ($this) {
             self::Absence => 'Falta',
             self::Late => 'Atraso',
-            self::Justified => 'Justificado',
+            self::Justified => 'Falta Justificada',
         };
     }
 }
