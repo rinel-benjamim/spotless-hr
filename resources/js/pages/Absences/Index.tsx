@@ -1,6 +1,14 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
@@ -29,6 +37,7 @@ interface AbsencesIndexProps {
     };
     employees: Employee[];
     pendingJustificationsCount?: number;
+    isAdmin?: boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -47,9 +56,13 @@ export default function AbsencesIndex({
     filters,
     employees,
     pendingJustificationsCount = 0,
+    isAdmin = false,
 }: AbsencesIndexProps) {
     const [startDate, setStartDate] = useState(filters.start_date);
     const [endDate, setEndDate] = useState(filters.end_date);
+    const [selectedAbsence, setSelectedAbsence] = useState<Absence | null>(
+        null,
+    );
 
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
@@ -166,12 +179,101 @@ export default function AbsencesIndex({
                                                 }`}
                                             >
                                                 {absence.type === 'justified'
-                                                    ? 'Justificada'
+                                                    ? 'Falta Justificada'
                                                     : 'Falta'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            {absence.type !== 'justified' && (
+                                            {absence.type === 'justified' ? (
+                                                <span className="text-sm text-muted-foreground">
+                                                    -
+                                                </span>
+                                            ) : isAdmin ? (
+                                                <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                setSelectedAbsence(
+                                                                    absence,
+                                                                )
+                                                            }
+                                                        >
+                                                            <UserCheck className="mr-2 size-4" />
+                                                            Ver Detalhes
+                                                        </Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>
+                                                                Detalhes da
+                                                                Falta
+                                                            </DialogTitle>
+                                                            <DialogDescription>
+                                                                Informações
+                                                                sobre a falta do
+                                                                funcionário
+                                                            </DialogDescription>
+                                                        </DialogHeader>
+                                                        <div className="space-y-4 py-4">
+                                                            <div>
+                                                                <Label className="text-muted-foreground">
+                                                                    Funcionário
+                                                                </Label>
+                                                                <p className="font-medium">
+                                                                    {
+                                                                        selectedAbsence
+                                                                            ?.employee
+                                                                            .full_name
+                                                                    }
+                                                                </p>
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    {
+                                                                        selectedAbsence
+                                                                            ?.employee
+                                                                            .employee_code
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <Label className="text-muted-foreground">
+                                                                    Data
+                                                                </Label>
+                                                                <p className="font-medium">
+                                                                    {selectedAbsence &&
+                                                                        formatDate(
+                                                                            selectedAbsence.date,
+                                                                        )}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <Label className="text-muted-foreground">
+                                                                    Dia da
+                                                                    Semana
+                                                                </Label>
+                                                                <p className="font-medium capitalize">
+                                                                    {selectedAbsence &&
+                                                                        getDayName(
+                                                                            selectedAbsence.date,
+                                                                        )}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <Label className="text-muted-foreground">
+                                                                    Status
+                                                                </Label>
+                                                                <p className="font-medium">
+                                                                    {selectedAbsence?.type ===
+                                                                    'justified'
+                                                                        ? 'Falta Justificada'
+                                                                        : 'Falta'}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </DialogContent>
+                                                </Dialog>
+                                            ) : (
                                                 <Link
                                                     href={`/justifications/create?employee_id=${absence.employee.id}&absence_date=${absence.date}`}
                                                 >

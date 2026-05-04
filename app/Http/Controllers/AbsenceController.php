@@ -48,6 +48,8 @@ class AbsenceController extends Controller
             ? Justification::where('status', 'pending')->count()
             : 0;
 
+        $isAdmin = auth()->user()->isAdmin();
+
         return Inertia::render('Absences/Index', [
             'absences' => $allAbsences,
             'filters' => [
@@ -58,6 +60,7 @@ class AbsenceController extends Controller
                 ? Employee::select('id', 'full_name')->get()
                 : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name')->get(),
             'pendingJustificationsCount' => $pendingJustificationsCount,
+            'isAdmin' => $isAdmin,
         ]);
     }
 }

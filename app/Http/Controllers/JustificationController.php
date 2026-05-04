@@ -31,18 +31,19 @@ class JustificationController extends Controller
     // Formulário para criar justificativa
     public function create(Request $request)
     {
-        $employeeId = $request->query('employee_id');
-
-        if (! auth()->user()->canViewAllData()) {
-            $employeeId = auth()->user()->employee->id;
+        // Apenas funcionários podem criar justificativas
+        // Admin e Manager não podem criar justificativas para ninguém
+        if (auth()->user()->isAdmin() || auth()->user()->isManager()) {
+            abort(403, 'Apenas funcionários podem justificar faltas.');
         }
 
+        $employeeId = auth()->user()->employee->id;
         $absenceDate = $request->query('absence_date');
-        $employee = $employeeId ? Employee::findOrFail($employeeId) : null;
+        $employee = Employee::findOrFail($employeeId);
 
-        $employees = auth()->user()->canViewAllData()
-            ? Employee::select('id', 'full_name', 'employee_code')->orderBy('full_name')->get()
-            : Employee::where('id', auth()->user()->employee->id)->select('id', 'full_name', 'employee_code')->get();
+        $employees = Employee::where('id', $employeeId)
+            ->select('id', 'full_name', 'employee_code')
+            ->get();
 
         return Inertia::render('Justifications/Create', [
             'employees' => $employees,
@@ -54,21 +55,37 @@ class JustificationController extends Controller
     // Cria nova justificativa (status: pending)
     public function store(Request $request)
     {
+        // Apenas funcionários podem criar justificativas
+        if (auth()->user()->isAdmin() || auth()->user()->isManager()) {
+            abort(403, 'Apenas funcionários podem justificar faltas.');
+        }
+
         $validated = $request->validate([
             'employee_id' => ['required', 'exists:employees,id'],
             'attendance_id' => ['nullable', 'exists:attendances,id'],
             'absence_date' => ['nullable', 'date'],
             'reason' => ['required', 'string', 'max:1000'],
+            'attachment' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
         ]);
 
-        if (! auth()->user()->canViewAllData()) {
-            if ($validated['employee_id'] != auth()->user()->employee->id) {
-                abort(403);
-            }
+        // Funcionário só pode justificar para si mesmo
+        $employeeId = auth()->user()->employee->id;
+        if ($validated['employee_id'] != $employeeId) {
+            abort(403, 'Apenas pode justificar as suas próprias faltas.');
+        }
+
+        // Processar anexo (opcional)
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $attachmentPath = $file->store('justifications', 'public');
         }
 
         $validated['justified_by'] = auth()->id();
         $validated['status'] = 'pending';
+        if ($attachmentPath) {
+            $validated['attachment_path'] = $attachmentPath;
+        }
 
         $justification = Justification::create($validated);
 
