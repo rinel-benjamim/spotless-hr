@@ -79,7 +79,11 @@ class ScheduleController extends Controller
         $pdf = Pdf::loadView('pdf.schedules', compact('schedules', 'year', 'month', 'employee', 'monthName'))
             ->setPaper('a4', 'landscape');
 
-        return $pdf->download("escala-{$monthName}.pdf");
+        $filename = $employee
+            ? 'Escala_'.$employee->full_name.'_'.$year.'-'.str_pad($month, 2, '0', STR_PAD_LEFT).'.pdf'
+            : 'Escala_Geral_'.$year.'-'.str_pad($month, 2, '0', STR_PAD_LEFT).'.pdf';
+
+        return $pdf->download($filename);
     }
 
     // Formulário para criar nova escala

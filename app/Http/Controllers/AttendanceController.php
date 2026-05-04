@@ -42,7 +42,11 @@ class AttendanceController extends Controller
 
         $pdf = Pdf::loadView('pdf.attendances', compact('attendances', 'employee', 'request'));
 
-        return $pdf->download('relatorio-presencas-'.now()->format('Y-m-d').'.pdf');
+        $filename = $employee
+            ? 'Presencas_'.$employee->full_name.'_'.now()->format('Y-m').'.pdf'
+            : 'Presencas_Geral_'.now()->format('Y-m').'.pdf';
+
+        return $pdf->download($filename);
     }
 
     // Aplica filtros na query de attendances

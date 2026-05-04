@@ -156,7 +156,7 @@ class DashboardController extends Controller
         $stats = $this->getAdminStats();
         $pdf = Pdf::loadView('pdf.dashboard-kpis', compact('stats'));
 
-        return $pdf->download('dashboard-kpis-'.now()->format('Y-m-d').'.pdf');
+        return $pdf->download('Dashboard_KPIs_'.now()->format('Y-m').'.pdf');
     }
 
     // Calcula métricas completas para o dashboard do administrador
