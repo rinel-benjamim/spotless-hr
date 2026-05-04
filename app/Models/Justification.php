@@ -18,6 +18,7 @@ class Justification extends Model
         'reason',
         'status',
         'justified_by',
+        'attachment_path',
     ];
 
     // Conversões de tipo

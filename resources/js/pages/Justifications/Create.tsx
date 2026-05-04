@@ -34,15 +34,23 @@ export default function JustificationsCreate({
     selectedEmployee,
     absenceDate,
 }: JustificationsCreateProps) {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, transform } = useForm({
         employee_id: selectedEmployee?.id?.toString() || '',
         absence_date: absenceDate || '',
         reason: '',
+        attachment: null as File | null,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/justifications');
+        post('/justifications', {
+            forceFormData: true,
+        });
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setData('attachment', file);
     };
 
     return (
@@ -114,6 +122,20 @@ export default function JustificationsCreate({
                                 placeholder="Descreva o motivo da justificativa..."
                             />
                             <InputError message={errors.reason} />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="attachment">Anexo (opcional)</Label>
+                            <Input
+                                type="file"
+                                id="attachment"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={handleFileChange}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Formatos aceitos: PDF, JPG, PNG (máx. 10MB)
+                            </p>
+                            <InputError message={errors.attachment} />
                         </div>
 
                         <div className="flex justify-end gap-4">

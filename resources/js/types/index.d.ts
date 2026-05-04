@@ -118,6 +118,7 @@ export interface Justification {
     reason: string;
     justified_by: number;
     status: 'pending' | 'approved' | 'rejected';
+    attachment_path: string | null;
     employee?: Employee;
     attendance?: Attendance;
     justifiedBy?: User;

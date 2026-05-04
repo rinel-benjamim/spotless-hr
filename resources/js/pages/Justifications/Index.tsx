@@ -129,6 +129,9 @@ export default function JustificationsIndex({
                                         Motivo
                                     </th>
                                     <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
+                                        Anexo
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
                                         Estado
                                     </th>
                                     <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
@@ -170,6 +173,22 @@ export default function JustificationsIndex({
                                             >
                                                 {justification.reason}
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            {justification.attachment_path ? (
+                                                <a
+                                                    href={`/storage/${justification.attachment_path}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:underline"
+                                                >
+                                                    Ver Anexo
+                                                </a>
+                                            ) : (
+                                                <span className="text-muted-foreground">
+                                                    -
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
                                             {getStatusBadge(
