@@ -5,17 +5,18 @@
     <meta charset="utf-8">
     <title>Relatório de Presenças - Spotlight HR</title>
     <style>
-        body { font-family: 'Helvetica', sans-serif; color: #333; font-size: 11px; padding: 20px; }
-        .header { border-bottom: 2px solid #3b82f6; padding-bottom: 10px; margin-bottom: 20px; }
-        .title { font-size: 18px; font-weight: bold; color: #1e40af; }
-        .info { margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b; }
-        td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
-        .badge { padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
+        body { font-family: 'Helvetica', sans-serif; color: #333; font-size: 10px; padding: 15px; }
+        .header { border-bottom: 2px solid #3b82f6; padding-bottom: 8px; margin-bottom: 15px; }
+        .title { font-size: 16px; font-weight: bold; color: #1e40af; }
+        .info { margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { background: #f8fafc; text-align: left; padding: 6px; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 9px; }
+        td { padding: 6px; border-bottom: 1px solid #f1f5f9; word-wrap: break-word; }
+        .employee-cell { width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .badge { padding: 2px 6px; border-radius: 10px; font-size: 8px; font-weight: bold; text-transform: uppercase; }
         .badge-in { background: #dcfce7; color: #166534; }
         .badge-out { background: #dbeafe; color: #1e40af; }
-        .footer { margin-top: 30px; text-align: center; color: #94a3b8; font-size: 9px; }
+        .footer { margin-top: 20px; text-align: center; color: #94a3b8; font-size: 8px; }
     </style>
 </head>
 <body>
