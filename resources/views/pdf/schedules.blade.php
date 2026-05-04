@@ -5,20 +5,20 @@
     <meta charset="utf-8">
     <title>Escala de Serviço - {{ $monthName }}</title>
     <style>
-        body { font-family: 'Helvetica', sans-serif; color: #333; font-size: 10px; margin: 0; padding: 10px; }
-        .header { border-bottom: 2px solid #3b82f6; padding-bottom: 5px; margin-bottom: 15px; }
-        .title { font-size: 16px; font-weight: bold; color: #1e40af; }
-        .info { margin-bottom: 10px; font-size: 11px; }
+        body { font-family: 'Helvetica', sans-serif; color: #333; font-size: 9px; margin: 0; padding: 5px; }
+        .header { border-bottom: 2px solid #3b82f6; padding-bottom: 5px; margin-bottom: 10px; }
+        .title { font-size: 14px; font-weight: bold; color: #1e40af; }
+        .info { margin-bottom: 8px; font-size: 9px; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { background: #f8fafc; text-align: center; padding: 4px; border: 1px solid #e2e8f0; color: #475569; font-size: 8px; }
-        td { padding: 4px; border: 1px solid #e2e8f0; text-align: center; height: 30px; }
-        .employee-name { text-align: left; width: 120px; font-weight: bold; background: #f8fafc; }
-        .day-off { background: #2563eb; color: #ffffff; }
-        .working-day { background: #16a34a; color: #ffffff; }
-        .no-schedule { background: #ffffff; color: #6b7280; }
-        .shift-name { font-size: 7px; display: block; }
-        .footer { margin-top: 15px; text-align: center; color: #94a3b8; font-size: 8px; }
-        @page { margin: 1cm; }
+        th { background: #f8fafc; text-align: center; padding: 2px; border: 1px solid #e2e8f0; color: #475569; font-size: 6px; width: 12px; }
+        td { padding: 2px; border: 1px solid #e2e8f0; text-align: center; height: 20px; overflow: hidden; }
+        .employee-name { text-align: left; width: 80px; font-weight: bold; background: #f8fafc; font-size: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .day-off { background: #ffffff; color: #6b7280; font-size: 6px; }
+        .working-day { background: #bfdbfe; color: #1e40af; font-size: 6px; }
+        .no-schedule { background: #4b5563; color: #ffffff; }
+        .shift-name { font-size: 5px; display: block; }
+        .footer { margin-top: 10px; text-align: center; color: #94a3b8; font-size: 7px; }
+        @page { margin: 0.5cm; size: landscape; }
     </style>
 </head>
 <body>
