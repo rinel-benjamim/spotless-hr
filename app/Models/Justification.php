@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Classe responsável por Justification.
+ */
 class Justification extends Model
 {
     use HasFactory;
@@ -21,7 +24,9 @@ class Justification extends Model
         'attachment_path',
     ];
 
-    // Conversões de tipo
+    /**
+     * Conversões de tipo.
+     */
     protected function casts(): array
     {
         return [
@@ -29,19 +34,25 @@ class Justification extends Model
         ];
     }
 
-    // Relation: attendance associada
+    /**
+     * Relation: attendance associada.
+     */
     public function attendance(): BelongsTo
     {
         return $this->belongsTo(Attendance::class);
     }
 
-    // Relation: funcionário
+    /**
+     * Relation: funcionário.
+     */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
-    // Relation: quem justificou
+    /**
+     * Relation: quem justificou.
+     */
     public function justifiedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'justified_by');

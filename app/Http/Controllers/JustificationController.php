@@ -8,9 +8,14 @@ use App\Models\Justification;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por JustificationController.
+ */
 class JustificationController extends Controller
 {
-    // Lista justificativas com filtros
+    /**
+     * Lista justificativas com filtros.
+     */
     public function index()
     {
         $query = Justification::with(['employee', 'attendance', 'justifiedBy']);
@@ -28,7 +33,9 @@ class JustificationController extends Controller
         ]);
     }
 
-    // Formulário para criar justificativa
+    /**
+     * Formulário para criar justificativa.
+     */
     public function create(Request $request)
     {
         // Apenas funcionários podem criar justificativas
@@ -52,7 +59,9 @@ class JustificationController extends Controller
         ]);
     }
 
-    // Cria nova justificativa (status: pending)
+    /**
+     * Cria nova justificativa (status: pending).
+     */
     public function store(Request $request)
     {
         // Apenas funcionários podem criar justificativas
@@ -100,7 +109,9 @@ class JustificationController extends Controller
             ->with('success', 'Justificativa submetida. Aguarde aprovação do administrador.');
     }
 
-    // Aprova justificativa (admin)
+    /**
+     * Aprova justificativa (admin).
+     */
     public function approve(Justification $justification)
     {
         if (! auth()->user()->isAdmin()) {
@@ -123,7 +134,9 @@ class JustificationController extends Controller
             ->with('success', 'Justificativa aprovada com sucesso.');
     }
 
-    // Rejeita justificativa (admin)
+    /**
+     * Rejeita justificativa (admin).
+     */
     public function reject(Justification $justification)
     {
         if (! auth()->user()->isAdmin()) {
@@ -146,7 +159,9 @@ class JustificationController extends Controller
             ->with('success', 'Justificativa rejeitada.');
     }
 
-    // Remove justificativa
+    /**
+     * Remove justificativa.
+     */
     public function destroy(Justification $justification)
     {
         if (! auth()->user()->canManageEmployees()) {

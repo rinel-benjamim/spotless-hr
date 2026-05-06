@@ -12,6 +12,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ShiftController;
 use Illuminate\Support\Facades\Route;
 
+// Rotas públicas de instalação e inicialização do sistema.
 Route::get('/setup', [\App\Http\Controllers\SetupController::class, 'index'])->name('setup');
 Route::post('/setup', [\App\Http\Controllers\SetupController::class, 'store']);
 
@@ -19,13 +20,17 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 })->name('home');
 
+// Rotas acessíveis apenas por usuários autenticados e verificados.
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Dashboard principal e página de métricas.
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/export-kpis', [DashboardController::class, 'exportKpis'])->name('dashboard.export-kpis');
 
+    // Recursos de funcionários e turnos.
     Route::resource('employees', EmployeeController::class);
     Route::resource('shifts', ShiftController::class);
 
+    // Rotas de controle de ponto e exportação de registros.
     Route::get('attendances', [AttendanceController::class, 'index'])->name('attendances.index');
     Route::get('attendances/export-pdf', [AttendanceController::class, 'exportPdf'])->name('attendances.export-pdf');
     Route::post('attendances', [AttendanceController::class, 'store'])->name('attendances.store');
@@ -34,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('attendances/check-in-employee', [AttendanceController::class, 'checkInEmployee'])->name('attendances.check-in-employee');
     Route::post('attendances/check-out-employee', [AttendanceController::class, 'checkOutEmployee'])->name('attendances.check-out-employee');
 
+    // Rotas de relatórios, incluindo relatórios por funcionário e exportação para PDF.
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/manager', [ReportController::class, 'managerReports'])->name('reports.manager');
     Route::get('reports/admin', [ReportController::class, 'adminReports'])->name('reports.admin');
@@ -43,6 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/calendar/{employee}', [ReportController::class, 'calendar'])->name('reports.calendar');
     Route::get('reports/calendar/{employee}/export-pdf', [ReportController::class, 'exportCalendarPdf'])->name('reports.calendar-pdf');
 
+    // Rotas para gerenciamento de justificativas de ausência e atraso.
     Route::get('justifications', [JustificationController::class, 'index'])->name('justifications.index');
     Route::get('justifications/create', [JustificationController::class, 'create'])->name('justifications.create');
     Route::post('justifications', [JustificationController::class, 'store'])->name('justifications.store');
@@ -52,8 +59,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('absences', [\App\Http\Controllers\AbsenceController::class, 'index'])->name('absences.index');
 
+    // Rotas de auditoria e acesso rápido a logs de atividade.
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
+    // Rotas de geração e visualização de folhas de pagamento.
     Route::get('payrolls', [PayrollController::class, 'index'])->name('payrolls.index');
     Route::get('payrolls/export-pdf', [PayrollController::class, 'exportListPdf'])->name('payrolls.export-list-pdf');
     Route::get('payrolls/create', [PayrollController::class, 'create'])->name('payrolls.create');

@@ -9,9 +9,14 @@ use App\Models\Justification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por DashboardController.
+ */
 class DashboardController extends Controller
 {
-    // Redireciona para o dashboard correto conforme o tipo de usuário
+    /**
+     * Redireciona para o dashboard correto conforme o tipo de usuário.
+     */
     public function index()
     {
         $user = auth()->user();
@@ -27,7 +32,9 @@ class DashboardController extends Controller
         return $this->employeeDashboard();
     }
 
-    // Dashboard do Administrador (Diretor) - métricas completas
+    /**
+     * Dashboard do Administrador (Diretor) - métricas completas.
+     */
     protected function adminDashboard()
     {
         $stats = $this->getAdminStats();
@@ -47,7 +54,9 @@ class DashboardController extends Controller
         ]);
     }
 
-    // Dashboard do Gerente - métricas limitadas
+    /**
+     * Dashboard do Gerente - métricas limitadas.
+     */
     protected function managerDashboard()
     {
         $stats = $this->getManagerStats();
@@ -69,84 +78,111 @@ class DashboardController extends Controller
         ]);
     }
 
-    // Calcula métricas para o dashboard do gerente
+    /**
+     * Calcula métricas para o dashboard do gerente.
+     */
     private function getManagerStats()
     {
+        // Define o início do mês atual para cálculos mensais.
         $thisMonth = now()->startOfMonth();
 
+        // Conta o total de funcionários ativos na empresa.
         $activeEmployees = Employee::where('status', 'active')->count();
 
+        // Calcula quantos funcionários estão presentes hoje.
         $presentToday = $this->getPresentTodayCount();
 
+        // Reúne todos os eventos de ponto do mês para calcular as horas trabalhadas.
         $events = Attendance::whereDate('recorded_at', '>=', $thisMonth)
-            ->orderBy('employee_id')
-            ->orderBy('recorded_at')
+            ->orderBy('employee_id') // Ordena por funcionário para agrupar eventos.
+            ->orderBy('recorded_at') // Ordena cronologicamente dentro de cada funcionário.
             ->get();
 
-        $totalMinutes = 0;
-        $currentCheckIn = null;
-        $lastEmployeeId = null;
+        $totalMinutes = 0; // Acumulador total de minutos trabalhados no mês.
+        $currentCheckIn = null; // Armazena o check-in atual para emparelhar com check-out.
+        $lastEmployeeId = null; // Controla mudança de funcionário para resetar emparelhamento.
 
+        // Itera sobre cada evento de ponto para calcular horas trabalhadas.
         foreach ($events as $event) {
+            // Se mudou de funcionário, reseta o emparelhamento de check-in/check-out.
             if ($lastEmployeeId !== $event->employee_id) {
-                $currentCheckIn = null;
-                $lastEmployeeId = $event->employee_id;
+                $currentCheckIn = null; // Limpa check-in anterior.
+                $lastEmployeeId = $event->employee_id; // Atualiza ID do funcionário atual.
             }
 
+            // Se é check-in, armazena para emparelhar com próximo check-out.
             if ($event->type === AttendanceType::CheckIn) {
                 $currentCheckIn = $event->recorded_at;
-            } elseif ($event->type === AttendanceType::CheckOut && $currentCheckIn) {
+            }
+            // Se é check-out e há check-in emparelhado, calcula diferença de tempo.
+            elseif ($event->type === AttendanceType::CheckOut && $currentCheckIn) {
+                // Calcula minutos trabalhados entre entrada e saída.
                 $totalMinutes += $currentCheckIn->diffInMinutes($event->recorded_at);
-                $currentCheckIn = null;
+                $currentCheckIn = null; // Limpa check-in após cálculo.
             }
         }
 
+        // Converte minutos totais para horas (sem arredondamento ainda).
         $totalHoursThisMonth = $totalMinutes / 60;
 
+        // Retorna array com todas as métricas calculadas para o gerente.
         return [
             'activeEmployees' => $activeEmployees,
             'presentToday' => $presentToday,
-            'totalHoursThisMonth' => round($totalHoursThisMonth, 2),
-            'monthName' => now()->translatedFormat('F Y'),
+            'totalHoursThisMonth' => round($totalHoursThisMonth, 2), // Arredonda para 2 casas decimais.
+            'monthName' => now()->translatedFormat('F Y'), // Nome do mês atual em português.
         ];
     }
 
-    // Conta funcionários presentes hoje (com check-out válido)
+    /**
+     * Conta funcionários presentes hoje (com check-out válido).
+     */
     private function getPresentTodayCount(): int
     {
+        // Define a data de hoje para filtrar registros.
         $today = now()->toDateString();
+        // Instancia o serviço de attendance para validações.
         $attendanceService = app(\App\Services\AttendanceService::class);
 
+        // Busca os IDs únicos dos funcionários que fizeram check-in hoje.
         $employeesWithCheckIn = Attendance::whereDate('recorded_at', $today)
             ->where('type', AttendanceType::CheckIn)
-            ->pluck('employee_id')
-            ->unique();
+            ->pluck('employee_id') // Extrai apenas os IDs dos funcionários.
+            ->unique(); // Remove duplicatas.
 
-        $presentToday = 0;
+        $presentToday = 0; // Contador de funcionários presentes hoje.
+        // Itera sobre cada funcionário que fez check-in hoje.
         foreach ($employeesWithCheckIn as $employeeId) {
+            // Carrega o funcionário completo do banco.
             $employee = Employee::find($employeeId);
+            // Se funcionário não existe ou não tem turno definido, conta como presente.
             if (! $employee || ! $employee->shift) {
                 $presentToday++;
 
-                continue;
+                continue; // Pula para o próximo funcionário.
             }
 
+            // Verifica se há check-outs válidos (não antecipados) para este funcionário hoje.
             $hasValidCheckout = Attendance::where('employee_id', $employeeId)
                 ->whereDate('recorded_at', $today)
                 ->where('type', AttendanceType::CheckOut)
-                ->get()
-                ->filter(fn ($att) => ! $attendanceService->isEarlyExit($att))
-                ->isNotEmpty();
+                ->get() // Busca todos os check-outs do dia.
+                ->filter(fn ($att) => ! $attendanceService->isEarlyExit($att)) // Filtra apenas válidos.
+                ->isNotEmpty(); // Verifica se há pelo menos um válido.
 
+            // Se tem check-out válido, conta como presente.
             if ($hasValidCheckout) {
                 $presentToday++;
             }
         }
 
+        // Retorna o total de funcionários considerados presentes hoje.
         return $presentToday;
     }
 
-    // Exporta KPIs do dashboard para PDF
+    /**
+     * Exporta KPIs do dashboard para PDF.
+     */
     public function exportKpis()
     {
         if (! auth()->user()->canViewAllData()) {
@@ -159,7 +195,9 @@ class DashboardController extends Controller
         return $pdf->download('Dashboard_KPIs_'.now()->format('Y-m').'.pdf');
     }
 
-    // Calcula métricas completas para o dashboard do administrador
+    /**
+     * Calcula métricas completas para o dashboard do administrador.
+     */
     private function getAdminStats()
     {
         $thisMonth = now()->startOfMonth();
@@ -170,6 +208,7 @@ class DashboardController extends Controller
 
         $presentToday = $this->getPresentTodayCount();
 
+        // Reúne entradas e saídas do mês para calcular horas totais do período.
         $events = Attendance::whereDate('recorded_at', '>=', $thisMonth)
             ->orderBy('employee_id')
             ->orderBy('recorded_at')
@@ -229,7 +268,9 @@ class DashboardController extends Controller
         ];
     }
 
-    // Dashboard do Funcionário - histórico de ponto pessoal
+    /**
+     * Dashboard do Funcionário - histórico de ponto pessoal.
+     */
     protected function employeeDashboard()
     {
         $employee = auth()->user()->employee;

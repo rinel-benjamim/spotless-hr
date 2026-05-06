@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Classe responsável por ActivityLog.
+ */
 class ActivityLog extends Model
 {
     // Campos permitidos
@@ -18,7 +21,9 @@ class ActivityLog extends Model
         'ip_address',
     ];
 
-    // Conversões de tipo
+    /**
+     * Conversões de tipo.
+     */
     protected function casts(): array
     {
         return [
@@ -26,7 +31,9 @@ class ActivityLog extends Model
         ];
     }
 
-    // Relation: usuário que realizou a ação
+    /**
+     * Relation: usuário que realizou a ação.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

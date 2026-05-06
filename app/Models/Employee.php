@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Classe responsável por Employee.
+ */
 class Employee extends Model
 {
     use HasFactory, SoftDeletes;
@@ -34,7 +37,9 @@ class Employee extends Model
         'status',
     ];
 
-    // Conversões de tipo automático
+    /**
+     * Conversões de tipo automático.
+     */
     protected function casts(): array
     {
         return [
@@ -70,49 +75,65 @@ class Employee extends Model
         });
     }
 
-    // Relation: usuário associado
+    /**
+     * Relation: usuário associado.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relation: turno padrão
+    /**
+     * Relation: turno padrão.
+     */
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);
     }
 
-    // Relation: registros de ponto
+    /**
+     * Relation: registros de ponto.
+     */
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
     }
 
-    // Relation: justificativas
+    /**
+     * Relation: justificativas.
+     */
     public function justifications(): HasMany
     {
         return $this->hasMany(Justification::class);
     }
 
-    // Relation: folhas de pagamento
+    /**
+     * Relation: folhas de pagamento.
+     */
     public function payrolls(): HasMany
     {
         return $this->hasMany(Payroll::class);
     }
 
-    // Relation: escalas
+    /**
+     * Relation: escalas.
+     */
     public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class);
     }
 
-    // Verifica se funcionário está ativo
+    /**
+     * Verifica se funcionário está ativo.
+     */
     public function isActive(): bool
     {
         return $this->status === EmployeeStatus::Active;
     }
 
-    // Verifica se é gerente
+    /**
+     * Verifica se é gerente.
+     */
     public function isManager(): bool
     {
         return $this->role === EmployeeRole::Manager;

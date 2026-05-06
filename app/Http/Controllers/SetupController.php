@@ -9,15 +9,22 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por SetupController.
+ */
 class SetupController extends Controller
 {
-    // Página inicial de configuração (primeiro acesso)
+    /**
+     * Página inicial de configuração (primeiro acesso).
+     */
     public function index()
     {
         return Inertia::render('Setup/Index');
     }
 
-    // Cria o primeiro administrador do sistema
+    /**
+     * Cria o primeiro administrador do sistema.
+     */
     public function store(Request $request)
     {
         $request->validate([

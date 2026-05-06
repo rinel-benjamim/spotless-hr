@@ -7,9 +7,14 @@ use App\Http\Requests\UpdateShiftRequest;
 use App\Models\Shift;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por ShiftController.
+ */
 class ShiftController extends Controller
 {
-    // Apenas admin pode acessar turnos
+    /**
+     * Apenas admin pode acessar turnos.
+     */
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
@@ -21,7 +26,9 @@ class ShiftController extends Controller
         });
     }
 
-    // Lista todos os turnos
+    /**
+     * Lista todos os turnos.
+     */
     public function index()
     {
         $shifts = Shift::withCount('employees')->latest()->paginate(15);
@@ -31,13 +38,17 @@ class ShiftController extends Controller
         ]);
     }
 
-    // Formulário para criar turno
+    /**
+     * Formulário para criar turno.
+     */
     public function create()
     {
         return Inertia::render('Shifts/Create');
     }
 
-    // Cria novo turno
+    /**
+     * Cria novo turno.
+     */
     public function store(StoreShiftRequest $request)
     {
         Shift::create($request->validated());
@@ -46,7 +57,9 @@ class ShiftController extends Controller
             ->with('success', 'Turno criado com sucesso.');
     }
 
-    // Detalhes de um turno
+    /**
+     * Detalhes de um turno.
+     */
     public function show(Shift $shift)
     {
         $shift->load('employees');
@@ -56,7 +69,9 @@ class ShiftController extends Controller
         ]);
     }
 
-    // Formulário para editar turno
+    /**
+     * Formulário para editar turno.
+     */
     public function edit(Shift $shift)
     {
         return Inertia::render('Shifts/Edit', [
@@ -64,7 +79,9 @@ class ShiftController extends Controller
         ]);
     }
 
-    // Atualiza turno
+    /**
+     * Atualiza turno.
+     */
     public function update(UpdateShiftRequest $request, Shift $shift)
     {
         $shift->update($request->validated());
@@ -73,7 +90,9 @@ class ShiftController extends Controller
             ->with('success', 'Turno atualizado com sucesso.');
     }
 
-    // Remove turno
+    /**
+     * Remove turno.
+     */
     public function destroy(Shift $shift)
     {
         $shift->delete();

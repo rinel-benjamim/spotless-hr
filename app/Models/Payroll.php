@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Classe responsável por Payroll.
+ */
 class Payroll extends Model
 {
     use HasFactory;
@@ -26,7 +29,9 @@ class Payroll extends Model
         'notes',
     ];
 
-    // Conversões de tipo
+    /**
+     * Conversões de tipo.
+     */
     protected function casts(): array
     {
         return [
@@ -39,13 +44,17 @@ class Payroll extends Model
         ];
     }
 
-    // Relation: funcionário
+    /**
+     * Relation: funcionário.
+     */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
-    // Verifica se já foi pago
+    /**
+     * Verifica se já foi pago.
+     */
     public function isPaid(): bool
     {
         return $this->paid_at !== null;

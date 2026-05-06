@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Classe responsável por Report.
+ */
 class Report extends Model
 {
     use HasFactory;
@@ -22,7 +25,9 @@ class Report extends Model
         'generated_at',
     ];
 
-    // Conversões de tipo
+    /**
+     * Conversões de tipo.
+     */
     protected function casts(): array
     {
         return [
@@ -31,7 +36,9 @@ class Report extends Model
         ];
     }
 
-    // Relation: criador do relatório
+    /**
+     * Relation: criador do relatório.
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

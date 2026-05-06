@@ -9,6 +9,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
+/**
+ * Classe responsável por User.
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
@@ -29,7 +32,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // Conversões de tipo
+    /**
+     * Conversões de tipo.
+     */
     protected function casts(): array
     {
         return [
@@ -40,49 +45,65 @@ class User extends Authenticatable
         ];
     }
 
-    // Relation: funcionário associado
+    /**
+     * Relation: funcionário associado.
+     */
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class);
     }
 
-    // Verifica se é admin
+    /**
+     * Verifica se é admin.
+     */
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;
     }
 
-    // Verifica se é gerente
+    /**
+     * Verifica se é gerente.
+     */
     public function isManager(): bool
     {
         return $this->role === UserRole::Manager;
     }
 
-    // Verifica se é funcionário
+    /**
+     * Verifica se é funcionário.
+     */
     public function isEmployee(): bool
     {
         return $this->role === UserRole::Employee;
     }
 
-    // Verifica se pode excluir outro usuário
+    /**
+     * Verifica se pode excluir outro usuário.
+     */
     public function canDelete(User $target): bool
     {
         return $this->role->canDelete($target->role);
     }
 
-    // Verifica se pode gerenciar funcionários
+    /**
+     * Verifica se pode gerenciar funcionários.
+     */
     public function canManageEmployees(): bool
     {
         return $this->role->canManageEmployees();
     }
 
-    // Verifica se pode ver todos os dados
+    /**
+     * Verifica se pode ver todos os dados.
+     */
     public function canViewAllData(): bool
     {
         return $this->role->canViewAllData();
     }
 
-    // Verifica se pode marcar ponto
+    /**
+     * Verifica se pode marcar ponto.
+     */
     public function canMarkAttendance(): bool
     {
         return $this->role->canMarkAttendance();

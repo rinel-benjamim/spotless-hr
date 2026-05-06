@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Classe responsável por Schedule.
+ */
 class Schedule extends Model
 {
     use HasFactory;
@@ -19,7 +22,9 @@ class Schedule extends Model
         'notes',
     ];
 
-    // Conversões de tipo
+    /**
+     * Conversões de tipo.
+     */
     protected function casts(): array
     {
         return [
@@ -28,13 +33,17 @@ class Schedule extends Model
         ];
     }
 
-    // Relation: funcionário
+    /**
+     * Relation: funcionário.
+     */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
-    // Relation: turno
+    /**
+     * Relation: turno.
+     */
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);

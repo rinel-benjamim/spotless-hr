@@ -10,9 +10,14 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por AttendanceController.
+ */
 class AttendanceController extends Controller
 {
-    // Lista registros de ponto com filtros
+    /**
+     * Lista registros de ponto com filtros.
+     */
     public function index(Request $request)
     {
         $query = $this->getFilteredQuery($request);
@@ -30,7 +35,9 @@ class AttendanceController extends Controller
         ]);
     }
 
-    // Exporta registros de ponto para PDF
+    /**
+     * Exporta registros de ponto para PDF.
+     */
     public function exportPdf(Request $request)
     {
         if (! auth()->user()->canViewAllData() && $request->employee_id != auth()->user()->employee->id) {
@@ -49,57 +56,77 @@ class AttendanceController extends Controller
         return $pdf->download($filename);
     }
 
-    // Aplica filtros na query de attendances
+    /**
+     * Aplica filtros na query de attendances.
+     */
     private function getFilteredQuery(Request $request)
     {
+        // Inicia query base com relacionamento de turno do funcionário.
         $query = Attendance::query()->with(['employee.shift']);
 
+        // Restringe os resultados ao próprio usuário quando não há permissão para ver todos os dados.
         if (! auth()->user()->canViewAllData()) {
+            // Usuários sem permissão veem apenas seus próprios registros.
             $query->where('employee_id', auth()->user()->employee->id);
         } elseif ($request->filled('employee_id')) {
+            // Se tem permissão e foi especificado funcionário, filtra por ele.
             $query->where('employee_id', $request->employee_id);
         }
 
+        // Aplica filtro de data inicial se fornecido.
         if ($request->filled('start_date')) {
             $query->whereDate('recorded_at', '>=', $request->start_date);
         }
 
+        // Aplica filtro de data final se fornecido.
         if ($request->filled('end_date')) {
             $query->whereDate('recorded_at', '<=', $request->end_date);
         }
 
+        // Retorna a query com todos os filtros aplicados.
         return $query;
     }
 
-    // Registra ponto (check-in ou check-out automático)
+    /**
+     * Registra ponto (check-in ou check-out automático).
+     */
     public function store(StoreAttendanceRequest $request)
     {
+        // Define o ID do funcionário (do request ou do usuário logado).
         $employeeId = $request->employee_id ?? auth()->user()->employee->id;
 
+        // Verifica se o usuário tem permissão para marcar ponto para outro funcionário.
         if (! auth()->user()->canMarkAttendance() && $employeeId != auth()->user()->employee->id) {
-            abort(403);
+            abort(403); // Aborta com erro 403 se não tiver permissão.
         }
 
+        // Busca o último registro de ponto do funcionário para determinar o próximo tipo.
         $lastAttendance = Attendance::where('employee_id', $employeeId)
-            ->latest('recorded_at')
+            ->latest('recorded_at') // Ordena pelo mais recente.
             ->first();
 
+        // Lógica de alternância: se não há registro ou último foi check-out, faz check-in.
+        // Caso contrário (último foi check-in), faz check-out.
         $type = (! $lastAttendance || $lastAttendance->type === AttendanceType::CheckOut)
             ? AttendanceType::CheckIn
             : AttendanceType::CheckOut;
 
+        // Cria o novo registro de ponto com os dados fornecidos.
         Attendance::create([
             'employee_id' => $employeeId,
-            'type' => $type,
-            'recorded_at' => now(),
-            'notes' => $request->notes,
+            'type' => $type, // Tipo determinado pela lógica acima.
+            'recorded_at' => now(), // Timestamp atual.
+            'notes' => $request->notes, // Notas opcionais do request.
         ]);
 
+        // Redireciona de volta com mensagem de sucesso.
         return redirect()->back()
             ->with('success', 'Ponto registado com sucesso.');
     }
 
-    // Registra entrada (check-in)
+    /**
+     * Registra entrada (check-in).
+     */
     public function checkIn(Request $request)
     {
         $employeeId = auth()->user()->employee->id;
@@ -115,7 +142,9 @@ class AttendanceController extends Controller
             ->with('success', 'Entrada registada com sucesso.');
     }
 
-    // Registra saída (check-out)
+    /**
+     * Registra saída (check-out).
+     */
     public function checkOut(Request $request)
     {
         $employeeId = auth()->user()->employee->id;
@@ -131,7 +160,9 @@ class AttendanceController extends Controller
             ->with('success', 'Saída registada com sucesso.');
     }
 
-    // Registra entrada para um funcionário (gerente/admin)
+    /**
+     * Registra entrada para um funcionário (gerente/admin).
+     */
     public function checkInEmployee(Request $request)
     {
         if (! auth()->user()->canMarkAttendance()) {
@@ -153,7 +184,9 @@ class AttendanceController extends Controller
             ->with('success', 'Entrada registada com sucesso.');
     }
 
-    // Registra saída para um funcionário (gerente/admin)
+    /**
+     * Registra saída para um funcionário (gerente/admin).
+     */
     public function checkOutEmployee(Request $request)
     {
         if (! auth()->user()->canMarkAttendance()) {

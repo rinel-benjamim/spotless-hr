@@ -8,6 +8,9 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
 
+/**
+ * Classe responsável por TwoFactorAuthenticationController.
+ */
 class TwoFactorAuthenticationController extends Controller
 {
     public function __construct()

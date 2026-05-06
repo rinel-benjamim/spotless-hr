@@ -10,13 +10,18 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por ReportController.
+ */
 class ReportController extends Controller
 {
     public function __construct(
         protected AttendanceService $attendanceService
     ) {}
 
-    // Lista funcionários para gerar relatórios
+    /**
+     * Lista funcionários para gerar relatórios.
+     */
     public function index(Request $request)
     {
         if (! auth()->user()->canViewAllData()) {
@@ -30,7 +35,9 @@ class ReportController extends Controller
         ]);
     }
 
-    // Lista relatórios do gerente
+    /**
+     * Lista relatórios do gerente.
+     */
     public function managerReports(Request $request)
     {
         if (! auth()->user()->isManager()) {
@@ -46,7 +53,9 @@ class ReportController extends Controller
         ]);
     }
 
-    // Lista relatórios do admin
+    /**
+     * Lista relatórios do admin.
+     */
     public function adminReports(Request $request)
     {
         if (! auth()->user()->isAdmin()) {
@@ -62,7 +71,9 @@ class ReportController extends Controller
         ]);
     }
 
-    // Cria novo relatório
+    /**
+     * Cria novo relatório.
+     */
     public function createReport(Request $request)
     {
         if (! auth()->user()->isManager()) {
@@ -89,7 +100,9 @@ class ReportController extends Controller
         return redirect()->back()->with('success', 'Relatório criado com sucesso.');
     }
 
-    // Relatório de um funcionário
+    /**
+     * Relatório de um funcionário.
+     */
     public function employee(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);
@@ -120,7 +133,9 @@ class ReportController extends Controller
         ]);
     }
 
-    // Exporta relatório para PDF
+    /**
+     * Exporta relatório para PDF.
+     */
     public function exportEmployeePdf(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);
@@ -144,7 +159,9 @@ class ReportController extends Controller
         return $pdf->download("relatorio-{$employee->employee_code}-{$monthName}.pdf");
     }
 
-    // Calendário de presença
+    /**
+     * Calendário de presença.
+     */
     public function calendar(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);
@@ -175,7 +192,9 @@ class ReportController extends Controller
         ]);
     }
 
-    // Exporta calendário para PDF
+    /**
+     * Exporta calendário para PDF.
+     */
     public function exportCalendarPdf(Request $request, Employee $employee)
     {
         $this->authorize('view', $employee);

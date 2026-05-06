@@ -9,9 +9,14 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por AbsenceController.
+ */
 class AbsenceController extends Controller
 {
-    // Lista ausências com filtros de data
+    /**
+     * Lista ausências com filtros de data.
+     */
     public function index(Request $request, AttendanceService $attendanceService)
     {
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : now()->startOfMonth();

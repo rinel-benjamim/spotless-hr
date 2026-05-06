@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Classe responsável por Shift.
+ */
 class Shift extends Model
 {
     use HasFactory;
@@ -19,7 +22,9 @@ class Shift extends Model
         'description',
     ];
 
-    // Conversões de tipo
+    /**
+     * Conversões de tipo.
+     */
     protected function casts(): array
     {
         return [
@@ -27,7 +32,9 @@ class Shift extends Model
         ];
     }
 
-    // Relation: funcionários com este turno
+    /**
+     * Relation: funcionários com este turno.
+     */
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);

@@ -10,13 +10,18 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por PayrollController.
+ */
 class PayrollController extends Controller
 {
     public function __construct(
         protected PayrollService $payrollService
     ) {}
 
-    // Lista folhas de pagamento por mês/ano
+    /**
+     * Lista folhas de pagamento por mês/ano.
+     */
     public function index(Request $request)
     {
         $year = (int) $request->input('year', now()->year);
@@ -44,7 +49,9 @@ class PayrollController extends Controller
         ]);
     }
 
-    // Exporta lista de folhas para PDF
+    /**
+     * Exporta lista de folhas para PDF.
+     */
     public function exportListPdf(Request $request)
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -64,7 +71,9 @@ class PayrollController extends Controller
         return $pdf->download("folhas-pagamento-{$year}-{$month}.pdf");
     }
 
-    // Formulário para gerar folha
+    /**
+     * Formulário para gerar folha.
+     */
     public function create()
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -81,7 +90,9 @@ class PayrollController extends Controller
         ]);
     }
 
-    // Gera folha de pagamento
+    /**
+     * Gera folha de pagamento.
+     */
     public function store(StorePayrollRequest $request)
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -115,7 +126,9 @@ class PayrollController extends Controller
         ])->with('success', 'Folha de pagamento gerada com sucesso.');
     }
 
-    // Detalhes de uma folha
+    /**
+     * Detalhes de uma folha.
+     */
     public function show(Payroll $payroll)
     {
         if (! auth()->user()->canViewAllData() && $payroll->employee_id != auth()->user()->employee->id) {
@@ -129,7 +142,9 @@ class PayrollController extends Controller
         ]);
     }
 
-    // Exporta folha para PDF
+    /**
+     * Exporta folha para PDF.
+     */
     public function exportPdf(Payroll $payroll)
     {
         if (! auth()->user()->canViewAllData() && $payroll->employee_id != auth()->user()->employee->id) {
@@ -143,7 +158,9 @@ class PayrollController extends Controller
         return $pdf->download("folha-pagamento-{$payroll->employee->employee_code}-".now()->format('Y-m-d').'.pdf');
     }
 
-    // Atualiza folha (bonus, notas)
+    /**
+     * Atualiza folha (bonus, notas).
+     */
     public function update(Request $request, Payroll $payroll)
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -162,7 +179,9 @@ class PayrollController extends Controller
             ->with('success', 'Folha atualizada com sucesso.');
     }
 
-    // Marca como pago
+    /**
+     * Marca como pago.
+     */
     public function markAsPaid(Payroll $payroll)
     {
         if (! auth()->user()->canManageEmployees()) {
@@ -175,7 +194,9 @@ class PayrollController extends Controller
             ->with('success', 'Pagamento registrado com sucesso.');
     }
 
-    // Recalcula folha
+    /**
+     * Recalcula folha.
+     */
     public function recalculate(Payroll $payroll)
     {
         if (! auth()->user()->canManageEmployees()) {

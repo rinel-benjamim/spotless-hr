@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Classe responsável por CompanySetting.
+ */
 class CompanySetting extends Model
 {
     // Campos permitidos

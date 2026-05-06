@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * Classe responsável por Attendance.
+ */
 class Attendance extends Model
 {
     use HasFactory;
@@ -20,7 +23,9 @@ class Attendance extends Model
         'notes',
     ];
 
-    // Conversões de tipo
+    /**
+     * Conversões de tipo.
+     */
     protected function casts(): array
     {
         return [
@@ -29,13 +34,17 @@ class Attendance extends Model
         ];
     }
 
-    // Relation: funcionário
+    /**
+     * Relation: funcionário.
+     */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
-    // Relation: justificativa associada
+    /**
+     * Relation: justificativa associada.
+     */
     public function justification(): HasOne
     {
         return $this->hasOne(Justification::class);

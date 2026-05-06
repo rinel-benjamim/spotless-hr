@@ -6,9 +6,14 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/**
+ * Classe responsável por ActivityLogController.
+ */
 class ActivityLogController extends Controller
 {
-    // Lista logs de atividade (apenas admin)
+    /**
+     * Lista logs de atividade (apenas admin).
+     */
     public function index(Request $request)
     {
         if (! auth()->user()->isAdmin()) {
