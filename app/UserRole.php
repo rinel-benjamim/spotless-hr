@@ -40,4 +40,14 @@ enum UserRole: string
     {
         return $this === self::Admin || $this === self::Manager;
     }
+
+    public function canCreateJustification(): bool
+    {
+        return $this === self::Employee || $this === self::Manager;
+    }
+
+    public function canSelectAllEmployeesForJustification(): bool
+    {
+        return $this === self::Manager;
+    }
 }

@@ -119,6 +119,7 @@ export interface Justification {
     justified_by: number;
     status: 'pending' | 'approved' | 'rejected';
     attachment_path: string | null;
+    attachment_path_encoded: string | null;
     employee?: Employee;
     attendance?: Attendance;
     justifiedBy?: User;

@@ -25,7 +25,14 @@ class JustificationController extends Controller
         }
 
         $justifications = $query->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->through(function ($j) {
+                $j->attachment_path_encoded = $j->attachment_path
+                    ? base64_encode($j->attachment_path)
+                    : null;
+
+                return $j;
+            });
 
         return Inertia::render('Justifications/Index', [
             'justifications' => $justifications,
@@ -38,24 +45,33 @@ class JustificationController extends Controller
      */
     public function create(Request $request)
     {
-        // Apenas funcionários podem criar justificativas
-        // Admin e Manager não podem criar justificativas para ninguém
-        if (auth()->user()->isAdmin() || auth()->user()->isManager()) {
-            abort(403, 'Apenas funcionários podem justificar faltas.');
+        if (! auth()->user()->role->canCreateJustification()) {
+            abort(403, 'Não tem permissão para criar justificativas.');
         }
 
-        $employeeId = auth()->user()->employee->id;
+        $user = auth()->user();
         $absenceDate = $request->query('absence_date');
-        $employee = Employee::findOrFail($employeeId);
 
-        $employees = Employee::where('id', $employeeId)
-            ->select('id', 'full_name', 'employee_code')
-            ->get();
+        if ($user->isEmployee()) {
+            $employeeId = $user->employee->id;
+            $employees = Employee::where('id', $employeeId)
+                ->select('id', 'full_name', 'employee_code')
+                ->get();
+            $selectedEmployee = $user->employee;
+            $canSelectAllEmployees = false;
+        } else {
+            $employees = Employee::select('id', 'full_name', 'employee_code')
+                ->orderBy('full_name')
+                ->get();
+            $selectedEmployee = $user->employee;
+            $canSelectAllEmployees = true;
+        }
 
         return Inertia::render('Justifications/Create', [
             'employees' => $employees,
-            'selectedEmployee' => $employee,
+            'selectedEmployee' => $selectedEmployee,
             'absenceDate' => $absenceDate,
+            'canSelectAllEmployees' => $canSelectAllEmployees,
         ]);
     }
 
@@ -64,9 +80,8 @@ class JustificationController extends Controller
      */
     public function store(Request $request)
     {
-        // Apenas funcionários podem criar justificativas
-        if (auth()->user()->isAdmin() || auth()->user()->isManager()) {
-            abort(403, 'Apenas funcionários podem justificar faltas.');
+        if (! auth()->user()->role->canCreateJustification()) {
+            abort(403, 'Não tem permissão para criar justificativas.');
         }
 
         $validated = $request->validate([
@@ -77,17 +92,14 @@ class JustificationController extends Controller
             'attachment' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
         ]);
 
-        // Funcionário só pode justificar para si mesmo
-        $employeeId = auth()->user()->employee->id;
-        if ($validated['employee_id'] != $employeeId) {
+        if (auth()->user()->isEmployee() && $validated['employee_id'] != auth()->user()->employee->id) {
             abort(403, 'Apenas pode justificar as suas próprias faltas.');
         }
 
-        // Processar anexo (opcional)
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
             $file = $request->file('attachment');
-            $attachmentPath = $file->store('justifications', 'public');
+            $attachmentPath = $file->store('justifications', 'local');
         }
 
         $validated['justified_by'] = auth()->id();

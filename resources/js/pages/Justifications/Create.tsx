@@ -20,6 +20,7 @@ interface JustificationsCreateProps {
     employees: Employee[];
     selectedEmployee?: Employee;
     absenceDate?: string;
+    canSelectAllEmployees: boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -33,6 +34,7 @@ export default function JustificationsCreate({
     employees,
     selectedEmployee,
     absenceDate,
+    canSelectAllEmployees,
 }: JustificationsCreateProps) {
     const { data, setData, post, processing, errors, transform } = useForm({
         employee_id: selectedEmployee?.id?.toString() || '',
@@ -71,27 +73,34 @@ export default function JustificationsCreate({
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
                             <Label htmlFor="employee_id">Funcionário *</Label>
-                            <Select
-                                value={data.employee_id}
-                                onValueChange={(value) =>
-                                    setData('employee_id', value)
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Selecione um funcionário" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {employees.map((employee) => (
-                                        <SelectItem
-                                            key={employee.id}
-                                            value={employee.id.toString()}
-                                        >
-                                            {employee.full_name} (
-                                            {employee.employee_code})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            {canSelectAllEmployees ? (
+                                <Select
+                                    value={data.employee_id}
+                                    onValueChange={(value) =>
+                                        setData('employee_id', value)
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Selecione um funcionário" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {employees.map((employee) => (
+                                            <SelectItem
+                                                key={employee.id}
+                                                value={employee.id.toString()}
+                                            >
+                                                {employee.full_name} (
+                                                {employee.employee_code})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            ) : (
+                                <div className="rounded-md bg-muted p-3 font-medium">
+                                    {selectedEmployee?.full_name} (
+                                    {selectedEmployee?.employee_code})
+                                </div>
+                            )}
                             <InputError message={errors.employee_id} />
                         </div>
 

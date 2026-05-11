@@ -10,7 +10,14 @@ import {
 import { Head, Link, router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Check, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
+import {
+    Check,
+    ChevronLeft,
+    ChevronRight,
+    FileText,
+    Plus,
+    X,
+} from 'lucide-react';
 
 interface JustificationsIndexProps {
     justifications: PaginatedData<Justification>;
@@ -82,6 +89,25 @@ const handleReject = (id: number) => {
     if (confirm('Rejeitar esta justificativa?')) {
         router.post(`/justifications/${id}/reject`);
     }
+};
+
+const openFile = (encodedPath: string) => {
+    fetch('/api/open-file', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ path: encodedPath }),
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.error) {
+                alert('Erro ao abrir ficheiro: ' + data.error);
+            }
+        })
+        .catch(() => {
+            alert('Erro ao comunicar com o servidor');
+        });
 };
 
 export default function JustificationsIndex({
@@ -175,15 +201,23 @@ export default function JustificationsIndex({
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm">
-                                            {justification.attachment_path ? (
-                                                <a
-                                                    href={`/storage/${justification.attachment_path}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:underline"
+                                            {justification.attachment_path_encoded ? (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        if (
+                                                            justification.attachment_path_encoded
+                                                        ) {
+                                                            openFile(
+                                                                justification.attachment_path_encoded,
+                                                            );
+                                                        }
+                                                    }}
                                                 >
+                                                    <FileText className="mr-1 size-4" />
                                                     Ver Anexo
-                                                </a>
+                                                </Button>
                                             ) : (
                                                 <span className="text-muted-foreground">
                                                     -
